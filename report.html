@@ -1,19 +1,1882 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>รายงานความคืบหน้า (HR)</title>
+<script>window.KP_API_URL = "https://script.google.com/macros/s/AKfycbzPjdPRRxNKaTWaR8CP2qFyGToMMiTFM_XJctdxfYMqpFY_04P7L89nMIS3qX5ku8CgWQ/exec";</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<style>
+:root {
+  --bg: #f4f7f6;
+  --surface: #ffffff;
+  --ink: #1b2a27;
+  --ink-2: #51625e;
+  --line: #dfe7e4;
+  --brand: #0f8a6c;
+  --brand-ink: #0b6650;
+  --brand-soft: #e3f4ef;
+  --warn-soft: #fff4e5;
+  --warn: #b45309;
+  --danger: #b91c1c;
+  --radius: 14px;
+  --shadow: 0 1px 2px rgba(16, 40, 34, .06), 0 4px 16px rgba(16, 40, 34, .06);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: "Sarabun", "Leelawadee UI", "Tahoma", sans-serif;
+  font-size: 17px; line-height: 1.7;
+  color: var(--ink); background: var(--bg);
+}
+img { max-width: 100%; height: auto; }
+button { font: inherit; cursor: pointer; }
+a { color: var(--brand-ink); }
+
+/* ---------- Login ---------- */
+.login-wrap {
+  min-height: 100vh; display: grid; place-items: center; padding: 24px 16px;
+  background: radial-gradient(1200px 600px at 10% -10%, #cdeee4 0%, transparent 60%),
+              radial-gradient(900px 500px at 110% 110%, #dbe7ff 0%, transparent 60%), var(--bg);
+}
+.login-card {
+  width: 100%; max-width: 420px; background: var(--surface); border-radius: 20px;
+  box-shadow: var(--shadow); padding: 36px 28px;
+}
+.login-card .logo { font-size: 40px; line-height: 1; }
+.login-card h1 { font-size: 26px; margin: 12px 0 4px; }
+.login-card p.sub { color: var(--ink-2); margin: 0 0 24px; }
+.field label { display: block; font-weight: 600; margin-bottom: 6px; }
+.field input {
+  width: 100%; font: inherit; font-size: 18px; padding: 12px 14px; letter-spacing: .5px;
+  border: 1.5px solid var(--line); border-radius: 10px; outline: none; background: #fbfdfc;
+}
+.field input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+.error { color: var(--danger); font-size: 15px; min-height: 24px; margin: 6px 0 4px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 0; border-radius: 10px; padding: 11px 20px; font-weight: 600;
+  background: var(--brand); color: #fff; text-decoration: none;
+}
+.btn:hover { background: var(--brand-ink); }
+.btn.block { width: 100%; padding: 13px; font-size: 18px; }
+.btn.ghost { background: transparent; color: var(--brand-ink); border: 1.5px solid var(--line); }
+.btn.ghost:hover { background: var(--brand-soft); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.login-foot { color: var(--ink-2); font-size: 14px; margin-top: 18px; text-align: center; }
+
+/* ---------- Company logo + department ---------- */
+.brand-logo { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; }
+.brand-logo img { display: block; width: 230px; height: auto; }
+.brand-logo .dept {
+  display: flex; align-items: center; gap: 10px;
+  font-family: "Orbitron", "Segoe UI", sans-serif; font-weight: 600; font-size: 12.5px;
+  letter-spacing: .38em; margin-right: -.38em; /* letter-spacing adds trailing space; pull it back to stay centered */
+  color: #1f7a5c; text-transform: uppercase; white-space: nowrap;
+}
+.brand-logo .dept::before, .brand-logo .dept::after {
+  content: ""; width: 16px; height: 1.5px; background: linear-gradient(90deg, transparent, #5fb053);
+}
+.brand-logo .dept::after { background: linear-gradient(90deg, #5fb053, transparent); margin-right: .38em; }
+.brand-logo.small { gap: 3px; }
+.brand-logo.small img { width: 128px; }
+.brand-logo.small .dept { font-size: 7.5px; gap: 6px; letter-spacing: .34em; margin-right: -.34em; }
+.brand-logo.small .dept::before, .brand-logo.small .dept::after { width: 8px; height: 1px; }
+.topbar .brand { flex-shrink: 0; }
+.topbar .btn { white-space: nowrap; }
+.login-brand { display: flex; justify-content: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--line); }
+.site-name { font-weight: 700; font-size: 16px; color: var(--ink); padding-left: 14px; margin-left: 4px; border-left: 1px solid var(--line); line-height: 1.3; }
+
+/* ---------- Top bar ---------- */
+.topbar {
+  position: sticky; top: 0; z-index: 10; background: var(--surface);
+  border-bottom: 1px solid var(--line);
+}
+.topbar-inner {
+  max-width: 1100px; margin: 0 auto; padding: 10px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+.brand { font-weight: 700; font-size: 18px; color: var(--ink); text-decoration: none; display: flex; gap: 8px; align-items: center; }
+.spacer { flex: 1; }
+.sync { font-size: 13px; color: var(--ink-2); white-space: nowrap; }
+.sync.error { color: var(--danger); font-weight: 600; }
+.user-chip { color: var(--ink-2); font-size: 15px; text-align: right; line-height: 1.3; }
+.user-chip b { color: var(--ink); display: block; }
+
+/* ---------- Dashboard ---------- */
+.container { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
+.hero h2 { font-size: 28px; margin: 4px 0 2px; }
+.hero p { color: var(--ink-2); margin: 0; }
+.overall {
+  margin: 20px 0 28px; background: var(--surface); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 18px 20px; display: flex; gap: 24px; flex-wrap: wrap;
+}
+.overall .stat b { font-size: 26px; display: block; line-height: 1.2; }
+.overall .stat span { color: var(--ink-2); font-size: 14px; }
+.course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+.course-card {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  overflow: hidden; display: flex; flex-direction: column; text-decoration: none; color: inherit;
+  border-top: 5px solid var(--c, var(--brand)); transition: transform .12s ease;
+}
+.course-card:hover { transform: translateY(-2px); }
+.course-card .body { padding: 18px 20px; flex: 1; }
+.course-card .icon { font-size: 30px; }
+.course-card h3 { margin: 6px 0 4px; font-size: 20px; line-height: 1.4; }
+.course-card p { margin: 0; color: var(--ink-2); font-size: 15px; }
+.course-card .meta { color: var(--ink-2); font-size: 14px; margin-top: 10px; }
+.course-card .foot { padding: 12px 20px 16px; border-top: 1px solid var(--line); }
+.bar { height: 8px; background: #e8eeec; border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--c, var(--brand)); border-radius: 99px; }
+.foot-row { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-2); margin-top: 6px; }
+.badge { display: inline-block; font-size: 13px; font-weight: 600; padding: 2px 10px; border-radius: 99px; background: var(--brand-soft); color: var(--brand-ink); }
+.badge.todo { background: #eef2f1; color: var(--ink-2); }
+.badge.doing { background: var(--warn-soft); color: var(--warn); }
+
+/* ---------- Course layout ---------- */
+.course-layout { display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start; }
+.side {
+  position: sticky; top: 72px; background: var(--surface); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 14px;
+}
+.side h4 { margin: 4px 8px 10px; font-size: 15px; color: var(--ink-2); font-weight: 600; }
+.side a {
+  display: flex; gap: 10px; align-items: flex-start; padding: 9px 10px; border-radius: 10px;
+  color: var(--ink); text-decoration: none; font-size: 15px; line-height: 1.45;
+}
+.side a:hover { background: #f1f5f4; }
+.side a.active { background: var(--brand-soft); font-weight: 600; }
+.side .dot {
+  flex: 0 0 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line);
+  display: grid; place-items: center; font-size: 12px; color: #fff; margin-top: 1px;
+}
+.side .dot.done { background: var(--c, var(--brand)); border-color: var(--c, var(--brand)); }
+.back { display: inline-block; margin-bottom: 12px; text-decoration: none; font-size: 15px; }
+
+.lesson {
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 28px 32px; min-width: 0;
+}
+.lesson .kicker { color: var(--c, var(--brand)); font-weight: 600; font-size: 15px; }
+.lesson h2 { margin: 2px 0 6px; font-size: 26px; line-height: 1.35; }
+.lesson .src { color: var(--ink-2); font-size: 14px; margin-bottom: 18px; }
+.lesson h3 { font-size: 20px; margin: 28px 0 10px; color: var(--ink); }
+.lesson h4 { margin: 0 0 6px; font-size: 17px; }
+.lesson .lead { font-size: 18px; color: var(--ink-2); }
+.lesson figure { margin: 16px 0; text-align: center; }
+.lesson figure img { border: 1px solid var(--line); border-radius: 10px; background: #fff; max-height: 460px; }
+.lesson figcaption { color: var(--ink-2); font-size: 15px; margin-top: 6px; }
+.lesson ul, .lesson ol { padding-left: 1.4em; }
+.lesson-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+
+.callout { background: var(--brand-soft); border-left: 4px solid var(--brand); padding: 14px 16px; border-radius: 10px; margin: 16px 0; }
+.callout.strong { background: #fdf2f2; border-color: #dc2626; }
+.callout.warn { background: var(--warn-soft); border-color: var(--warn); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 14px 0; }
+.card { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: #fbfdfc; }
+.card p { margin: 6px 0; }
+.card ul { margin: 6px 0; }
+.card.muted { background: #f7f7f7; }
+.card.tip { background: #fffbea; border-color: #f4e3a1; margin-top: 20px; }
+.tag { font-size: 15px; color: var(--ink-2); }
+.example { font-style: italic; }
+.muted-text { color: var(--ink-2); font-style: italic; }
+.refs { color: var(--ink-2); font-size: 14px; margin-top: 24px; }
+table.compare { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 16px; }
+table.compare th { background: var(--brand); color: #fff; padding: 10px; }
+table.compare td { border: 1px solid var(--line); padding: 10px; text-align: center; }
+table.compare tr:nth-child(even) td { background: #f6faf9; }
+.triad { text-align: center; margin: 12px 0; }
+.triad-top { display: inline-block; background: #fffbd6; border: 1px solid #e6dd8a; border-radius: 99px; padding: 8px 22px; font-weight: 600; }
+.triad-row { display: flex; justify-content: center; align-items: center; gap: 14px; margin-top: 12px; flex-wrap: wrap; }
+.triad-row span { background: #fffbd6; border: 1px solid #e6dd8a; border-radius: 50%; width: 96px; height: 96px; display: grid; place-items: center; font-weight: 600; }
+.triad-row b { color: var(--brand-ink); }
+.steps { list-style: none; padding: 0 !important; display: grid; gap: 10px; }
+.steps li { background: #eefcfb; border: 1px solid #bfe9e4; border-radius: 12px; padding: 12px 16px; }
+.steps em { color: var(--danger); font-style: normal; font-weight: 600; }
+.step-no { display: inline-block; background: var(--brand); color: #fff; border-radius: 6px; padding: 0 10px; margin-right: 8px; font-weight: 700; font-size: 14px; }
+.frame4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
+.frame4 div { background: #fbfdfc; border: 1px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; }
+.frame4 b { display: block; background: var(--brand); color: #fff; border-radius: 99px; padding: 2px 0; margin-bottom: 6px; }
+.frame4 span { font-size: 15px; }
+.quote-list { list-style: none; padding: 0 !important; font-weight: 600; }
+.cols2 { columns: 2; column-gap: 32px; }
+.diamond { list-style: "♦  "; }
+.check { list-style: "✓  "; }
+.check.big li { margin: 6px 0; font-size: 18px; }
+.numbered-cards li { margin: 8px 0; }
+.smcr { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 14px 0; }
+.smcr div { text-align: center; background: #eef4ff; border: 1px solid #c9d8fb; border-radius: 12px; padding: 12px 6px; }
+.smcr b { display: block; font-size: 30px; color: #2563eb; line-height: 1.2; }
+.smcr span { font-size: 15px; }
+.pdca-wheel { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 320px; margin: 4px auto 20px; }
+.pdca-wheel .q { padding: 18px 10px; text-align: center; color: #fff; font-weight: 600; line-height: 1.3; }
+.pdca-wheel .q b { display: block; font-size: 30px; }
+.pdca-wheel .p { background: #4f97b3; border-radius: 120px 12px 12px 12px; }
+.pdca-wheel .d { background: #8b7bb5; border-radius: 12px 120px 12px 12px; }
+.pdca-wheel .a { background: #4b9e73; border-radius: 12px 12px 12px 120px; }
+.pdca-wheel .c { background: #c4677d; border-radius: 12px 12px 120px 12px; }
+.phase { border-left: 5px solid; padding: 2px 0 2px 18px; margin: 18px 0; }
+.phase h3 { margin-top: 6px; }
+.phase.p { border-color: #4f97b3; } .phase.d { border-color: #8b7bb5; }
+.phase.c { border-color: #c4677d; } .phase.a { border-color: #4b9e73; }
+
+.grid5s { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 14px 0; }
+.grid5s div { text-align: center; background: #f3edff; border: 1px solid #d8c8fb; border-radius: 12px; padding: 10px 4px; font-weight: 600; font-size: 15px; line-height: 1.35; }
+.grid5s b { display: block; font-size: 24px; color: #7c3aed; }
+.grid5s small { display: block; color: var(--ink-2); font-weight: 400; }
+.ghs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
+.ghs-grid div { text-align: center; font-size: 30px; border: 2px solid #dc2626; border-radius: 10px; padding: 8px 4px; background: #fff; }
+.ghs-grid span { display: block; font-size: 14px; color: var(--ink); }
+.why-chain { display: grid; gap: 8px; margin: 14px 0; }
+.why-chain div { border-left: 4px solid #0891b2; background: #ecfeff; border-radius: 8px; padding: 8px 14px; }
+.why-chain div.root { border-color: #dc2626; background: #fdf2f2; font-weight: 600; }
+.why-chain b { display: inline-block; min-width: 90px; color: #0e7490; }
+.why-chain .root b { color: var(--danger); }
+
+/* ---------- Quiz ---------- */
+.q-item { border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+.q-item .q-title { font-weight: 600; margin-bottom: 8px; }
+.q-item label {
+  display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border-radius: 8px;
+  cursor: pointer; border: 1px solid transparent;
+}
+.q-item label:hover { background: #f4f8f7; }
+.q-item input { margin-top: 7px; accent-color: var(--brand); }
+.q-item label.right { background: #e7f7ef; border-color: #9ad8b8; }
+.q-item label.wrong { background: #fdecec; border-color: #f2b1b1; }
+.result {
+  border-radius: 14px; padding: 20px; text-align: center; margin: 20px 0;
+  background: var(--brand-soft);
+}
+.result.fail { background: var(--warn-soft); }
+.result .score { font-size: 40px; font-weight: 700; line-height: 1.2; }
+
+/* ---------- HR report ---------- */
+.container.wide { max-width: 1400px; }
+.report-head h2 { margin: 0; font-size: 26px; }
+.sum-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin: 18px 0; }
+.sum-card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; border-top: 4px solid var(--c, var(--brand)); }
+.sum-title { font-weight: 600; font-size: 15px; line-height: 1.4; }
+.sum-big { font-size: 30px; font-weight: 700; margin: 4px 0 8px; }
+.sum-big span { font-size: 15px; font-weight: 400; color: var(--ink-2); }
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0 12px; }
+.filters input, .filters select { font: inherit; font-size: 15px; padding: 8px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); }
+.filters input { min-width: 220px; }
+.table-wrap { overflow-x: auto; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); }
+table.report { width: 100%; border-collapse: collapse; font-size: 15px; }
+table.report th { text-align: left; background: #f1f5f4; padding: 10px 12px; font-weight: 600; white-space: nowrap; max-width: 220px; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; }
+table.report td { padding: 9px 12px; border-top: 1px solid var(--line); vertical-align: top; white-space: nowrap; }
+table.report td small { display: block; color: var(--ink-2); font-size: 13px; }
+td.c-done b { color: var(--brand-ink); }
+td.c-doing b { color: var(--warn); }
+td.c-none { color: #9aa8a5; text-align: center; }
+td.c-count { font-weight: 700; text-align: center; }
+td.c-date { color: var(--ink-2); font-size: 14px; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .course-layout { grid-template-columns: 1fr; }
+  .side { position: static; }
+  .lesson { padding: 20px 18px; }
+  .grid2, .grid3 { grid-template-columns: 1fr; }
+  .frame4, .smcr { grid-template-columns: 1fr 1fr; }
+  .grid5s { grid-template-columns: repeat(3, 1fr); }
+  .ghs-grid { grid-template-columns: 1fr 1fr; }
+  .cols2 { columns: 1; }
+  .user-chip span { display: none; }
+  .site-name { display: none; }
+}
+@media (max-width: 520px) {
+  .topbar .user-chip { display: none; }
+  .topbar .btn { padding: 8px 12px; font-size: 15px; }
+  .topbar .sync { font-size: 12px; white-space: normal; text-align: right; }
+}
+
+</style>
+
 </head>
 <body>
-<div id="app"></div>
+<div id="app" data-url="index.html" data-home="index.html" data-report="report.html"></div>
+<script>
+window.IMG = window.IMG || {};
+window.IMG["logo-sansuisha"] = "data:image/png;base64,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";
+</script>
 
-<script src="config.js"></script>
-<script src="employees.js"></script>
-<script src="content.js"></script>
-<script src="report.js"></script>
+<script>
+/*
+ * เนื้อหาความรู้องค์กร
+ * ------------------------------------------------------------
+ * แต่ละหลักสูตร (course) มี: id, title, subtitle, source, icon, color, lessons[], quiz[]
+ *   lessons[].body เป็น HTML
+ *   quiz[].answer คือ index ของตัวเลือกที่ถูก (เริ่มนับจาก 0)
+ * เพิ่มหลักสูตรใหม่ได้โดยคัดลอกโครงสร้างของหลักสูตรเดิม
+ */
+window.COURSES = [
+  /* ================================================================
+   * 1) การสื่อสารทางธุรกิจ  (Biz Communication_(04-10-2025).pptx)
+   * ================================================================ */
+  {
+    id: "biz-communication",
+    title: "การสื่อสารทางธุรกิจ",
+    subtitle: "Business Communication Skill — ฟัง ถาม ถ่ายทอด และเจรจาต่อรอง",
+    source: "Biz Communication (04-10-2025)",
+    icon: "💬",
+    color: "#0f8a6c",
+    lessons: [
+      {
+        title: "การสื่อสารทางธุรกิจคืออะไร",
+        minutes: 8,
+        body: `
+<h3>แตกต่างจากการสื่อสารแบบส่วนตัวอย่างไร</h3>
+<table class="compare">
+  <thead><tr><th>การสื่อสารทางธุรกิจ</th><th>การสื่อสารแบบส่วนตัว</th></tr></thead>
+  <tbody>
+    <tr><td>ต้องมีวัตถุประสงค์</td><td>อาจไม่ต้องมีวัตถุประสงค์</td></tr>
+    <tr><td>ไม่สามารถเลือกคู่สนทนาได้</td><td>เลือกคู่สนทนาได้</td></tr>
+    <tr><td>บริษัทแบกรับภาระในคำพูดและการกระทำไว้</td><td>คำพูดและการกระทำเป็นเรื่องของเจ้าตัว (ไม่เกี่ยวกับบริษัท)</td></tr>
+    <tr><td><b>หลีกเลี่ยงไม่ได้</b></td><td>หลีกเลี่ยงได้</td></tr>
+  </tbody>
+</table>
+
+<h3>หัวใจของการสื่อสารทางธุรกิจ</h3>
+<div class="triad">
+  <div class="triad-top">วัตถุประสงค์ของการสื่อสาร</div>
+  <div class="triad-row"><span>ตัวเอง</span><b>⇄ พูดคุย ⇄</b><span>คู่สนทนา</span></div>
+</div>
+<div class="callout">การสื่อสารทางธุรกิจ คือการที่แต่ละฝ่าย<b>ไม่สามารถเลือกคู่สนทนาได้</b> แต่ทั้งสองฝ่ายจะมุ่งไปยังสภาวะที่ต่าง <b>「เข้าใจและยอมรับได้」</b></div>
+
+<h3>แต่สิ่งที่มักเกิดขึ้นคือ… “ช่องว่าง (GAP)”</h3>
+<p>แม้จะได้พูดคุยกันแล้ว แต่ตัวเองและคู่สนทนายังไปไม่ถึงวัตถุประสงค์ร่วมกัน เพราะมีช่องว่างคั่นอยู่ ช่องว่างมี 2 แบบ:</p>
+<div class="grid2">
+  <div class="card">
+    <h4>🧠 ช่องว่างของสมอง (ความรู้)</h4>
+    <ul><li>ปริมาณข้อมูล</li><li>ปริมาณความรู้</li><li>ความสามารถในการทำความเข้าใจ</li><li>ความสามารถในการใช้ภาษา ฯลฯ</li></ul>
+    <p class="tag">ผลลัพธ์ → <b>ยังไม่เป็นที่เข้าใจ</b></p>
+  </div>
+  <div class="card">
+    <h4>❤️ ช่องว่างของจิตใจ (ความรู้สึก)</h4>
+    <ul><li>สติที่อยู่กับปัญหา</li><li>อารมณ์ / ความรู้สึก / ความอยาก</li><li>ค่านิยม (มุมมองเรื่องการทำงาน)</li><li>สามัญสำนึกทั่วไป ฯลฯ</li></ul>
+    <p class="tag">ผลลัพธ์ → <b>ไม่เกิดความรู้สึกร่วม</b></p>
+  </div>
+</div>
+
+<h3>ได้สื่อสารไปแล้ว แต่… 「ไม่เป็นที่เข้าใจ」</h3>
+<figure><img src="${IMG["biz-understanding-matrix"]}" alt="แผนภาพ 4 ช่อง: แกนตั้งคือเข้าใจได้/ไม่ได้ แกนนอนคือเห็นด้วยได้/ไม่ได้"><figcaption>เป้าหมายคือมุมขวาบน — “เห็นพ้องและได้รับการโน้มน้าว” ซึ่งเชื่อมโยงไปสู่การกระทำ</figcaption></figure>
+<p>การสื่อสารที่ดีเป็นเครื่องมือที่ระงับและขจัดช่องว่างระหว่าง <b>หัว</b> และ <b>จิตใจ</b> ของอีกฝ่าย และอำนวยความสะดวกในการทำงาน</p>
+
+<h3>ช่องว่างในที่ทำงาน</h3>
+<figure><img src="${IMG["biz-office-gaps"]}" alt="ช่องว่างระหว่างตัวเองกับหัวหน้า เพื่อนร่วมงาน และรุ่นน้อง"><figcaption>เติมช่องว่างระหว่าง “ความรู้” กับ “ความรู้สึก” กับอีกฝ่าย และเรียนรู้ทักษะต่าง ๆ สำหรับสิ่งนั้น</figcaption></figure>
+
+<h3>ทักษะ 3 อย่างเพื่อเติมเต็มช่องว่างกับอีกฝ่าย</h3>
+<ol class="steps">
+  <li><span class="step-no">Step 1</span><b>การจัดระเบียบข้อมูลและการสร้างความไว้วางใจ</b><br>จัดระเบียบและยอมรับข้อเท็จจริงและความรู้สึก<br><em>ทักษะหลัก: ความสามารถในการฟัง</em></li>
+  <li><span class="step-no">Step 2</span><b>ความเข้าใจซึ่งกันและกันและส่งเสริมความสัมพันธ์</b><br>แชร์กับอีกฝ่าย และดึงคำตอบจากอีกฝ่าย<br><em>ทักษะหลัก: ความสามารถในการตั้งคำถาม</em></li>
+  <li><span class="step-no">Step 3</span><b>โน้มน้าวใจและส่งเสริมการกระทำ</b><br>ได้รับความยินยอมจากผู้อื่นและเชื่อมโยงกับการกระทำและผลลัพธ์<br><em>ทักษะหลัก: ความสามารถในการถ่ายทอด</em></li>
+</ol>`,
+      },
+      {
+        title: "ความสามารถในการฟัง",
+        minutes: 6,
+        body: `
+<p class="lead">การจัดระเบียบข้อมูลและการสร้างความไว้วางใจ — ทักษะ 2 ประการที่จำเป็นสำหรับการฟัง</p>
+
+<h3>1. จัดระเบียบความคิดขณะฟัง</h3>
+<p>ตระหนักถึง <b>“กรอบข้อมูล”</b> — เมื่อฟังโดยมีกรอบ คุณจะจัดโครงสร้างสิ่งที่คนอื่นพูด และสังเกตเห็นข้อบกพร่องได้ ลองถามตัวเองขณะฟังว่า:</p>
+<div class="frame4">
+  <div><b>ประเด็น</b><span>คุณกำลังพูดถึงอะไร?</span></div>
+  <div><b>ข้อสรุป</b><span>ข้อสรุป (ข้อคิดเห็น) ที่อยากบอกมากที่สุดคือ?</span></div>
+  <div><b>เหตุผล</b><span>เหตุผลสำหรับข้อสรุปนั้นคืออะไร?</span></div>
+  <div><b>ข้อเท็จจริง</b><span>ข้อเท็จจริงที่สนับสนุนเหตุผลนั้นคือ?</span></div>
+</div>
+
+<h3>2. การฟังเพื่ออีกฝ่าย</h3>
+<figure><img src="${IMG["biz-listen-for-others"]}" alt="ฟังเพื่อตัวคุณเอง เทียบกับ ฟังเพื่ออีกฝ่าย"></figure>
+<div class="grid2">
+  <div class="card muted">
+    <h4>❌ ฟังเพื่อตัวคุณเอง</h4>
+    <ul><li>ฟังเฉพาะเรื่องที่คุณต้องการจะฟัง</li><li>ฟังด้วยอุปาทาน (ความเชื่อของตัวเอง)</li></ul>
+  </div>
+  <div class="card">
+    <h4>✅ ฟังเพื่ออีกฝ่าย</h4>
+    <ul><li>ฟังทั้งคำพูดและความรู้สึกในสิ่งที่อีกฝ่ายพยายามจะสื่อ</li><li>รับฟังสิ่งที่อีกฝ่ายต้องการจะสื่อ</li></ul>
+  </div>
+</div>
+<div class="callout">การฟังเรื่องของอีกฝ่าย = <b>การฟังอย่างตั้งใจ</b> → สร้างความสัมพันธ์และความไว้วางใจด้วยการรับฟัง</div>
+
+<h3>ผลลัพธ์: Rapport</h3>
+<p>เมื่อฟังอย่างตั้งใจ อีกฝ่ายจะรู้สึกว่า</p>
+<ul class="quote-list"><li>「ถ้าเราพูดกับคนนี้… น่าจะพูดได้」</li><li>「ถ้าเป็นคนนี้… เราอยากจะคุยด้วย」</li><li>「ถ้าเป็นคนนี้… เราสามารถไว้ใจได้」</li></ul>
+<p>นี่คือ <b>Rapport</b> — ความเป็นมิตร ความสามัคคี และความปรองดอง</p>`,
+      },
+      {
+        title: "ความสามารถในการตั้งคำถาม",
+        minutes: 5,
+        body: `
+<p class="lead">ความเข้าใจซึ่งกันและกันและการพัฒนาความสัมพันธ์</p>
+<div class="callout">การฟังเป็นพื้นฐานของการสื่อสารทางธุรกิจ จากนั้นจึงถาม “คำถาม” เพื่อ <b>“เข้าใจซึ่งกันและกัน”</b> และ <b>“สร้างความสัมพันธ์”</b> กับอีกฝ่าย</div>
+
+<h3>คำถามที่ทำให้คนฟังรู้สึกไม่สบายใจ</h3>
+<ol>
+  <li>ไม่รู้ว่าจะพูดอะไรดี ทำให้เสียเวลา</li>
+  <li>คำถามที่หากแค่ค้นหาได้ด้วยตัวเองก็จะรู้</li>
+  <li>คำถามที่คู่สนทนารู้สึกอึดอัด และคิดว่าไม่มีมารยาทเมื่อถูกถาม</li>
+</ol>
+
+<h3>ข้อควรทราบเมื่อถามคำถาม</h3>
+<p>การถามคำถามนั้น ต้องนึกเสมอว่าเราได้รับทั้ง <b>การสละเวลา</b> และ <b>ความร่วมมือ</b> ของผู้ที่ถูกถาม ควรพยายามถามสิ่งที่เป็นประโยชน์เพื่อลดภาระของอีกฝ่าย</p>
+<p>ต้อง「พิจารณา」ว่าถามคำถามแบบไหนออกไปแล้ว จะได้รับความไว้วางใจจากอีกฝ่ายได้ง่ายขึ้น</p>
+
+<h3>รูปแบบการตั้งคำถาม</h3>
+<div class="grid2">
+  <div class="card">
+    <h4>คำถามปลายปิด</h4>
+    <p>ตอบได้ด้วย ใช่/ไม่ใช่ หรือคำสั้น ๆ</p>
+    <p class="example">「ทำ…ได้มั้ย」 「มี…กี่อัน」</p>
+    <p class="tag">ใช้เพื่อ: <b>ยืนยัน · จบเรื่อง · หาข้อสรุปที่เห็นพ้องกัน</b></p>
+  </div>
+  <div class="card">
+    <h4>คำถามปลายเปิด</h4>
+    <p>ไม่สามารถตอบด้วยคำสั้น ๆ ได้</p>
+    <p class="example">「คุณคิดยังไงบ้าง」 「โดยรูปธรรมเป็นเรื่องอะไร」 「คิดว่ามีวิธีการอย่างไรบ้าง」</p>
+    <p class="tag">ใช้เพื่อ: <b>ดึงความคิดออกมา · เจาะลึก · ขยายประเด็น</b></p>
+  </div>
+</div>`,
+      },
+      {
+        title: "ความสามารถในการถ่ายทอด",
+        minutes: 7,
+        body: `
+<p class="lead">ความโน้มน้าวใจและส่งเสริมพฤติกรรม — การจัดระเบียบเรียบเรียงข้อมูลในการสื่อสาร</p>
+
+<h3>ทัศนคติและวิธีการสื่อสารของผู้พูดที่ไม่ดี</h3>
+<ol class="cols2">
+  <li>พูดเพียงฝ่ายเดียว (ไม่ให้อีกฝ่ายพูด)</li>
+  <li>สกัดกั้นเรื่องราว</li>
+  <li>เข้าจากการปฏิเสธของอีกฝ่าย</li>
+  <li>ใช้สำนวนเชิงลบมากเกินไป</li>
+  <li>พูดโดยไม่มองหน้า</li>
+  <li>มีหลายอย่างที่อยากพูด ไม่เป็นระเบียบ ไม่มีอยู่จริง</li>
+  <li>จุดประสงค์ไม่ใช่เพื่อโน้มน้าวคนอื่น แต่เพื่อรับทราบตัวเอง</li>
+  <li>ไม่ระบุเหตุผล</li>
+  <li>อัตนัยมากเกินไป</li>
+</ol>
+<p>แล้วจะ <b>“ส่งสาร”</b> ให้อีกฝ่ายได้อย่างไร?</p>
+
+<h3>จัดระเบียบและเรียบเรียงข้อมูลก่อนพูด</h3>
+<figure><img src="${IMG["biz-organize-info"]}" alt="ข้อมูลที่กระจัดกระจาย A-K ถูกจัดเป็น 3 กลุ่มก่อนพูด"><figcaption>หากจัดระเบียบและเรียบเรียงข้อมูล การสนทนาจะง่ายต่อการเข้าใจทั้งสำหรับผู้ฟังและตัวคุณเอง</figcaption></figure>
+
+<h3>กรณีตัวอย่าง</h3>
+<p class="muted-text">เจ้านาย: “ได้ยินว่ามีโทรศัพท์จากบริษัท Z ลูกค้าของเราโทรมา ใช่มั้ย? น่าจะเป็นเรื่องเอกสารข้อเสนอการวางแผนงานที่เราเสนอไปนะ เขาพูดว่าอะไรรึ?”</p>
+<div class="grid2">
+  <div class="card muted">
+    <h4>❌ นาย A — เข้าใจยาก</h4>
+    <p>“บอกว่าตอนนี้บริษัท Z กำลังยุ่งอยู่หลายเรื่อง ได้รับเอกสารข้อเสนอเต็มไปหมด แล้วยังมีข้อเสนอเข้าไปอีกเยอะ คงเป็นของคู่แข่งนั่นแหละ บอกว่าน่าจะจำเป็นต้องมีการประเมินราคา ไม่รู้ว่าราคาเหมาะสมจะเป็นสักเท่าไร รู้สึกจะกังวลเรื่องว่าจะทำ project ต่อไปยังไงดี… บอกว่าอยากให้ส่งประมาณภายในสัปดาห์หน้าครับ”</p>
+    <p class="tag">ท้ายสุด <b>ไม่รู้ว่าต้องการจะพูดอะไร</b></p>
+  </div>
+  <div class="card">
+    <h4>✅ นาย B — เข้าใจง่าย</h4>
+    <p>“ครับ เป็น<u>เรื่องเอกสารข้อเสนอฯ เมื่อวันก่อน</u> ทราบว่าหลังเปรียบเทียบกับคู่แข่ง<u>จนเหลือ 3 บริษัท</u>สุดท้าย และบริษัทเราติดอยู่ด้วยครับ แล้วยังขอให้ทำเพิ่มอีก 2 เรื่อง <u>เรื่องแรก</u> ให้จัดทำเอกสารประเมินราคา <u>เรื่องที่ 2</u> ให้เสนอโครงสร้างโครงการ (project structure) และให้ส่งเมล์ถึงหัวหน้า C <u>ภายในวันพุธหน้า</u>ครับ”</p>
+    <p class="tag">เจ้านาย: “อืม… ดีมาก เข้าใจแล้ว รีบไปทำเลย!”<br><b>มีการจัดระเบียบในสิ่งที่คู่สนทนาต้องการ</b></p>
+  </div>
+</div>
+
+<div class="callout strong">
+  ผู้พูด<b>กำลังดึงเอาเวลา</b>ของผู้ฟังอยู่!<br>
+  พระเอกของการสื่อสารไม่ใช่ผู้พูด — <b>พระเอกคือฝ่ายของผู้ฟัง</b><br>
+  ขอให้ผู้พูด<b>รับผิดชอบ</b>กับเรื่องที่จะแชร์ ให้คุ้มกับเวลาอันมีค่าของผู้ฟัง
+</div>`,
+      },
+      {
+        title: "เทคนิคการเจรจาและต่อรอง",
+        minutes: 5,
+        body: `
+<h3>หลักการสร้างโอกาสในการต่อรอง</h3>
+<div class="callout">ต้อง<b>เปิดใจอีกฝ่าย</b>เพื่อแลกเปลี่ยนความคิด จนมองที่<b>จุดมุ่งหมายเดียวกัน</b></div>
+
+<h3>วิธีการนำเสนอในการต่อรอง</h3>
+<p>ต้องรู้จักข้อดีของข้อเสนอในการต่อรอง:</p>
+<div class="grid2">
+  <div class="card"><h4>ประโยชน์ที่แท้จริง</h4><p>เช่น ประโยชน์ที่แท้จริงของรถยนต์ก็คือ “ขับ”</p></div>
+  <div class="card"><h4>ประโยชน์จากสิ่งรอบด้าน</h4><p>เช่น รถคันเล็กประหยัดพื้นที่ใช้สอย, รถบางประเภทใช้เปิดร้านขายของได้</p></div>
+</div>
+<ul class="diamond">
+  <li>เน้นผลกระทบที่รุนแรง เช่น ถ้าไม่เปลี่ยนตัวที่ใช้อยู่ อาจทำให้เกิดอันตรายได้</li>
+  <li>เพิ่มทางเลือกให้ลูกค้า</li>
+  <li>ลดตัวที่ขายไม่ดีออก ให้ตัวที่ทำเงินได้เข้ามาแทนที่</li>
+</ul>
+
+<h3>เหตุผลของการเกิดคำปฏิเสธ</h3>
+<ul>
+  <li>ความไม่มั่นใจในบางสิ่งบางอย่าง</li>
+  <li>ยังไม่ตรงตามความต้องการ</li>
+  <li>สถานการณ์ไม่ตรงกับที่คาดหวังไว้</li>
+  <li>รู้สึกไม่ดีกับผู้พูดที่มานำเสนอ</li>
+</ul>
+
+<h3>สรุป</h3>
+<div class="callout strong">การโน้มน้าวที่ดีที่สุด คือ การทำให้ลูกค้าตระหนักได้ว่า<b>เราหวังดี</b> ให้เราเชื่อมั่นในสินค้าและบริการ และนำเสนอด้วย<b>ความจริงใจ</b></div>`,
+      },
+    ],
+    quiz: [
+      { q: "ข้อใดเป็นลักษณะของ “การสื่อสารทางธุรกิจ” ที่ต่างจากการสื่อสารแบบส่วนตัว?", options: ["เลือกคู่สนทนาได้", "ไม่จำเป็นต้องมีวัตถุประสงค์", "ไม่สามารถเลือกคู่สนทนาได้ และหลีกเลี่ยงไม่ได้", "คำพูดเป็นเรื่องของเจ้าตัวเท่านั้น"], answer: 2 },
+      { q: "“ช่องว่างของจิตใจ” ทำให้เกิดผลลัพธ์แบบใด?", options: ["ยังไม่เป็นที่เข้าใจ", "ไม่เกิดความรู้สึกร่วม", "ข้อมูลไม่เพียงพอ", "ใช้ภาษาไม่ถูกต้อง"], answer: 1 },
+      { q: "ทักษะหลักของ Step 1 “การจัดระเบียบข้อมูลและการสร้างความไว้วางใจ” คืออะไร?", options: ["ความสามารถในการฟัง", "ความสามารถในการตั้งคำถาม", "ความสามารถในการถ่ายทอด", "การเจรจาต่อรอง"], answer: 0 },
+      { q: "“กรอบข้อมูล” ขณะฟังประกอบด้วยอะไรบ้าง?", options: ["ใคร ทำอะไร ที่ไหน เมื่อไร", "ประเด็น ข้อสรุป เหตุผล ข้อเท็จจริง", "ปัญหา สาเหตุ วิธีแก้ ผลลัพธ์", "Plan Do Check Act"], answer: 1 },
+      { q: "คำถามแบบใดเหมาะกับการ “ดึงความคิดออกมา เจาะลึก และขยายประเด็น”?", options: ["คำถามปลายปิด", "คำถามปลายเปิด", "คำถามที่ค้นหาเองได้", "คำถามแบบใช่/ไม่ใช่"], answer: 1 },
+      { q: "ตามบทเรียน “พระเอก” ของการสื่อสารคือใคร?", options: ["ผู้พูด", "หัวหน้างาน", "ผู้ฟัง", "ลูกค้า"], answer: 2 },
+      { q: "ตามบทสรุปเรื่องการเจรจา การโน้มน้าวที่ดีที่สุดคืออะไร?", options: ["ลดราคาให้มากที่สุด", "พูดให้มากกว่าอีกฝ่าย", "ทำให้ลูกค้าตระหนักว่าเราหวังดี และนำเสนอด้วยความจริงใจ", "เน้นแต่ข้อเสียของคู่แข่ง"], answer: 2 },
+    ],
+  },
+
+  /* ================================================================
+   * 2) การสื่อสารภายในองค์กรอย่างมีประสิทธิภาพ  (by Eve)
+   * ================================================================ */
+  {
+    id: "internal-communication",
+    title: "การสื่อสารภายในองค์กรอย่างมีประสิทธิภาพ",
+    subtitle: "ความหมาย กระบวนการ ทิศทาง และเทคนิคการสื่อสารในองค์กร",
+    source: "การสื่อสารภายในองค์กรอย่างมีประสิทธิภาพ — by Eve",
+    icon: "🏢",
+    color: "#2563eb",
+    lessons: [
+      {
+        title: "ความหมายและความสำคัญ",
+        minutes: 3,
+        body: `
+<h3>การสื่อสารภายในองค์กร คืออะไร</h3>
+<p>กระบวนการแลกเปลี่ยน<b>ข้อมูลข่าวสาร ความคิด ความรู้สึก</b>ระหว่างบุคคลภายในองค์กร เพื่อให้เกิด<b>ความเข้าใจร่วมกัน</b> และมุ่งสู่<b>เป้าหมายเดียวกัน</b> โดยใช้ช่องทางที่หลากหลายทั้งแบบทางการและไม่เป็นทางการ</p>
+<div class="callout">การสื่อสารภายในองค์กรเป็นเครื่องมือสำคัญในการขับเคลื่อนความสำเร็จขององค์กร ช่วยให้พนักงานเข้าใจ <b>เป้าหมาย กลยุทธ์ นโยบาย</b> และทำงานร่วมกันได้อย่างมีประสิทธิภาพ</div>`,
+      },
+      {
+        title: "กระบวนการสื่อสาร (Communication Process)",
+        minutes: 5,
+        body: `
+<p>แบบจำลอง <b>S-M-C-R</b> ตามแนวคิดของเบอร์โล (Berlo)</p>
+<div class="smcr">
+  <div><b>S</b><span>ผู้ส่งสาร<br>Sender</span></div>
+  <div><b>M</b><span>สาร<br>Message</span></div>
+  <div><b>C</b><span>ช่องทาง<br>Channel</span></div>
+  <div><b>R</b><span>ผู้รับสาร<br>Receiver</span></div>
+</div>
+
+<h3>ผู้ส่งสาร (Sender)</h3>
+<p>ผู้ที่ต้องการสื่อสารต้องทำความเข้าใจเรื่องที่จะสื่อสารให้ชัดเจนก่อน อาจใช้การพูดคุย ออกคำสั่ง บันทึกข้อความ ข่าวสาร หรือรายงาน ปัจจัยของผู้ส่งสาร ได้แก่ ทักษะการสื่อสาร ทัศนคติ ความรู้ ระบบสังคม และวัฒนธรรม</p>
+
+<h3>สาร (Message)</h3>
+<p>ประกอบด้วย เนื้อหา ส่วนประกอบ โครงสร้าง การจัดสาร และรหัส</p>
+
+<h3>ช่องทาง / สื่อ (Channel / Media)</h3>
+<p>ตัวกลางที่ทำให้ข่าวสารเดินทางจากแหล่งกำเนิดไปถึงผู้รับ เช่น เครื่องขยายเสียง วิทยุ โทรทัศน์ อินเทอร์เน็ต เว็บไซต์ e-mail — รับรู้ผ่านการเห็น การได้ยิน การสัมผัส การได้กลิ่น และการลิ้มรส</p>
+
+<h3>ผู้รับสาร (Receiver)</h3>
+<p>ต้องมีความรู้ความเข้าใจ ประสบการณ์ และทักษะในการ<b>ถอดรหัส (Decoding)</b> เพื่อเข้าใจข่าวสารที่ผู้ส่งเข้ารหัส <b>(Encoding)</b> มา ปัจจัยของผู้รับเช่นเดียวกับผู้ส่ง: ทักษะการสื่อสาร ทัศนคติ ความรู้ ระบบสังคม และวัฒนธรรม</p>`,
+      },
+      {
+        title: "ประเภทของการสื่อสารภายในองค์กร (4 ทิศทาง)",
+        minutes: 6,
+        body: `
+<div class="grid2">
+  <div class="card"><h4>⬆️ 1. จากล่างขึ้นบน (Upward)</h4><p>จากพนักงานไปยังผู้บริหาร (Bottom-Up) ใช้สื่อสารปัญหา อุปสรรค ข้อเสนอแนะ ความคิดเห็น เป็นการสื่อสารสองทางที่เปิดโอกาสให้พนักงานมีส่วนร่วม และสร้าง <b>Employee Engagement</b> หรือความผูกพันกับองค์กร</p></div>
+  <div class="card"><h4>⬇️ 2. จากบนลงล่าง (Downward)</h4><p>จากผู้บังคับบัญชาไปยังผู้ใต้บังคับบัญชา เช่น สั่งงาน บอกเป้าหมาย มอบหมายงาน ให้ข้อมูลย้อนกลับ (Performance Feedback) และการประชุม ช่วยให้บุคลากรเห็นว่างานของตนสำคัญและมีผลต่อแผนงานขององค์กรอย่างไร</p></div>
+  <div class="card"><h4>↗️ 3. แนวทแยง (Diagonal)</h4><p>สื่อสาร<b>ข้ามแผนกและข้ามระดับ</b> มักเป็นระหว่างฝ่ายให้คำแนะนำ (Staff) กับฝ่ายปฏิบัติการ (Line) เช่น ผู้จัดการฝ่ายบุคคลแจ้งกฎระเบียบใหม่ให้พนักงานฝ่ายผลิต</p></div>
+  <div class="card"><h4>↔️ 4. แนวนอน (Horizontal)</h4><p>สื่อสารในกลุ่มงานหรือระดับเดียวกัน เช่น เพื่อนร่วมงาน (ไม่จำเป็นต้องแผนกเดียวกัน) มักเป็นมิตรและเป็นกันเอง ช่วยให้สนิทสนมและสร้างความสัมพันธ์ที่ดีในองค์กร</p></div>
+</div>`,
+      },
+      {
+        title: "ทางเดียว / สองทาง และวิธีการสื่อสาร",
+        minutes: 5,
+        body: `
+<h3>ทิศทางของการสื่อสาร</h3>
+<div class="grid2">
+  <div class="card"><h4>One-Way Communication</h4><p>ส่งข่าวสารไปยังผู้รับเพียงฝ่ายเดียว ไม่มีการตอบกลับ หรือตอบกลับไม่ได้ในทันที</p><p class="tag">เช่น ประกาศข่าวสารองค์กร ประกาศสวัสดิการ ประกาศข้อบังคับการทำงาน</p></div>
+  <div class="card"><h4>Two-Way Communication</h4><p>ผู้ส่งและผู้รับแลกเปลี่ยนความคิด โต้ตอบได้ทั้ง 2 ฝ่าย ไม่จำเป็นต้องตอบกลับทันที</p><p class="tag">เช่น การประชุม การพูดคุย หรือ HR ทำแบบสำรวจผ่าน Google Forms แล้วรอพนักงานตอบ</p></div>
+</div>
+
+<h3>วิธีการสื่อสารในองค์กร</h3>
+<div class="grid3">
+  <div class="card"><h4>🗣️ ด้วยวาจา (ภาษาพูด)</h4><p>พูดเป็นประโยค มีจังหวะ น้ำเสียงเบา-ดัง ความเร็ว-ช้าของการพูด</p></div>
+  <div class="card"><h4>🙌 ด้วยกิริยาท่าทาง (ภาษากาย)</h4><p>การสบตา การพยักหน้า การโค้ง สีหน้า การสัมผัส และการใช้มือ</p></div>
+  <div class="card"><h4>✍️ ด้วยลายลักษณ์อักษร (ภาษาเขียน)</h4><p>ตัวอักษร สัญลักษณ์ และรูปภาพต่าง ๆ</p></div>
+</div>`,
+      },
+      {
+        title: "9 เทคนิคการสื่อสาร และข้อดีของการสื่อสารที่ดี",
+        minutes: 7,
+        body: `
+<h3>9 เทคนิคการสื่อสารอย่างมีประสิทธิภาพ</h3>
+<ol class="numbered-cards">
+  <li><b>เป็นผู้ฟังที่ดี (Active Listening)</b> — ใส่ใจคู่สนทนา สังเกตทั้งคำพูด ท่าทาง สีหน้า น้ำเสียง ฟังเพื่อเข้าใจ ไม่ใช่ฟังเพื่อโต้แย้ง</li>
+  <li><b>สื่อสารตรงประเด็นและกระชับ</b> — บอกสิ่งสำคัญให้ชัด ไม่วกวน</li>
+  <li><b>ทักษะการเล่าเรื่อง (Storytelling)</b> — หาจุดร่วมกับผู้ฟัง เปิดด้วยประโยคที่ดึงความสนใจ เช่น เริ่มจาก pain point ของผู้ฟัง</li>
+  <li><b>ศิลปะในการพูด (วาทศิลป์)</b> — รู้ว่าเวลาและสถานการณ์นี้ควรพูดอะไร รักษาบรรยากาศเชิงบวก สำคัญมากเมื่อต้องเจรจา ปฏิเสธ หรือให้ feedback เชิงลบ</li>
+  <li><b>ภาษากาย</b> — การสบตา การยิ้ม บุคลิกภาพ ช่วยถ่ายทอดความมั่นใจและความรู้สึกร่วม</li>
+  <li><b>ความกล้าแสดงออก</b> — สร้างความมั่นใจและความเชื่อมั่นให้ผู้รับสาร</li>
+  <li><b>ความโปร่งใสและเป็นกลาง</b> — สื่อสารตามข้อเท็จจริง ไม่ลำเอียง</li>
+  <li><b>การรักษาเวลา</b> — เคารพเวลาของผู้ฟังและผู้ร่วมประชุม</li>
+  <li><b>การรับฟังข้อเสนอของผู้อื่น</b> — เปิดใจรับความคิดเห็นที่แตกต่าง</li>
+</ol>
+
+<h3>การสื่อสารที่มีประสิทธิภาพช่วยชีวิตส่วนบุคคล</h3>
+<ul>
+  <li>สร้างและบริหารความสัมพันธ์ได้ดียิ่งขึ้น</li>
+  <li>รับมือกับความขัดแย้ง และหาทางออกร่วมกันอย่างสร้างสรรค์</li>
+  <li>สุขภาพจิตดีขึ้น จิตใจมั่นคง เพราะรู้จักสื่อสารอารมณ์ของตนเอง</li>
+</ul>
+
+<h3>ข้อดีต่อทีมและองค์กร</h3>
+<ul class="check">
+  <li>ทีมร่วมมือกันมากขึ้น แรงจูงใจในองค์กรเพิ่มขึ้น</li>
+  <li>ลดความสับสนและความเข้าใจผิด</li>
+  <li>ส่งเสริมภาวะผู้นำ — ทักษะสำคัญในการก้าวเป็นหัวหน้าทีม</li>
+  <li>ผู้นำสร้างทีมเวิร์คและการประสานงานที่ดีขึ้น</li>
+  <li>คนในทีมรู้ความคาดหวังขององค์กรและหัวหน้าอย่างชัดเจน</li>
+  <li>โปร่งใสในการรายงานความคืบหน้า บทบาทหน้าที่ และความรับผิดชอบ</li>
+  <li>ความสัมพันธ์ดีขึ้น คนในทีมสนับสนุนกัน</li>
+</ul>
+
+<p class="refs">แหล่งอ้างอิงจากเอกสารต้นฉบับ: disruptignite.com/blog/communication · humansoft.co.th · thaiprint.org · flash-hr.com</p>`,
+      },
+    ],
+    quiz: [
+      { q: "เป้าหมายของการสื่อสารภายในองค์กรคืออะไร?", options: ["ให้ผู้บริหารสั่งงานได้เร็วขึ้น", "ให้เกิดความเข้าใจร่วมกันและมุ่งสู่เป้าหมายเดียวกัน", "ลดจำนวนการประชุม", "ใช้แต่ช่องทางที่เป็นทางการ"], answer: 1 },
+      { q: "ในแบบจำลอง S-M-C-R ตัว “C” หมายถึงอะไร?", options: ["Customer", "Culture", "Channel (ช่องทาง)", "Control"], answer: 2 },
+      { q: "ผู้รับสารต้องมีทักษะใดเพื่อเข้าใจข่าวสารที่ผู้ส่งเข้ารหัสมา?", options: ["Encoding", "Decoding (ถอดรหัส)", "Feedback", "Storytelling"], answer: 1 },
+      { q: "พนักงานเสนอแนะปัญหาหน้างานไปยังผู้บริหาร เป็นการสื่อสารแบบใด?", options: ["จากบนลงล่าง (Downward)", "แนวนอน (Horizontal)", "จากล่างขึ้นบน (Upward)", "แนวทแยง (Diagonal)"], answer: 2 },
+      { q: "ผู้จัดการฝ่ายบุคคลแจ้งกฎระเบียบใหม่ให้พนักงานฝ่ายผลิต เป็นการสื่อสารแบบใด?", options: ["แนวทแยง (Diagonal)", "แนวนอน (Horizontal)", "จากล่างขึ้นบน (Upward)", "ทางเดียวแบบส่วนตัว"], answer: 0 },
+      { q: "HR ส่งแบบสำรวจ Google Forms แล้วรอพนักงานตอบกลับ จัดเป็นการสื่อสารแบบใด?", options: ["One-Way Communication", "Two-Way Communication", "ไม่ใช่การสื่อสาร", "Downward เท่านั้น"], answer: 1 },
+      { q: "ข้อใด “ไม่ใช่” ข้อดีของการมีทักษะการสื่อสารที่มีประสิทธิภาพ?", options: ["ลดความสับสนและความเข้าใจผิด", "ส่งเสริมภาวะผู้นำ", "ทำให้ไม่ต้องรับฟังความเห็นผู้อื่น", "ความโปร่งใสในการรายงานความคืบหน้า"], answer: 2 },
+    ],
+  },
+
+  /* ================================================================
+   * 3) PDCA  (PDCA.pdf — วิทยากร คุณกรทักษ์ สีเขียว)
+   * ================================================================ */
+  {
+    id: "pdca",
+    title: "PDCA วงจรพัฒนาองค์กรอย่างต่อเนื่อง",
+    subtitle: "ความหมาย ประโยชน์ และ 4 ขั้นตอน Plan-Do-Check-Act",
+    source: "PDCA — วิทยากรโดย คุณกรทักษ์ สีเขียว",
+    icon: "🔄",
+    color: "#c2410c",
+    lessons: [
+      {
+        title: "PDCA คืออะไร",
+        minutes: 4,
+        body: `
+<div class="pdca-wheel" aria-label="วงจร PDCA">
+  <div class="q p"><b>P</b>Plan<br><small>วางแผน</small></div>
+  <div class="q d"><b>D</b>Do<br><small>ปฏิบัติ</small></div>
+  <div class="q a"><b>A</b>Act<br><small>ปรับปรุง</small></div>
+  <div class="q c"><b>C</b>Check<br><small>ตรวจสอบ</small></div>
+</div>
+<p>ปัญหาเป็นสิ่งที่หลีกเลี่ยงไม่ได้ แต่เราเรียนรู้ที่จะแก้ปัญหาได้ ปัจจุบันมีเครื่องมือมากมาย เช่น POCCC, POSDC, POLC — PDCA คือกระบวนการที่ให้ความสำคัญมากกว่าแค่การวางแผน แต่รวมถึง<b>การลงมือทำ ตรวจสอบ และปรับปรุงพัฒนาอย่างเป็นระบบ</b></p>
+<div class="callout"><b>PDCA</b> คือ <b>วงจรบริหารงานคุณภาพ</b> ประกอบด้วย 4 ขั้นตอน Plan-Do-Check-Act เป็นกระบวนการปรับปรุงการทำงานขององค์กรอย่างเป็นระบบ เพื่อแก้ปัญหาและเกิด<b>การพัฒนาอย่างต่อเนื่อง (Continuous Improvement)</b> — ทำซ้ำได้เรื่อย ๆ จนกลายเป็นวงจร (Cycle)</div>
+
+<h3>ที่มา</h3>
+<p>เกิดขึ้นช่วงทศวรรษ 1950 โดยบิดาแห่งการควบคุมคุณภาพสมัยใหม่ <b>ดร.วิลเลียม เอ็ดเวิร์ดส์ เดมมิ่ง (Dr. William Edwards Deming)</b> ซึ่งพัฒนาต่อจากปรมาจารย์ของเขา <b>วอลเตอร์ เอ ชิวฮาร์ท (Walter Andrew Shewhart)</b> จึงมีชื่อเรียกอีกว่า <b>Deming Cycle</b> หรือ <b>Shewhart Cycle</b></p>
+<p>เดมมิ่งคิดค้น PDCA จากความเชื่อว่า <b>“คุณภาพสามารถปรับปรุงพัฒนาได้”</b> ใช้ได้กับองค์กรทุกประเภท ธุรกิจทุกรูปแบบ และแม้กระทั่งชีวิตประจำวัน</p>
+
+<div class="card tip"><h4>💡 Do You Know?</h4><p>กระบวนการ <b>Kaizen</b> ก็ใช้แนวคิดแบบวงจร PDCA เช่นกัน ผ่านหัวใจสำคัญคือการปรับปรุงพัฒนาต่อเนื่องไม่หยุดยั้ง — Kaizen แปลตรง ๆ ว่า <b>“การปรับปรุงให้ดีขึ้นกว่าเดิม”</b></p></div>`,
+      },
+      {
+        title: "ประโยชน์และข้อจำกัดของ PDCA",
+        minutes: 3,
+        body: `
+<p><b>เรียบง่ายและทำซ้ำได้</b> คือคุณสมบัติหลักของวงจรบริหารงานคุณภาพ ทำให้ PDCA มีประโยชน์ดังนี้</p>
+<div class="grid2">
+  <div class="card"><h4>📈 สร้างประสิทธิภาพและประสิทธิผลที่ดีกว่า</h4><p>เพราะเริ่มต้นที่ปัญหา และแก้ไขเพื่อนำไปสู่เป้าหมายขององค์กร</p></div>
+  <div class="card"><h4>🔁 ปรับปรุงพัฒนาอย่างต่อเนื่อง</h4><p>ทำซ้ำได้ในระยะยาว จึงเกิดประสิทธิภาพสูงสุดหากปฏิบัติต่อเนื่อง</p></div>
+  <div class="card"><h4>🎯 ตัดสินใจง่ายขึ้น</h4><p>มีการตั้งเป้าหมายและวัดผลชัดเจน ข้อมูลที่ได้นำไปวิเคราะห์พัฒนาองค์กรต่อได้</p></div>
+  <div class="card"><h4>🛡️ ลดความเสี่ยงในการจัดการ</h4><p>เริ่มใช้กับทีมเล็ก ๆ ก่อน หากผิดพลาดก็ควบคุมได้ง่าย และอุดรอยรั่วไม่ให้เกิดความเสี่ยงในอนาคต</p></div>
+</div>
+<div class="callout warn"><b>ข้อจำกัด:</b> PDCA ไม่เหมาะกับโครงการที่ต้องแก้ปัญหาอย่างเร่งด่วน เพราะต้องใช้ระยะเวลาในการดำเนินการ ถ้าเป็นโปรเจกต์สั้น ๆ เครื่องมืออื่นอาจตอบโจทย์กว่า</div>
+<p>ที่สำคัญ PDCA ต้องการ<b>ความร่วมมือจากผู้มีส่วนเกี่ยวข้อง</b>อย่างมาก การจูงใจพนักงานให้เข้าใจเป้าหมายเดียวกันจึงสำคัญ</p>`,
+      },
+      {
+        title: "4 ขั้นตอนสู่ความสำเร็จของ PDCA",
+        minutes: 7,
+        body: `
+<div class="phase p">
+  <h3>P — Plan: ระบุและวิเคราะห์ปัญหา</h3>
+  <p>เริ่มจากเป้าหมายที่ชัดเจน กำหนดให้ครอบคลุมตั้งแต่ต้นจนจบ: มีปัญหาอะไรที่ต้องแก้ ใครรับผิดชอบ กระบวนการค้นหาข้อมูลและแก้ไขคืออะไร โดยระบุตัวชี้วัดชัดเจน เช่น <b>KPIs</b> หรือ <b>OKR</b> แล้วทำเป็น <b>แผนการดำเนินงาน (Action Plan)</b> ที่ปรับเปลี่ยนได้ตามความเหมาะสม</p>
+  <p><b>คำถามที่ควรถามตัวเองก่อนไปขั้นต่อไป:</b></p>
+  <ul class="check">
+    <li>ปัญหาสำคัญที่ต้องได้รับการแก้ไขคืออะไร</li>
+    <li>ทรัพยากรที่ต้องการคืออะไร</li>
+    <li>ทรัพยากรที่มีอยู่คืออะไร</li>
+    <li>ทางออกที่ดีที่สุดภายใต้ทรัพยากรที่มีอยู่คืออะไร</li>
+    <li>แผนนี้จะสำเร็จด้วยเงื่อนไขอะไรบ้าง</li>
+    <li>เป้าหมายที่แท้จริงที่เราต้องการคืออะไร</li>
+  </ul>
+</div>
+<div class="phase d">
+  <h3>D — Do: พัฒนาทางออกและดำเนินการตามแผน</h3>
+  <p>นำแผนมาใช้จริงเพื่อให้เห็นผลลัพธ์จริง ทุกคนต้องระลึกไว้ว่าการดำเนินการจะเกิดปัญหาอื่นตามมาเสมอ จึงควร<b>ทดลองกับทีมนำร่องหรือโปรเจกต์เล็ก ๆ ก่อน</b> เพื่อควบคุมความเสียหายไม่ให้กระทบทั้งบริษัท</p>
+</div>
+<div class="phase c">
+  <h3>C — Check: ประเมินและสรุปผล</h3>
+  <p>ตรวจสอบว่าแผนมีผลลัพธ์ตามตัวชี้วัดหรือไม่ ถ้าสำเร็จ ไปขั้นสุดท้ายได้เลย ถ้าไม่สำเร็จ ให้วิเคราะห์หาสาเหตุ แล้ว<b>วนกลับไปทำขั้นตอนที่ 1–3 ใหม่</b>จนกว่าจะผ่านตัวชี้วัด</p>
+</div>
+<div class="phase a">
+  <h3>A — Act: ปรับปรุงแก้ไขและวางแผนใหม่ต่อไป</h3>
+  <p>เมื่อแผนสำเร็จ นำไปประยุกต์ใช้กับทั้งองค์กร ผ่านการประกาศ ประชุม อีเมล หรืออบรมภายใน เพื่อสร้างการเปลี่ยนแปลงจนเกิด<b>มาตรฐานใหม่</b></p>
+  <p>อย่าลืมว่า PDCA ทำซ้ำได้ ไม่ใช่สำเร็จแล้วหยุด ควรต่อยอดแผนใหม่ด้วยความคิดว่า <b>“จะต้องดีกว่าเดิมเสมอ”</b></p>
+</div>`,
+      },
+      {
+        title: "ประยุกต์ใช้ PDCA เมื่อไหร่",
+        minutes: 2,
+        body: `
+<ul class="check big">
+  <li>เมื่อต้องการติดตามหรือแก้ไขปัญหา</li>
+  <li>เมื่อต้องการปรับปรุงแผนงานหรือโครงการให้ดียิ่งขึ้น</li>
+  <li>เมื่อต้องการพัฒนาสินค้าและบริการใหม่</li>
+  <li>เมื่อต้องการเปลี่ยนแปลงกระบวนการทำงาน</li>
+  <li>เมื่อต้องการกำหนดกระบวนการที่ทำซ้ำได้</li>
+  <li>เมื่อต้องการวางแผน ดำเนินการ และตรวจสอบระเบียบบริษัท</li>
+  <li>เมื่อต้องการประเมินกระบวนการทางธุรกิจ</li>
+</ul>
+<div class="callout"><b>ลองฝึก:</b> เลือกปัญหาเล็ก ๆ ในงานของคุณ 1 เรื่อง แล้วเขียน P-D-C-A สั้น ๆ อย่างละ 1 บรรทัด — จะวัดผลด้วยตัวชี้วัดอะไร และทดลองกับใครก่อน?</div>`,
+      },
+    ],
+    quiz: [
+      { q: "PDCA ย่อมาจากอะไร?", options: ["Plan-Do-Check-Act", "Prepare-Do-Control-Approve", "Plan-Deliver-Check-Adjust", "Process-Data-Check-Action"], answer: 0 },
+      { q: "PDCA มีชื่อเรียกอีกอย่างว่าอะไร?", options: ["Kaizen Cycle", "Deming Cycle หรือ Shewhart Cycle", "OKR Cycle", "Lean Cycle"], answer: 1 },
+      { q: "แนวคิดของเดมมิ่งที่เป็นที่มาของ PDCA คือ?", options: ["ต้นทุนต้องต่ำที่สุด", "คุณภาพสามารถปรับปรุงพัฒนาได้", "ลูกค้าถูกเสมอ", "ทำครั้งเดียวให้สมบูรณ์"], answer: 1 },
+      { q: "ในขั้น Do ควรทำอย่างไรเพื่อลดความเสียหาย?", options: ["ใช้กับทั้งบริษัทพร้อมกันทันที", "ข้ามไปขั้น Act เลย", "ทดลองกับทีมนำร่องหรือโปรเจกต์เล็กก่อน", "ไม่ต้องวัดผล"], answer: 2 },
+      { q: "ถ้าขั้น Check พบว่าไม่ผ่านตัวชี้วัด ควรทำอย่างไร?", options: ["ยกเลิกโครงการ", "วิเคราะห์หาสาเหตุ แล้วทำขั้นตอนที่ 1–3 ใหม่", "ประกาศใช้ทั้งองค์กร", "เปลี่ยนตัวชี้วัดให้ผ่าน"], answer: 1 },
+      { q: "PDCA ไม่เหมาะกับงานลักษณะใด?", options: ["การพัฒนาสินค้าใหม่", "การปรับปรุงกระบวนการทำงาน", "โครงการที่ต้องแก้ปัญหาอย่างเร่งด่วน", "การประเมินกระบวนการธุรกิจ"], answer: 2 },
+    ],
+  },
+
+  /* ================================================================
+   * 4) 5ส สำหรับพนักงาน  (ระบบ 5S/คู่มือ 5ส สำหรับพนักงาน.pdf + Pre/Post test)
+   * ================================================================ */
+  {
+    id: "5s",
+    title: "5ส สำหรับพนักงาน",
+    subtitle: "สะสาง สะดวก สะอาด สร้างมาตรฐาน สร้างวินัย — พื้นฐานของที่ทำงานที่ดี",
+    source: "คู่มือ 5ส สำหรับพนักงาน — ทีมวิชาการ",
+    icon: "🧹",
+    color: "#7c3aed",
+    lessons: [
+      {
+        title: "5ส คืออะไร และทำไมต้องทำ",
+        minutes: 5,
+        body: `
+<div class="callout"><b>5ส</b> คือการจัดระบบอุปกรณ์/สิ่งของ/กระบวนการทำงาน ให้มีความ<b>สะดวก สะอาด เป็นระเบียบ เรียบร้อย</b> อยู่ในสภาพพร้อมใช้งาน ช่วยเพิ่มประสิทธิภาพในการทำงาน ทำให้เกิด<b>ความปลอดภัย</b> และมีความสุขจากการทำงาน</div>
+
+<div class="grid5s">
+  <div><b>ส1</b>สะสาง<small>Seiri</small></div>
+  <div><b>ส2</b>สะดวก<small>Seiton</small></div>
+  <div><b>ส3</b>สะอาด<small>Seiso</small></div>
+  <div><b>ส4</b>สร้างมาตรฐาน<small>Seiketsu</small></div>
+  <div><b>ส5</b>สร้างวินัย<small>Shitsuke</small></div>
+</div>
+
+<h3>บ้าน 5ส (5S House)</h3>
+<p>เปรียบ 5ส เหมือนบ้าน: <b>หลังคา</b> คือการเป็นผู้ผลิตและบริการระดับโลก, <b>คาน</b> คือ ส4 สร้างมาตรฐาน, <b>เสา 3 ต้น</b> คือ ส1 สะสาง ส2 สะดวก ส3 สะอาด, <b>พื้น</b> คือ ส5 สร้างวินัย และ<b>ฐานราก</b> คือการสร้างแรงจูงใจ เศรษฐกิจพอเพียง การศึกษา โครงสร้าง และแผนงาน 5ส — การทำ 5ส ให้สำเร็จและยั่งยืน ต้องเตรียมฐานรากให้ดีก่อน</p>
+
+<h3>ทำไมต้องทำ 5ส</h3>
+<div class="grid2">
+  <div class="card">วางของปะปนกัน <b>เสียเวลาค้นหา</b> ก่อให้เกิดความสับสน</div>
+  <div class="card">เก็บของไว้<b>มากเกินความจำเป็น</b> ไม่เป็นระบบ</div>
+  <div class="card">เอกสาร เครื่องมือ<b>สกปรก ชำรุดเสียหาย</b>อยู่เสมอ</div>
+  <div class="card">พนักงานในหน่วยงานเดียวกัน<b>ทำงานแทนกันไม่ได้</b></div>
+  <div class="card">ไม่เคารพและไม่ปฏิบัติตาม<b>กฎกติกา</b>ของหน่วยงาน</div>
+</div>`,
+      },
+      {
+        title: "ส1 สะสาง (Seiri)",
+        minutes: 4,
+        body: `
+<p class="lead">Organization — การจัดระบบองค์กร</p>
+<div class="card"><h4>ส1 สะสาง คือ</h4><ul><li>สำรวจให้ครบ</li><li>คัดแยกให้จบ สิ่งที่ใช้</li><li>ขจัดสิ่งที่ไม่จำเป็นออกไป</li><li>แล้วหามาเติมใหม่ให้เกิดสมดุล</li></ul></div>
+<div class="grid2">
+  <div class="card"><h4>🎯 วัตถุประสงค์</h4><p>ลดความสูญเปล่า</p></div>
+  <div class="card"><h4>✅ ผลลัพธ์ที่ได้</h4><p>มีเฉพาะสิ่งของ/ขั้นตอนการทำงานที่จำเป็น ในจำนวนที่พอดี</p></div>
+</div>
+<h3>ประโยชน์จากการทำ “สะสาง”</h3>
+<ol>
+  <li>มีพื้นที่ว่างจากการขจัดสิ่งของที่ไม่จำเป็น</li>
+  <li>ลดต้นทุนการสั่งซื้ออุปกรณ์ที่ไม่จำเป็น</li>
+  <li>ลดปริมาณการเก็บ/สำรองวัสดุสิ่งของ</li>
+  <li>สถานที่ทำงานดูกว้างขวาง สบายตา</li>
+  <li>ลดขั้นตอนการทำงานที่ซับซ้อน</li>
+  <li>ข้อผิดพลาดจากการทำงานลดลง</li>
+  <li>ทำให้ไม่เครียดและมีความสุขจากการทำงาน</li>
+</ol>`,
+      },
+      {
+        title: "ส2 สะดวก (Seiton)",
+        minutes: 6,
+        body: `
+<p class="lead">Neatness — ระเบียบเรียบร้อย</p>
+<div class="card"><h4>ส2 สะดวก คือ</h4><ul><li>จัดเก็บให้เป็นหมวดหมู่</li><li>กำหนดที่อยู่ให้ชัดเจน</li><li>ทำคู่ไปกับ Visual Display / Control / Management</li><li>กำหนดหลักเกณฑ์ สร้างแผนผัง และ Update ให้สมบูรณ์</li></ul></div>
+<div class="grid2">
+  <div class="card"><h4>🎯 วัตถุประสงค์</h4><p>เพิ่มประสิทธิภาพในการทำงาน และปรับปรุงการทำงานให้ดีขึ้นอยู่เสมอ</p></div>
+  <div class="card"><h4>✅ ผลลัพธ์ที่ได้</h4><p><b>ค้นหาสิ่งของได้ภายใน 30 วินาที</b> และ Productivity เพิ่มขึ้น</p></div>
+</div>
+
+<h3>วิธีการทำ “สะดวก”</h3>
+<ol class="steps">
+  <li><span class="step-no">1</span>จัดหมวดหมู่สิ่งของ/ขั้นตอนการทำงาน และกำหนดปริมาณการจัดเก็บ (Max-Min)</li>
+  <li><span class="step-no">2</span>จัดหาพื้นที่จัดเก็บที่เหมาะสม และชี้บ่งเพื่อป้องกันการสับสน เช่น ป้าย ทาสี รูปภาพ</li>
+  <li><span class="step-no">3</span>ประยุกต์ใช้ Visual Display / Visual Control / Visual Management</li>
+  <li><span class="step-no">4</span>จัดทำแผนผังการจัดเก็บให้ชัดเจน และปรับปรุงแก้ไขอย่างต่อเนื่อง</li>
+</ol>
+
+<h3>หลักการจัดวาง</h3>
+<div class="callout">ใช้บ่อย <b>ไว้ใกล้มือ</b> · เรียง<b>ซ้ายไปขวา</b> จาก<b>บนลงล่าง</b> · <b>หนักอยู่ล่าง เบาอยู่บน</b> · <b>เล็กสั้นอยู่หน้า ใหญ่ยาวอยู่หลัง</b></div>
+
+<h3>การจัดการด้วยการมองเห็น</h3>
+<div class="grid3">
+  <div class="card"><h4>👁️ Visual Display</h4><p>สื่อสารด้วยการมองเห็นเพื่อให้รับรู้ข้อมูล เช่น กราฟ แผนภูมิ รูปภาพ ป้ายความปลอดภัย</p></div>
+  <div class="card"><h4>🎛️ Visual Control</h4><p>แสดงให้เห็นว่ายังปกติหรือมีความผิดปกติ เพื่อให้รีบแก้ไขได้ถูกต้อง เช่น แถบสีบนเกจวัด</p></div>
+  <div class="card"><h4>📊 Visual Management</h4><p>เปลี่ยนข้อมูล สถานะ เป้าหมาย ให้เป็นป้าย สี รูปภาพ หรือบอร์ด ให้ทุกคนเข้าใจหน้างานได้ทันที</p></div>
+</div>
+
+<h3>ประโยชน์จากการทำ “สะดวก”</h3>
+<ul>
+  <li>ลดเวลาค้นหาอุปกรณ์หรือเอกสาร</li>
+  <li>ลดการสูญหายของอุปกรณ์หรือเอกสาร ทำงานเสร็จทันตามแผน</li>
+  <li>ลดเวลาการทำงาน งานบริการรวดเร็วขึ้น</li>
+  <li>เพิ่มประสิทธิภาพในการทำงาน</li>
+  <li>บรรยากาศที่ทำงานน่าอยู่ ดีต่อสุขภาพกายและใจ</li>
+</ul>
+<p class="tag">ทำ “สะดวก” ต้องตอบได้: เก็บ <b>อะไร</b>? เก็บ <b>ที่ไหน</b>? จำนวน <b>เท่าไหร่</b>?</p>`,
+      },
+      {
+        title: "ส3 สะอาด (Seiso)",
+        minutes: 5,
+        body: `
+<p class="lead">Cleaning — ลงมือทำความสะอาด</p>
+<div class="card"><h4>ส3 สะอาด คือ</h4><ul><li>มีขั้นตอนการทำความสะอาด</li><li>อย่าให้ขาดผู้รับผิดชอบ</li><li>หมั่นตรวจสอบสิ่งผิดปกติ</li><li>กำหนดแผนงานตามความถี่</li></ul></div>
+<div class="grid2">
+  <div class="card"><h4>🎯 วัตถุประสงค์</h4><p>ตรวจสอบสิ่งผิดปกติ และแก้ไข</p></div>
+  <div class="card"><h4>✅ ผลลัพธ์ที่ได้</h4><p>อุปกรณ์ เครื่องจักร พร้อมใช้ สภาพแวดล้อมน่าทำงานและ<b>ปลอดภัย</b></p></div>
+</div>
+
+<h3>ขั้นตอนการทำ “สะอาด”</h3>
+<ol class="steps">
+  <li><span class="step-no">1</span>กำหนดผู้รับผิดชอบตามพื้นที่ให้ชัดเจน</li>
+  <li><span class="step-no">2</span>จัดทำขั้นตอนการทำความสะอาด ระบุวิธีตรวจสอบและการบำรุงรักษาที่ชัดเจน</li>
+  <li><span class="step-no">3</span>จัดทำแผนการทำความสะอาดพื้นที่ และกำหนดความถี่ที่เหมาะสม</li>
+  <li><span class="step-no">4</span>ลงมือทำความสะอาดตามความถี่ โดยตรวจสอบอุปกรณ์ หากผิดปกติให้รีบแก้ไขทันที</li>
+</ol>
+
+<h3>ตรวจสอบโดยใช้ประสาทสัมผัส</h3>
+<div class="grid2">
+  <div class="card">👁️ <b>ตา</b> — ค้นหารอยรั่ว เช่น น็อต โบลท์ที่หลวมหรือคลาย</div>
+  <div class="card">👂 <b>หู</b> — ค้นหาเสียงลมรั่ว เสียงสั่นคลอนของเครื่องจักร ท่อทาง สายพาน</div>
+  <div class="card">👃 <b>จมูก</b> — ค้นหากลิ่นไหม้ น้ำมันรั่ว แก๊สรั่ว สารเคมีหก</div>
+  <div class="card">✋ <b>สัมผัส</b> — อุณหภูมิมอเตอร์สูงกว่าปกติ การสั่นสะเทือน การโยกคลอน</div>
+</div>
+
+<h3>ประโยชน์จากการทำ “สะอาด”</h3>
+<ul>
+  <li>สภาพแวดล้อมน่าทำงาน สะอาดและปลอดภัย บรรยากาศสดชื่น</li>
+  <li>เพิ่มประสิทธิภาพของเครื่องมือ เครื่องจักร และวัสดุอุปกรณ์</li>
+  <li>ยืดอายุการใช้งานของเครื่องมือและเครื่องจักร</li>
+  <li>ลดของเสียจากเครื่องจักรที่เกิดจากความสกปรก</li>
+</ul>`,
+      },
+      {
+        title: "ส4 สร้างมาตรฐาน (Seiketsu)",
+        minutes: 5,
+        body: `
+<p class="lead">Standardization — สร้างแนวทางปฏิบัติที่ดีร่วมกัน</p>
+<div class="card"><h4>ส4 สร้างมาตรฐาน คือ</h4><ul><li>กำหนดเป็นลายลักษณ์อักษร</li><li>หมั่นติดตามและประเมินผล</li><li>ฝึกอบรม เพื่อเพิ่มทักษะคน</li><li>สร้างแรงจูงใจคน ให้ร่วมปรับปรุงงาน</li></ul></div>
+<div class="grid2">
+  <div class="card"><h4>🎯 วัตถุประสงค์</h4><p>รักษา พัฒนา และยกระดับการทำ 3ส แรก และลดความเสี่ยงในการปฏิบัติงาน</p></div>
+  <div class="card"><h4>✅ ผลลัพธ์ที่ได้</h4><p>ทุกคนยอมรับและปฏิบัติตามมาตรฐาน และ<b>ทำงานแทนกันได้</b></p></div>
+</div>
+
+<h3>ประเภทมาตรฐาน 5ส</h3>
+<div class="callout"><b>มาตรฐาน 5ส = มาตรฐานกลาง + มาตรฐานพื้นที่</b><br>
+มาตรฐาน<b>กลาง</b> คือสิ่งที่มีเหมือนกัน/พื้นที่ใช้ร่วมกัน (เช่น โต๊ะทำงาน ทางเดิน Walk Way)<br>
+มาตรฐาน<b>พื้นที่</b> คือมาตรฐานของแต่ละพื้นที่ ที่หัวหน้าพื้นที่และสมาชิกร่วมจัดทำขึ้น — <b>ต้องไม่ขัดแย้งกับมาตรฐานกลาง</b></div>
+<table class="compare">
+  <thead><tr><th>ช่วงเวลา</th><th>มาตรฐาน</th><th>ตัวอย่าง</th></tr></thead>
+  <tbody>
+    <tr><td><b>ก่อน</b>ทำงาน</td><td>มาตรฐานบำรุงรักษาเบื้องต้น</td><td>ตรวจความพร้อมอุปกรณ์/เครื่องจักร เช่น Checklist</td></tr>
+    <tr><td><b>ระหว่าง</b>ทำงาน</td><td>มาตรฐานใช้งาน</td><td>คู่มือวิธีใช้เครื่องมือ/อุปกรณ์</td></tr>
+    <tr><td><b>หลัง</b>ทำงาน</td><td>มาตรฐานจัดเก็บ</td><td>สภาพเดิมที่ต้องจัดเก็บคืน เช่น โต๊ะทำงาน</td></tr>
+  </tbody>
+</table>
+<p>ตัวอย่างมาตรฐานกลางของ Sansuisha: ทางเดิน (Walk Way) พื้นทาสีเขียว ขอบเหลือง ไม่มีสิ่งของกีดขวาง และมาตรฐานพื้นที่ของแผนก เช่น Facility, Delivery, Repair</p>
+
+<h3>ประโยชน์จากการ “สร้างมาตรฐาน”</h3>
+<ul>
+  <li>รักษาและปรับปรุงสภาพการทำ 3ส ให้เกิดความต่อเนื่อง</li>
+  <li>มีแนวทางการปฏิบัติไปในทิศทางเดียวกัน</li>
+  <li>สามารถปฏิบัติหน้าที่ทดแทนกันได้</li>
+  <li>พัฒนาความสามารถของพนักงานให้มี Multi skill</li>
+  <li>การปฏิบัติงานมีประสิทธิผลและประสิทธิภาพ</li>
+</ul>`,
+      },
+      {
+        title: "ส5 สร้างวินัย (Shitsuke) และแบบทดสอบ 5ส",
+        minutes: 4,
+        body: `
+<p class="lead">Discipline — สร้างแรงจูงใจและสร้างความเข้าใจที่ถูกต้อง</p>
+<div class="card"><h4>ส5 สร้างวินัย คือ</h4><ul><li>สร้างแรงจูงใจ และให้ความรู้</li><li>ผู้นำต้องทำให้ดู และเป็นแบบอย่าง</li><li>ร่วมแรง ร่วมใจ สร้างสรรค์สิ่งต่างๆ</li><li>จนเกิดเป็นวัฒนธรรมขององค์กร</li></ul></div>
+<div class="grid2">
+  <div class="card"><h4>🎯 วัตถุประสงค์</h4><p>เพื่อสร้างความต่อเนื่อง และความยั่งยืนของการทำระบบ 5ส</p></div>
+  <div class="card"><h4>✅ ผลลัพธ์ที่ได้</h4><p>มีทัศนคติที่ดี เข้าใจระบบ 5ส ผู้บริหารเป็นผู้นำในการทำ และผ่านผลการตรวจประเมิน — <b>ทำทุกคน ทุกที่ ทุกเวลา</b></p></div>
+</div>
+
+<h3>แบบทดสอบ 5ส ของบริษัท (Pre-test / Post-test)</h3>
+<p>สแกน QR Code ด้วยโทรศัพท์มือถือเพื่อทำแบบทดสอบของบริษัท แนะนำให้ทำ <b>Pre-test ก่อนเริ่มเรียน</b> และ <b>Post-test หลังเรียนจบ</b> แล้วจึงทำแบบทดสอบท้ายบทในเว็บนี้</p>
+<div class="grid2">
+  <figure><img src="${IMG["5s-pretest-qr"]}" alt="QR Code แบบทดสอบ 5S Pre-Test"><figcaption>5S Pre-Test</figcaption></figure>
+  <figure><img src="${IMG["5s-posttest-qr"]}" alt="QR Code แบบทดสอบ 5S Post-Test"><figcaption>5S Post-Test</figcaption></figure>
+</div>`,
+      },
+    ],
+    quiz: [
+      { q: "5ส ประกอบด้วยอะไรบ้าง (เรียงตามลำดับ)?", options: ["สะสาง สะดวก สะอาด สร้างมาตรฐาน สร้างวินัย", "สะอาด สะสาง สะดวก สร้างวินัย สร้างมาตรฐาน", "สะดวก สะสาง สะอาด สุขลักษณะ สร้างนิสัย", "สะสาง สะอาด สะดวก สร้างวินัย สร้างมาตรฐาน"], answer: 0 },
+      { q: "ส1 สะสาง มีวัตถุประสงค์หลักเพื่ออะไร?", options: ["ลดความสูญเปล่า", "ค้นหาของได้ใน 30 วินาที", "ตรวจสอบสิ่งผิดปกติ", "ทำงานแทนกันได้"], answer: 0 },
+      { q: "ผลลัพธ์ที่ต้องการของ ส2 สะดวก คือข้อใด?", options: ["มีเฉพาะของที่จำเป็น", "ค้นหาสิ่งของได้ภายใน 30 วินาที", "เครื่องจักรสะอาด", "ทุกคนมีวินัย"], answer: 1 },
+      { q: "ข้อใด “ไม่ใช่” หลักการจัดวางที่ถูกต้อง?", options: ["ใช้บ่อยไว้ใกล้มือ", "หนักอยู่ล่าง เบาอยู่บน", "เล็กสั้นอยู่หน้า ใหญ่ยาวอยู่หลัง", "หนักอยู่บน เบาอยู่ล่าง"], answer: 3 },
+      { q: "แถบสีบนเกจวัดที่บอกว่าค่ายังปกติหรือผิดปกติ เป็นตัวอย่างของอะไร?", options: ["Visual Display", "Visual Control", "Visual Management", "มาตรฐานจัดเก็บ"], answer: 1 },
+      { q: "การได้กลิ่นไหม้หรือกลิ่นสารเคมีระหว่างทำ ส3 สะอาด เป็นการตรวจสอบด้วยประสาทสัมผัสใด?", options: ["ตา", "หู", "จมูก", "การสัมผัส"], answer: 2 },
+      { q: "มาตรฐานพื้นที่ของแต่ละแผนก ต้องเป็นอย่างไร?", options: ["ทำแทนมาตรฐานกลางได้เลย", "ต้องไม่ขัดแย้งกับมาตรฐานกลาง", "ไม่ต้องเขียนเป็นลายลักษณ์อักษร", "หัวหน้าทำคนเดียว"], answer: 1 },
+      { q: "Checklist ตรวจความพร้อมเครื่องจักร “ก่อนทำงาน” คือมาตรฐานประเภทใด?", options: ["มาตรฐานจัดเก็บ", "มาตรฐานใช้งาน", "มาตรฐานบำรุงรักษาเบื้องต้น", "มาตรฐานกลาง"], answer: 2 },
+      { q: "ส5 สร้างวินัย จะสำเร็จได้ ผู้นำต้องทำอย่างไร?", options: ["สั่งการอย่างเดียว", "ทำให้ดูและเป็นแบบอย่าง", "ตรวจปีละครั้ง", "ให้พนักงานทำเอง"], answer: 1 },
+    ],
+  },
+
+  /* ================================================================
+   * 5) Ho Ren So  (ความรู้ภายนอก/Ho Ren So on MAR 2023.pdf)
+   * ================================================================ */
+  {
+    id: "horenso",
+    title: "Ho Ren So ทักษะการสื่อสารสไตล์ญี่ปุ่น",
+    subtitle: "รายงาน · ติดต่อ · ปรึกษา — หัวใจของการทำงานกับคนญี่ปุ่น",
+    source: "Ho Ren So — อ. อรอนงค์ สมผลึก, TOP Professional & Development (31 Mar 2023)",
+    icon: "🗾",
+    color: "#dc2626",
+    lessons: [
+      {
+        title: "ทำไมการสื่อสารในที่ทำงานจึงมีปัญหา",
+        minutes: 5,
+        body: `
+<h3>สาเหตุของปัญหาการสื่อสารในที่ทำงาน</h3>
+<p>เพราะแต่ละคนมีสิ่งเหล่านี้ <b>ไม่เท่ากัน</b>: ข้อมูล · ประสบการณ์ · ทักษะการพูด · ทักษะการฟัง · ทักษะการเขียน · ดุลพินิจในแต่ละเรื่อง</p>
+<h3>ทำไมทีมถึงไม่เป็นทีม?</h3>
+<div class="grid2">
+  <div class="card">ขาดการสื่อสาร<b>เป้าหมาย</b></div>
+  <div class="card">ขาดการให้ข้อมูลย้อนกลับใน<b>ความคืบหน้า</b>ของงาน</div>
+  <div class="card">ขาด<b>ความโปร่งใส</b> เลือกปฏิบัติ สื่อสารกับบางคน</div>
+  <div class="card">ขาด<b>ความเป็นเจ้าของงาน</b></div>
+</div>
+<div class="callout warn">เกือบทุกสาเหตุ มีเรื่อง<b>ปัญหาการสื่อสาร</b>เข้าไปเกี่ยวข้อง</div>
+
+<h3>องค์ประกอบการสื่อสารที่มีประสิทธิภาพ</h3>
+<div class="grid3">
+  <div class="card"><h4>7%</h4><p>ขึ้นอยู่กับ<b>คำพูด</b></p></div>
+  <div class="card"><h4>38%</h4><p>ขึ้นกับ<b>น้ำเสียงและวิธีการพูด</b></p></div>
+  <div class="card"><h4>55%</h4><p>มาจาก<b>ภาษากาย</b></p></div>
+</div>
+
+<h3>ลูกน้องแบบนี้ ไม่อยากได้ (มุมมองคนญี่ปุ่น)</h3>
+<ol class="cols2">
+  <li>มาสาย หยุดงานบ่อย</li><li>ไม่กล่าวทักทาย</li><li>ขาดความรับผิดชอบ</li><li>ผิดพลาดเรื่องเดิมซ้ำซาก</li><li>ชอบแก้ตัว</li>
+  <li>ไม่สั่งก็ไม่ทำ</li><li>ขาดพลังในการทำงาน</li><li><b>ไม่ทำการสื่อสารในการทำงาน (Ho Ren So)</b></li><li>ขาดความรอบคอบ</li><li>ไม่ฟังความคิดเห็นของคนอื่น</li>
+</ol>`,
+      },
+      {
+        title: "Ho Ren So คืออะไร",
+        minutes: 4,
+        body: `
+<p><b>ほうれんそう (Horenso)</b> ในภาษาญี่ปุ่นแปลว่า “ผักโขม” ซึ่งพ้องกับคำย่อของ <b>Houkoku-Renraku-Soudan</b> — หลักการที่เป็นหัวใจในการทำงานของคนญี่ปุ่น คนไหนไม่มี Ho Ren So แทบจะถูกหัวหน้าตราหน้าว่า <b>“ทำงานไม่ได้ดี”</b></p>
+<table class="compare">
+  <thead><tr><th>คำ</th><th>ญี่ปุ่น</th><th>ความหมาย</th></tr></thead>
+  <tbody>
+    <tr><td><b>Ho</b></td><td>報告 Houkoku</td><td>Report — การรายงาน</td></tr>
+    <tr><td><b>Ren</b></td><td>連絡 Renraku</td><td>Contact — การติดต่อสื่อสารอย่างต่อเนื่อง</td></tr>
+    <tr><td><b>So</b></td><td>相談 Soudan</td><td>Consult — การปรึกษาหารือ</td></tr>
+  </tbody>
+</table>
+<div class="callout">โดยเฉพาะตอนที่ไม่เข้าใจหรือไม่รู้ ให้รายงานหรือปรึกษาหัวหน้าหรือส่วนงานที่เกี่ยวข้อง <b>อย่าทำอะไรโดยพลการ อย่าคิดเองเออเองโดยเด็ดขาด</b> เพราะผลที่ตามมาอาจก่อให้เกิดความเสียหายมากกว่าที่คิด</div>
+<p class="tag">เปลี่ยนวิธีทำงานแค่ 1% คุณก็แซงหน้าคน 99% ได้แล้ว</p>`,
+      },
+      {
+        title: "Ho — Houkoku การรายงาน",
+        minutes: 7,
+        body: `
+<h3>ประเภทของการรายงาน</h3>
+<div class="grid2">
+  <div class="card"><h4>🗣️ ด้วยวาจา</h4><p>เรื่องง่ายๆ ไม่ซับซ้อน และเรื่องที่ต้องรายงานโดยเร็ว</p></div>
+  <div class="card"><h4>📝 ด้วยตัวอักษร</h4><p>เนื้อหาซับซ้อน ต้องมีบันทึกเป็นหลักฐาน หรือแจกจ่ายผู้เกี่ยวข้อง</p></div>
+</div>
+<h3>เราจะรายงานเมื่อใด</h3>
+<ul class="check">
+  <li>เมื่อทำงานเสร็จ</li><li>รายงานความคืบหน้า</li><li>เมื่อจำเป็นต้องเปลี่ยนวิธีการทำงาน</li>
+  <li>เมื่องานเกิดปัญหา</li><li>เมื่อมีข้อผิดพลาด</li><li>เมื่อมีสิ่งผิดปกติ</li><li>เมื่อได้รับข้อมูลที่เป็นประโยชน์</li>
+</ul>
+
+<h3>หลักพื้นฐานของการรายงาน</h3>
+<ul>
+  <li>รายงาน<b>อย่างถูกต้อง</b> — รายงานตามความจริงเป็นอันดับแรก</li>
+  <li>รายงาน<b>ด้วยความซื่อสัตย์</b> — ข้อเท็จจริง</li>
+  <li>แบ่งปันแนวคิดหรือข้อเสนอแนะ <b>หลังจาก</b>รายงานตามข้อเท็จจริงแล้ว</li>
+</ul>
+<p>การรายงานที่ดี = แสดงความรับผิดชอบด้วยแนวคิดเชิงรุก (งานแล้วเสร็จ โดยหัวหน้าไม่ต้องทวงถาม)</p>
+
+<h3>ช่วงเวลาในการรายงาน</h3>
+<table class="compare">
+  <tbody>
+    <tr><td><b>ระหว่างกระบวนการ</b></td><td>รายงานตามปกติ (ไม่ใช่การถาม) เมื่องานจบแต่ละขั้น หรือมีแนวโน้มล่าช้ากว่าที่คิด</td></tr>
+    <tr><td><b>เมื่อเกิดปัญหา</b></td><td>รายงาน<b>ทันที (ห้ามล่าช้า)</b> ยอมรับและขอโทษเมื่อผิดพลาด แจ้งข้อเท็จจริง สาเหตุ และแนวทางแก้ไข</td></tr>
+    <tr><td><b>เมื่อจบกระบวนการ</b></td><td>รายงานผลด้วยความซื่อสัตย์ ประเด็นสำคัญที่เกิดขึ้น และแนวคิดสำหรับครั้งต่อไป</td></tr>
+  </tbody>
+</table>
+
+<h3>จุดสำคัญของการรายงาน</h3>
+<div class="grid2">
+  <div class="card"><h4>1. สม่ำเสมอ</h4><ul><li>รายงานต่อผู้ที่สั่งงานโดยตรง</li><li>รายงานเป็นระยะๆ</li><li>รายงานอย่างถูกต้อง</li><li>ข้อมูลที่ไม่ดีให้รีบแจ้งทันที</li></ul></div>
+  <div class="card"><h4>2. สรุปอย่างได้ใจความ</h4><ul><li>รายงาน<b>ผลที่เกิดขึ้นจริงก่อน</b> แล้วตามด้วยรายละเอียด</li><li>แยกข้อเท็จจริงออกจากความคิดเห็นส่วนตัว</li></ul></div>
+</div>`,
+      },
+      {
+        title: "รายงานด้วยหลัก 5W2H",
+        minutes: 5,
+        body: `
+<p>ใช้ <b>5W2H</b> เป็นกรอบในการรายงาน ทั้งการเขียนและการพูด เพื่อให้ข้อมูลครบและเข้าใจง่าย</p>
+<table class="compare">
+  <thead><tr><th>คำถาม</th><th>ความหมาย</th><th>ตัวอย่าง</th></tr></thead>
+  <tbody>
+    <tr><td><b>When</b> เมื่อไหร่</td><td>วันและเวลาที่เกิดเหตุ</td><td>วันที่ 26 ก.ย. กะ B</td></tr>
+    <tr><td><b>Where</b> ที่ไหน</td><td>สถานที่เกิดเหตุ</td><td>ไลน์ตรวจสอบชิ้นงาน, ห้องน้ำ</td></tr>
+    <tr><td><b>Who</b> ใคร</td><td>ผู้เกี่ยวข้องหรือผู้ทำให้เกิดเหตุ</td><td>Operator, คุณ Tanaka</td></tr>
+    <tr><td><b>What</b> อะไร</td><td>เกิดอะไรขึ้น</td><td>โดนเครื่องจักรหนีบมือ, ลื่นล้ม</td></tr>
+    <tr><td><b>Why</b> ทำไม</td><td>เหตุใดจึงเกิด</td><td>ยื่นมือเก็บชิ้นงานโดยไม่หยุดเครื่อง, เดินขณะพื้นเปียก</td></tr>
+    <tr><td><b>How</b> อย่างไร</td><td>เกิดขึ้นอย่างไร ส่งผลอะไร</td><td>นิ้วหัก หยุดงาน 3 วัน ไลน์หยุดตรวจสอบ 3 ชม.</td></tr>
+    <tr><td><b>How much/many</b></td><td>จำนวน/ปริมาณ</td><td>ชิ้นงานเล็กกว่ามาตรฐาน 8 ชิ้นจาก 50 ชิ้น</td></tr>
+  </tbody>
+</table>
+<div class="callout"><b>ตัวอย่าง:</b> พนักงาน QC (Who) พบชิ้นงาน Product 55874 กลึงไม่ได้ขนาด (What) ที่ Line A เครื่อง 18 Lot 480926B (Where) วันที่ 26 กะ B (When) จากการสุ่มตรวจตามแผนทุกชั่วโมง (How) เพราะขนาดจริง 19.98 แต่มาตรฐาน 20 ± 0.02 (Why) พบ 8 ชิ้นจาก 50 ชิ้น (How many)</div>`,
+      },
+      {
+        title: "Ren — Renraku การติดต่อ",
+        minutes: 4,
+        body: `
+<p class="lead">การแจ้งด้วยวาจา ทางโทรศัพท์ หรือบันทึกการสนทนา ให้หน่วยงานหรือผู้เกี่ยวข้องทราบผลลัพธ์/จุดสำคัญ</p>
+<h3>ข้อควรระวังในการติดต่อ</h3>
+<ul>
+  <li>ไม่ใช่การแจ้งแบบ 2 ต่อ 2 เหมือนการรายงาน จุดสำคัญคือการแจ้งให้ทราบในจุดที่ต้องแชร์ข้อมูลร่วมกัน</li>
+  <li>แจ้งผู้เกี่ยวข้องให้ทราบสถานการณ์ ความคืบหน้า เนื้อหา ผลลัพธ์</li>
+  <li>โดยเฉพาะกรณีที่ผิดจากกำหนดการ <b>ต้องรีบแจ้งผู้เกี่ยวข้องโดยเร็วที่สุด</b></li>
+</ul>
+<h3>การบอกกล่าว ติดต่อสื่อสารอย่างต่อเนื่อง</h3>
+<ul class="check">
+  <li>บอกกล่าวความคืบหน้าของงานต่อหัวหน้าให้รับรู้ <b>ไม่ต้องรอให้เรียกถาม</b></li>
+  <li>ทันทีที่ได้รับข้อมูลใหม่หรือมีข่าวสารเพิ่มเติม ต้องแจ้งให้หัวหน้ารับรู้ทันที</li>
+  <li>เรื่องสำคัญ <b>ไม่ควรแจ้งทางโทรศัพท์</b> ควรรายงานโดยตรง แต่หากอยู่นอกบริษัท ให้โทรศัพท์สั้นๆ ก่อน แล้วรายงานละเอียดอีกครั้งเมื่อกลับถึงบริษัท</li>
+</ul>`,
+      },
+      {
+        title: "So — Soudan การปรึกษา",
+        minutes: 4,
+        body: `
+<p class="lead">เมื่อพบสถานการณ์ยุ่งยาก ไม่ควรเก็บปัญหาไว้คนเดียว แต่คอยพูดคุยกับหัวหน้าและเพื่อนร่วมงานบ่อยๆ เพื่อหาวิธีแก้ไข</p>
+<h3>ข้อควรระวังในการปรึกษา</h3>
+<ul>
+  <li>ก่อนอื่นต้องคิดถึงวัตถุประสงค์ เนื้อหา สิ่งที่คาดหวัง <b>ด้วยตัวเองก่อน</b> เมื่อคิดข้อเสนอคร่าวๆ ได้แล้วจึงนำไปปรึกษา</li>
+  <li>ไม่รีบนำเรื่องขึ้นไปปรึกษาหัวหน้าอย่างกะทันหัน ให้แจ้งเวลาและเรื่องที่ต้องการปรึกษาล่วงหน้า</li>
+  <li>อย่ายึดติดกับความคิดตัวเองฝ่ายเดียว ให้รับฟังคำชี้แนะของหัวหน้า</li>
+</ul>
+<h3>การปรึกษาเมื่อมีข้อสงสัยหรือปัญหา</h3>
+<ul class="check">
+  <li>นัดหมายหัวหน้าก่อน โดยบอกประเด็นสำคัญที่ต้องการปรึกษา</li>
+  <li><b>ไม่ควรปกปิดความผิดพลาดของตนเอง</b> ต้องแจ้งให้หัวหน้าทราบ</li>
+  <li>การไม่ปรึกษาหรือสอบถาม อาจทำให้ปัญหาลุกลาม จึงควรปรึกษาทันทีที่เกิดปัญหา</li>
+  <li>เรื่องส่วนตัว ควรขอปรึกษานอกเวลางาน และนัดหมายเวลาที่หัวหน้าสะดวก</li>
+</ul>`,
+      },
+      {
+        title: "Feedback และการสื่อสารกับคนแต่ละสไตล์ (DISC)",
+        minutes: 7,
+        body: `
+<h3>การให้ Feedback แบบมืออาชีพ</h3>
+<p>ผู้บังคับบัญชาควรมีทักษะการให้ Feedback ไม่เกรงใจจนไม่กล้าพูด ใช้คำพูดเหมาะสมและสร้างสรรค์ เตรียมข้อมูลก่อน และไม่ Feedback หลายเรื่องในครั้งเดียว</p>
+<table class="compare">
+  <thead><tr><th>❌ พูดแบบตีตรา</th><th>✅ พูดแบบมืออาชีพ (ข้อเท็จจริง)</th></tr></thead>
+  <tbody>
+    <tr><td>คุณมาสายไม่รับผิดชอบ</td><td>คุณมาสาย 30 นาที</td></tr>
+    <tr><td>ส่งงานช้าไม่ทันกิน</td><td>ส่งงานช้าไปสองวัน</td></tr>
+    <tr><td>ขับรถประมาทจัง</td><td>ขับรถเกินความเร็วตามกม.</td></tr>
+    <tr><td>ทำรายงานไม่รอบคอบ</td><td>รายงานนี้มีคำผิด 15 คำ</td></tr>
+  </tbody>
+</table>
+<div class="callout"><b>Sandwich Feedback:</b> ยกย่อง → ติ (ต้องมีหลักฐาน และบอกว่าถ้าเปลี่ยนแล้วจะได้อะไร) → ยกย่อง<br><em>“รายงานเขียนดี อ่านแล้วเข้าใจง่าย ตรงประเด็น (ชม) ติดที่ส่งช้าไปหน่อย ถ้าเร็วกว่านี้จะเยี่ยมเลย (ติ) ยังไงก็พัฒนาต่อไป เพื่อนๆ บอกว่าคุณมีความสามารถด้านนี้นะ (ให้กำลังใจ)”</em></div>
+
+<h3>รู้จักตนเอง เข้าใจผู้อื่น — DISC Model</h3>
+<p>ต่างคน ต่างมุมมอง — คนเราไม่ได้เป็นแบบใดแบบหนึ่งทั้งหมด แต่มีบุคลิกผสมกัน จึงควรปรับวิธีสื่อสารให้เข้ากับแต่ละคน</p>
+<div class="grid2">
+  <div class="card"><h4>🐯 D — Dominance (ตรงไปตรงมา)</h4><p>กล้าหาญ รวดเร็ว ชอบการแข่งขัน ใจร้อน เน้นผลลัพธ์</p><p class="tag">สื่อสาร: <b>สั้น ตรงประเด็น</b> พูดถึงผลลัพธ์ที่จะได้</p></div>
+  <div class="card"><h4>🦚 I — Influence (มีมนุษยสัมพันธ์)</h4><p>ชอบพูด เพื่อนมาก มองโลกในแง่ดี กระตือรือร้น</p><p class="tag">สื่อสาร: <b>ชวนคุยเรื่องทั่วไป</b> บรรยากาศสบายๆ สื่อสาร 2 ทาง</p></div>
+  <div class="card"><h4>🐬 S — Steadiness (ช่วยเหลือผู้อื่น)</h4><p>คอยสนับสนุน ใจเย็น เอาใจใส่ ทำตามขั้นตอน</p><p class="tag">สื่อสาร: <b>ให้เวลา อย่ารีบเร่ง</b> บอกเงื่อนไขให้ชัด</p></div>
+  <div class="card"><h4>🦉 C — Compliance (ละเอียดรอบคอบ)</h4><p>มาตรฐานสูง ชอบวิเคราะห์ ระมัดระวัง พูดน้อย</p><p class="tag">สื่อสาร: <b>ชัดเจน ถูกต้อง</b> ให้ข้อมูล หลักฐาน ข้อพิสูจน์</p></div>
+</div>
+
+<h3>6 เคล็ดลับฝึกทักษะการสื่อสาร</h3>
+<ol class="cols2">
+  <li>จำไม่ได้ต้องจด — จดบันทึกกันลืม</li><li>จับประเด็นสำคัญ — สรุปให้ได้ใจความ</li><li>สื่อสารให้ตรงจุด — ไม่อ้อมค้อม</li>
+  <li>วิเคราะห์ผู้ฟัง — สื่ออย่างเหมาะสม</li><li>ปูพื้นฐานให้เข้าใจตรงกัน</li><li>สื่อสารอย่างเป็นกลาง — ป้องกันความขัดแย้ง</li>
+</ol>`,
+      },
+    ],
+    quiz: [
+      { q: "Ho Ren So ย่อมาจากอะไร?", options: ["Houkoku-Renraku-Soudan (รายงาน-ติดต่อ-ปรึกษา)", "Honto-Renshu-Sougou", "Home-Rest-Sleep", "Hour-Rank-Score"], answer: 0 },
+      { q: "เมื่อเกิดปัญหาหรือข้อผิดพลาดในงาน ควรรายงานเมื่อใด?", options: ["รอให้แก้เสร็จก่อนค่อยบอก", "รายงานทันที ห้ามล่าช้า", "รอให้หัวหน้าถาม", "รายงานตอนประชุมประจำเดือน"], answer: 1 },
+      { q: "หลักการรายงานที่ถูกต้องคือข้อใด?", options: ["ใส่ความเห็นส่วนตัวก่อน", "รายงานผลที่เกิดขึ้นจริงก่อน แล้วตามด้วยรายละเอียด", "รายงานเฉพาะข่าวดี", "รายงานผ่านเพื่อนร่วมงาน"], answer: 1 },
+      { q: "ใน 5W2H คำถาม “How much/How many” ใช้บอกอะไร?", options: ["สถานที่", "ผู้เกี่ยวข้อง", "จำนวนหรือปริมาณ", "สาเหตุ"], answer: 2 },
+      { q: "เรื่องสำคัญที่ต้องแจ้งหัวหน้าขณะอยู่นอกบริษัท ควรทำอย่างไร?", options: ["ไม่ต้องแจ้งเลย", "ส่งสติกเกอร์ในไลน์", "โทรแจ้งสั้นๆ ก่อน แล้วรายงานละเอียดเมื่อกลับถึงบริษัท", "รอแจ้งปลายเดือน"], answer: 2 },
+      { q: "ก่อนนำเรื่องไปปรึกษา (Soudan) หัวหน้า ควรทำอะไรก่อน?", options: ["คิดวัตถุประสงค์และข้อเสนอคร่าวๆ ด้วยตัวเองก่อน", "ไปหาหัวหน้าทันทีโดยไม่นัด", "ปกปิดความผิดพลาดไว้", "ปรึกษาเพื่อนแทน"], answer: 0 },
+      { q: "ข้อใดเป็นการให้ Feedback แบบมืออาชีพ?", options: ["คุณมันขี้เกียจ", "ทำงานไม่ได้เรื่อง", "รายงานนี้มีคำผิด 15 คำ", "ส่งงานช้าไม่ทันกิน"], answer: 2 },
+      { q: "การสื่อสารกับคนสไตล์ D (Dominance) ควรทำอย่างไร?", options: ["พูดยาวๆ ให้รายละเอียดมาก", "สั้น ตรงประเด็น พูดถึงผลลัพธ์", "ชวนคุยเรื่องทั่วไปก่อนนานๆ", "ให้เวลาคิดหลายวัน"], answer: 1 },
+      { q: "ตามบทเรียน การสื่อสารที่มีประสิทธิภาพขึ้นอยู่กับภาษากายประมาณกี่เปอร์เซ็นต์?", options: ["7%", "38%", "55%", "100%"], answer: 2 },
+    ],
+  },
+
+  /* ================================================================
+   * 6) Why-Why Analysis  (QA/QA_หลักการเขียน why-why analysis.pdf)
+   * ================================================================ */
+  {
+    id: "why-why",
+    title: "Why-Why Analysis หาสาเหตุที่แท้จริง",
+    subtitle: "หลักการเขียน 5 Whys เพื่อค้นหา Root Cause และป้องกันการเกิดซ้ำ",
+    source: "QA: หลักการเขียน why-why analysis (Teachme Biz)",
+    icon: "❓",
+    color: "#0891b2",
+    lessons: [
+      {
+        title: "Why-Why Analysis คืออะไร",
+        minutes: 3,
+        body: `
+<p><b>Why-Why Analysis (5 Whys)</b> คือการวิเคราะห์หาสาเหตุของปัญหาด้วยการถาม “ทำไม” ซ้ำๆ จากผลไปหาเหตุ จนพบ<b>สาเหตุที่แท้จริง (Root Cause)</b> เพื่อแก้ไขให้ตรงจุดและ<b>ป้องกันการเกิดซ้ำ</b> ไม่ใช่แค่แก้ที่อาการ</p>
+<div class="callout">ถ้าแก้แค่สาเหตุที่เห็นตรงหน้า ปัญหามักจะกลับมาอีก — ต้องถามต่อจนถึงต้นเหตุ</div>
+<h3>เชื่อมโยงกับเครื่องมืออื่นในเว็บนี้</h3>
+<ul>
+  <li><b>PDCA</b> — ใช้ Why-Why ในขั้น Plan เพื่อวิเคราะห์หาสาเหตุก่อนวางแผนแก้ไข</li>
+  <li><b>รายงาน A3</b> — หัวข้อที่ 4 “วิเคราะห์หาสาเหตุที่แท้จริงของปัญหา” ใช้ Why-Why Analysis</li>
+  <li><b>Ho Ren So / 5W2H</b> — ข้อเท็จจริงที่รายงานครบถ้วน คือวัตถุดิบของการถาม “ทำไม”</li>
+</ul>`,
+      },
+      {
+        title: "4 ขั้นตอนการเขียน Why-Why Analysis",
+        minutes: 6,
+        body: `
+<ol class="steps">
+  <li><span class="step-no">Step 1</span><b>ระบุประเด็นปัญหาหรือปรากฏการณ์ให้ชัดเจนเป็นรูปธรรม</b><br>บอกให้ได้ว่าเกิดอะไร ที่ไหน เมื่อไร มากน้อยเท่าไร (ใช้ 5W2H ช่วย)</li>
+  <li><span class="step-no">Step 2</span><b>ทำความเข้าใจโครงสร้างและหน้าที่ของส่วนที่เป็นปัญหา</b><br>ทบทวนและทำความเข้าใจหน้าที่การทำงานของส่วนที่เป็นปัญหา ว่าผิดไปจากเดิมหรือสภาพที่ควรจะเป็นอย่างไร</li>
+  <li><span class="step-no">Step 3</span><b>วิเคราะห์หาสาเหตุของปัญหาจากผลไปเหตุ</b><br>• ระบุ ทำไม (1) ด้วยข้อความที่นำไปสู่การค้นหาสาเหตุ <b>ควรระบุอย่างน้อย 4–5 why</b><br>• เขียนให้ครบประเด็นและป้องกันความสับสน โดยสร้างคำพูด <b>“ทำไม…… เพราะว่า……”</b></li>
+  <li><span class="step-no">Step 4</span><b>ช่องสุดท้ายคือ Root Cause</b><br>เมื่อหาสาเหตุสุดท้ายจนไม่สามารถหาสาเหตุอื่นได้อีก นั่นคือสาเหตุที่แท้จริง (Root Cause)</li>
+</ol>
+<div class="callout warn">ปัญหาหนึ่งอาจมีหลายสาเหตุ — ให้แตกกิ่ง (ทำไม 1, ทำไม 2 …) แล้วถามต่อแต่ละกิ่ง จนได้ Root Cause ของทุกกิ่ง</div>`,
+      },
+      {
+        title: "ตัวอย่างการวิเคราะห์",
+        minutes: 5,
+        body: `
+<p class="lead">ตัวอย่างจากรายงาน A3: ปัญหารอยขีดข่วนบนชิ้นงาน Model AT 749-2 ที่แผนกประกอบ (60 ชิ้น/วัน)</p>
+<div class="why-chain">
+  <div><b>ปัญหา</b> ชิ้นงานมีรอยขีดข่วน 60 ชิ้น/วัน</div>
+  <div><b>ทำไม 1</b> เพราะชิ้นงานถูกกับขอบมุมถาด (Tray) ที่แตก</div>
+  <div><b>ทำไม 2</b> เพราะใช้ถาดที่ชำรุดปะปนกับถาดดี</div>
+  <div><b>ทำไม 3</b> เพราะไม่มีการคัดแยกถาดที่ใช้งานไม่ได้ออก</div>
+  <div><b>ทำไม 4</b> เพราะไม่มีผู้รับผิดชอบในการจัดการและควบคุมถาด</div>
+  <div class="root"><b>Root Cause</b> ไม่มีการกำหนดมาตรฐานการใช้ถาดและผู้รับผิดชอบ และไม่มีมาตรฐานการวางชิ้นงานในถาด</div>
+</div>
+<h3>มาตรการแก้ไขจาก Root Cause</h3>
+<ul class="check">
+  <li>กำหนดมาตรฐานการใช้ถาด และตารางตรวจสอบถาดประจำสัปดาห์</li>
+  <li>คัดแยกถาดที่ใช้ไม่ได้ออก และจัดหาถาดใหม่ให้เพียงพอ</li>
+  <li>กำหนดผู้รับผิดชอบควบคุมถาด</li>
+  <li>กำหนดวิธีและมาตรฐานการวางชิ้นงานในถาด และอบรมพนักงานทุกคน</li>
+</ul>
+<p>ผลลัพธ์: ตั้งเป้าลดจาก 60 ชิ้น/วัน ให้เหลือไม่เกิน 5 ชิ้น/วัน และติดตามผลด้วยกราฟ พร้อมอบรมพนักงานใหม่และทบทวนทุก 6 เดือน</p>`,
+      },
+    ],
+    quiz: [
+      { q: "จุดประสงค์หลักของ Why-Why Analysis คืออะไร?", options: ["หาคนผิด", "หาสาเหตุที่แท้จริง (Root Cause) เพื่อป้องกันการเกิดซ้ำ", "ทำรายงานให้ยาว", "แก้ปัญหาเฉพาะหน้าให้เร็ว"], answer: 1 },
+      { q: "ขั้นตอนแรกของการเขียน Why-Why Analysis คือ?", options: ["เขียน Root Cause", "ระบุประเด็นปัญหาให้ชัดเจนเป็นรูปธรรม", "หาคนรับผิดชอบ", "เขียนมาตรการแก้ไข"], answer: 1 },
+      { q: "ควรถาม “ทำไม” อย่างน้อยกี่ครั้ง?", options: ["1 ครั้ง", "2 ครั้ง", "4–5 ครั้ง", "10 ครั้งเสมอ"], answer: 2 },
+      { q: "รูปแบบประโยคที่แนะนำในการเขียนแต่ละขั้นคือ?", options: ["“ใคร…ทำ…”", "“ทำไม…… เพราะว่า……”", "“ถ้า…แล้ว…”", "“ควรจะ…”"], answer: 1 },
+      { q: "เราจะรู้ว่าได้ Root Cause แล้วเมื่อใด?", options: ["เมื่อถามครบ 2 ครั้ง", "เมื่อหาสาเหตุสุดท้ายจนไม่สามารถหาสาเหตุอื่นได้อีก", "เมื่อหัวหน้าพอใจ", "เมื่อเจอคนทำผิด"], answer: 1 },
+      { q: "ในรายงาน A3 Why-Why Analysis อยู่ในหัวข้อใด?", options: ["ข้อมูลพื้นฐาน", "เป้าหมาย SMART", "วิเคราะห์หาสาเหตุที่แท้จริงของปัญหา", "กิจกรรมติดตามผล"], answer: 2 },
+    ],
+  },
+
+  /* ================================================================
+   * 7) ความปลอดภัยสารเคมีอันตราย  (ความรู้ภายนอก/เอกสารความปลอดภัย...สารเคมีอันตราย...pdf)
+   * ================================================================ */
+  {
+    id: "chemical-safety",
+    title: "ความปลอดภัยในการใช้สารเคมีอันตราย",
+    subtitle: "สัญลักษณ์ GHS · SDS · การจัดเก็บ · PPE · ปฐมพยาบาล · การตอบโต้สารเคมีรั่วไหล",
+    source: "Safety on using of Chemical Substance and Emergency Response — สถาบันฝึกอบรมด้านความปลอดภัยท็อปโปร",
+    icon: "⚗️",
+    color: "#ca8a04",
+    lessons: [
+      {
+        title: "สารเคมีอันตรายและการจำแนกประเภท",
+        minutes: 6,
+        body: `
+<h3>สารเคมีอันตรายคืออะไร</h3>
+<p><b>สารเคมี</b> คือ ธาตุ สารประกอบ หรือสารผสม ทั้งของแข็ง (ฝุ่น ฟูม ควัน) ของเหลว (ละออง) และก๊าซ (ไอระเหย)</p>
+<div class="callout"><b>สารเคมีอันตราย</b> คือสารเคมีที่มีคุณสมบัติอย่างหนึ่งหรือหลายอย่าง: (1) มีพิษ กัดกร่อน ระคายเคือง ทำให้เกิดการแพ้ มะเร็ง เป็นอันตรายต่อทารกในครรภ์ หรือ<b>ทำให้ถึงแก่ความตาย</b> (2) เป็นตัวทำปฏิกิริยารุนแรง เป็นตัวเพิ่มออกซิเจน หรือ<b>ไวไฟ</b> ซึ่งอาจทำให้เกิดการระเบิดหรือไฟไหม้</div>
+
+<h3>ระบบการจำแนกและสัญลักษณ์</h3>
+<table class="compare">
+  <thead><tr><th>ใช้สำหรับ</th><th>มาตรฐาน</th></tr></thead>
+  <tbody>
+    <tr><td>การขนส่ง</td><td>UN Class (UNRTDG) — 9 ประเภท ป้ายรูปข้าวหลามตัด</td></tr>
+    <tr><td>การจัดเก็บ/ฉลาก</td><td>GHS (Globally Harmonized System) — ใช้ในฉลากและ SDS</td></tr>
+    <tr><td>ดับเพลิง/กู้ภัย</td><td>NFPA 704 — ป้ายสี่เหลี่ยม 4 สี</td></tr>
+  </tbody>
+</table>
+
+<h3>UN Class 9 ประเภท (การขนส่ง)</h3>
+<ol class="cols2">
+  <li>วัตถุระเบิด (Explosives)</li><li>ก๊าซ — ไวไฟ, ไม่ไวไฟ, ก๊าซพิษ</li><li>ของเหลวไวไฟ เช่น อะซิโตน น้ำมันเชื้อเพลิง ทินเนอร์</li>
+  <li>ของแข็งไวไฟ เช่น กำมะถัน ฟอสฟอรัส</li><li>สารออกซิไดส์และออร์แกนิกเปอร์ออกไซด์</li><li>สารพิษและสารติดเชื้อ</li>
+  <li>วัสดุกัมมันตรังสี</li><li>สารกัดกร่อน เช่น โซเดียมไฮดรอกไซด์</li><li>วัสดุอื่นๆ ที่เป็นอันตราย</li>
+</ol>
+<p>ตัวอย่างป้ายรถขนส่ง: เลข <b>80</b> = หมายเลขแสดงความอันตราย, <b>UN 1789</b> = Hydrochloric acid (สารกัดกร่อน)</p>
+
+<h3>NFPA 704 (ป้าย 4 สี)</h3>
+<div class="grid2">
+  <div class="card">🔵 <b>น้ำเงิน</b> — อันตรายต่อสุขภาพ</div>
+  <div class="card">🔴 <b>แดง</b> — ความไวไฟ</div>
+  <div class="card">🟡 <b>เหลือง</b> — ความไวต่อปฏิกิริยา</div>
+  <div class="card">⚪ <b>ขาว</b> — อันตรายพิเศษ เช่น W = ห้ามใช้น้ำ, OXY = ออกซิไดเซอร์</div>
+</div>
+<p class="tag">ระดับตัวเลข 0–4: <b>ยิ่งตัวเลขสูง ยิ่งอันตรายมาก</b> (4 = อันตรายร้ายแรง/ถึงตาย)</p>`,
+      },
+      {
+        title: "ระบบ GHS และฉลากสารเคมี",
+        minutes: 6,
+        body: `
+<p><b>GHS</b> คือระบบสากลในการจำแนกและสื่อสารความเป็นอันตรายของสารเคมี ผ่าน<b>ฉลาก</b>และ<b>เอกสารข้อมูลความปลอดภัย (SDS)</b></p>
+<div class="grid3">
+  <div class="card"><h4>อันตรายทางกายภาพ</h4><p>16 กลุ่ม เช่น ระเบิด ก๊าซไวไฟ ของเหลวไวไฟ ก๊าซออกซิไดซ์ สารกัดกร่อนโลหะ</p></div>
+  <div class="card"><h4>อันตรายต่อสุขภาพ</h4><p>10 กลุ่ม เช่น พิษเฉียบพลัน กัดกร่อนผิวหนัง ทำลายดวงตา ก่อมะเร็ง พิษต่อระบบสืบพันธุ์</p></div>
+  <div class="card"><h4>อันตรายต่อสิ่งแวดล้อม</h4><p>2 กลุ่ม: ต่อสิ่งแวดล้อมน้ำ และต่อโอโซนในชั้นบรรยากาศ</p></div>
+</div>
+
+<h3>รูปสัญลักษณ์ GHS (Pictograms) 9 แบบ</h3>
+<div class="ghs-grid">
+  <div>💥<span>ระเบิด</span></div><div>🔥<span>สารไวไฟ</span></div><div>⭕🔥<span>ออกซิไดซ์</span></div>
+  <div>🧯<span>ก๊าซภายใต้ความดัน</span></div><div>🧪<span>สารกัดกร่อน</span></div><div>☠️<span>พิษเฉียบพลัน</span></div>
+  <div>❗<span>ระคายเคือง</span></div><div>🫁<span>อันตรายต่อสุขภาพ/ก่อมะเร็ง</span></div><div>🐟<span>อันตรายต่อสิ่งแวดล้อม</span></div>
+</div>
+<p class="tag">ของจริงเป็นรูปภาพสีดำในกรอบข้าวหลามตัดขอบสีแดง ให้สังเกตจากฉลากบนภาชนะ</p>
+
+<h3>องค์ประกอบของฉลากตามระบบ GHS</h3>
+<ol>
+  <li>ชื่อผลิตภัณฑ์หรือสารเคมี (Product Identifier)</li>
+  <li>รูปสัญลักษณ์ (Pictograms)</li>
+  <li>คำสัญญาณ (Signal Words) — “อันตราย (Danger)” หรือ “ระวัง (Warning)”</li>
+  <li>ข้อความแสดงความเป็นอันตราย (Hazard Statements)</li>
+  <li>ข้อความแสดงข้อควรระวัง (Precautionary Statements)</li>
+  <li>ผู้ผลิตหรือผู้จัดจำหน่าย (Supplier Identification)</li>
+</ol>
+<div class="callout warn">ฉลากต้องเป็น<b>ภาษาไทย</b> ขนาดพอสมควร อ่านง่าย คงทน และหาก<b>แบ่งถ่ายสารเคมีใส่ภาชนะอื่น</b> (เช่น ขวดสเปรย์) <b>ต้องติดฉลากใหม่ทุกครั้ง</b></div>`,
+      },
+      {
+        title: "SDS เอกสารข้อมูลความปลอดภัย",
+        minutes: 5,
+        body: `
+<p><b>SDS (Safety Data Sheet)</b> คือเอกสารแสดงคุณสมบัติทางเคมี กายภาพ ชีวภาพ และมาตรการความปลอดภัย เพื่อใช้สารเคมีได้อย่างปลอดภัย สถานประกอบการต้องจัดให้มีและแจ้งพนักงานที่เกี่ยวข้อง ประกอบด้วย <b>16 หัวข้อ</b></p>
+<ol class="cols2">
+  <li>ข้อมูลสารเคมีและบริษัทผู้ผลิต</li><li>ข้อมูลระบุความเป็นอันตราย</li><li>ส่วนประกอบ/ส่วนผสม</li><li><b>มาตรการปฐมพยาบาล</b></li>
+  <li><b>มาตรการผจญเพลิง</b></li><li><b>มาตรการเมื่อหกรั่วไหล</b></li><li>การใช้และการเก็บรักษา</li><li>การควบคุมการสัมผัสและ PPE</li>
+  <li>คุณสมบัติทางเคมีและกายภาพ</li><li>ความเสถียรและการเกิดปฏิกิริยา</li><li>ข้อมูลด้านพิษวิทยา</li><li>ข้อมูลเชิงนิเวศน์</li>
+  <li>มาตรการการกำจัด</li><li>ข้อมูลการขนส่ง</li><li>ข้อมูลด้านกฎข้อบังคับ</li><li>ข้อมูลอื่นๆ</li>
+</ol>
+
+<h3>สรุปสิ่งที่ผู้ปฏิบัติงานต้องทราบจาก SDS</h3>
+<ul class="check">
+  <li>ชื่อสารเคมี และความเป็นอันตรายต่อคนหรือสิ่งแวดล้อม</li>
+  <li>การป้องกันและการจัดเก็บที่ถูกต้อง</li>
+  <li>อุปกรณ์ PPE ที่ต้องสวมใส่</li>
+  <li>วิธีปฐมพยาบาล</li>
+  <li>การจัดการเมื่อหกรั่วไหล ไฟไหม้ใช้อะไรดับ และการทิ้งขยะ</li>
+</ul>
+
+<h3>ค่าที่ควรรู้</h3>
+<div class="grid2">
+  <div class="card"><h4>TLV-TWA</h4><p>ความเข้มข้นในอากาศที่คนทั่วไปรับได้ ทำงานวันละ 8 ชม. สัปดาห์ละ 5 วัน โดยไม่เกิดผลกระทบ</p></div>
+  <div class="card"><h4>TLV-STEL</h4><p>รับได้ในเวลาสั้น 15 นาที ไม่เกิน 4 ครั้ง/วัน ห่างกันอย่างน้อย 1 ชั่วโมง</p></div>
+  <div class="card"><h4>LD50</h4><p>ปริมาณสารที่ทำให้สัตว์ทดลองตาย 50% (mg/kg) — <b>ยิ่ง LD50 น้อย ยิ่งอันตรายมาก</b> (เกลือแกง LD50 = 3,000 mg/kg)</p></div>
+  <div class="card"><h4>pH</h4><p>น้อยกว่า 7 = กรด, 7 = กลาง, มากกว่า 7 = เบส — <b>ทั้งกรดและเบสแรงมีฤทธิ์กัดกร่อน</b></p></div>
+</div>`,
+      },
+      {
+        title: "การจัดเก็บสารเคมีอย่างปลอดภัย",
+        minutes: 6,
+        body: `
+<h3>หลักพิจารณาการจัดเก็บ</h3>
+<ol><li>ความเป็นอันตรายของสารเคมี</li><li><b>ความเข้ากันได้</b>ของสารเคมี (สารบางชนิดห้ามเก็บด้วยกัน)</li><li>สถานะของสารเคมี</li></ol>
+<div class="grid2">
+  <div class="card"><h4>เก็บแยกบริเวณ (Separate)</h4><p>แยกด้วยผนังทนไฟได้อย่างน้อย 90 นาที หรือเว้นระยะห่างที่เหมาะสม เช่น 5–10 เมตร</p></div>
+  <div class="card"><h4>เก็บแยกห่าง (Segregate)</h4><p>เก็บ 2 ประเภทขึ้นไปในบริเวณเดียวกันได้ ถ้ามีมาตรการป้องกันเพียงพอ ตามตารางการจัดเก็บ</p></div>
+</div>
+
+<h3>ข้อปฏิบัติในสถานที่เก็บสารเคมี</h3>
+<ul>
+  <li>เป็นสถานที่มิดชิด ผนังทนไฟ ปิดล็อกได้ มีป้าย <b>“สถานที่เก็บสารเคมี”</b> เฉพาะผู้เกี่ยวข้อง</li>
+  <li>อากาศเย็นและแห้ง ระบายอากาศดี แดดส่องไม่ถึง</li>
+  <li>ชั้นวางมั่นคง แข็งแรง ไม่สั่นสะเทือน ภาชนะใหญ่และหนัก<b>ไม่วางในที่สูง</b></li>
+  <li>ภาชนะต้องมี<b>ป้ายชื่อที่ทนทาน</b>พร้อมบอกอันตรายและข้อควรระวัง</li>
+  <li>ขวดไม่วางบนพื้นโดยตรง หรือซ้อนบนขวดอื่น</li>
+  <li><b>มาก่อน ใช้ก่อน (FIFO)</b> หมดอายุต้องทำลายทันที</li>
+  <li>มีที่กั้นป้องกันไม่ให้สารเคมีต่างชนิดไหลรวมกัน</li>
+  <li>กองสินค้านอกอาคารสูงไม่เกิน 3 เมตร</li>
+  <li>มีอุปกรณ์ดับเพลิง อุปกรณ์ป้องกันภัย และเครื่องปฐมพยาบาลพร้อม</li>
+</ul>
+<div class="callout warn"><b>ห้ามสูบบุหรี่ รับประทานอาหาร/เครื่องดื่ม หรือเก็บอาหาร</b> ในบริเวณที่ทำงานหรือเก็บสารเคมีอันตราย</div>
+<p class="tag">สารประเภท 1, 2B, 4.1A, 4.2, 4.3, 5.1, 5.2 และ 6.1 ไม่อนุญาตให้เก็บนอกอาคาร · สารออกซิไดซ์ ห้ามใช้แผ่นรองไม้ ห้ามเก็บวัสดุติดไฟใกล้</p>`,
+      },
+      {
+        title: "อุปกรณ์ป้องกันอันตรายส่วนบุคคล (PPE)",
+        minutes: 6,
+        body: `
+<p class="lead">หลักการควบคุมอันตราย: <b>แหล่งต้นเหตุ (Source) → ทางผ่าน (Pathway) → ผู้ปฏิบัติงาน (Receiver)</b> — PPE คือด่านสุดท้ายที่ตัวผู้ปฏิบัติงาน</p>
+<div class="grid3">
+  <div class="card"><h4>ที่แหล่งต้นเหตุ</h4><p>เปลี่ยนสาร/วัสดุ ปรับปรุง Process แยก/ป้องกัน ระบายอากาศเฉพาะจุด บำรุงรักษาดี</p></div>
+  <div class="card"><h4>ที่ทางผ่าน</h4><p>รักษาความสะอาด ระบายอากาศทั่วไป เพิ่มระยะห่าง ตรวจวัดสารเคมีในอากาศ</p></div>
+  <div class="card"><h4>ที่ผู้ปฏิบัติงาน</h4><p>อบรม หมุนเวียนงาน ตรวจสุขภาพตามปัจจัยเสี่ยง และ<b>สวม PPE</b></p></div>
+</div>
+
+<h3>ประเภทของ PPE</h3>
+<div class="grid2">
+  <div class="card">😷 <b>ระบบหายใจ</b> — หน้ากากกรองอากาศ (ฝุ่น ละออง ฟูม แก๊ส ไอระเหย) หรือชุดส่งผ่านอากาศ (SCBA)</div>
+  <div class="card">🥽 <b>ดวงตา/ใบหน้า</b> — แว่นนิรภัย ครอบตา (Goggles) กระบังหน้า (Face shield)</div>
+  <div class="card">🧤 <b>มือ</b> — ถุงมือให้เหมาะกับสารเคมี ตรวจรอยชำรุดก่อนและหลังใช้</div>
+  <div class="card">🥼 <b>ร่างกาย</b> — ชุดป้องกันสารเคมี Level A–D, ผ้ากันเปื้อน</div>
+  <div class="card">🥾 <b>เท้า</b> — รองเท้านิรภัย รองเท้าบูททนสารเคมี</div>
+</div>
+
+<h3>การใช้และดูแล PPE</h3>
+<ul class="check">
+  <li>ตรวจสภาพก่อนใช้งานทุกครั้ง ไม่ใช้อุปกรณ์ที่เสียหาย</li>
+  <li>ใช้ให้ถูกวิธีและถูกงาน เปลี่ยนเมื่อหมดอายุ</li>
+  <li>ทำความสะอาดเสมอ เก็บในที่ร่ม อากาศถ่ายเท เป็นระเบียบ</li>
+  <li>มีมาตรฐานรับรอง เช่น มอก. CE ANSI NIOSH</li>
+  <li><b>หัวหน้างานต้องเป็นตัวอย่างที่ดีในการใช้ PPE</b></li>
+</ul>`,
+      },
+      {
+        title: "อาการและการปฐมพยาบาล",
+        minutes: 6,
+        body: `
+<h3>สารเคมีเข้าสู่ร่างกาย 3 ทาง</h3>
+<div class="grid3">
+  <div class="card">🫁 <b>หายใจ</b> (Inhalation)</div>
+  <div class="card">✋ <b>ดูดซึมผ่านผิวหนัง</b> (Skin Contact)</div>
+  <div class="card">🍽️ <b>กินหรือดื่ม</b> (Ingestion)</div>
+</div>
+<div class="grid2">
+  <div class="card"><h4>แบบเฉียบพลัน (Acute)</h4><p>เกิดทันทีหรือเร็ว: ผื่นคัน ระคายเคือง ผิวหนังไหม้ ขาดอากาศ หน้ามืดวิงเวียน</p></div>
+  <div class="card"><h4>แบบเรื้อรัง (Chronic)</h4><p>สัมผัสระดับต่ำเป็นเวลานาน: มะเร็ง ผลต่อทารกในครรภ์ อัมพาต จนถึงเสียชีวิต</p></div>
+</div>
+
+<h3>การปฐมพยาบาล</h3>
+<table class="compare">
+  <tbody>
+    <tr><td><b>สูดดม/หายใจเอาไอพิษ</b></td><td>รีบนำผู้ป่วยออกไปที่โล่ง อากาศถ่ายเท คลายเสื้อผ้า หากหมดสติหรือหยุดหายใจให้ทำ CPR แล้วนำส่งแพทย์ <b>พร้อมฉลากหรือเอกสารสารเคมี</b> ผู้ช่วยเหลือต้องสวมหน้ากากป้องกันก่อนเข้าพื้นที่</td></tr>
+    <tr><td><b>หกรดผิวหนัง</b></td><td>ล้างด้วยน้ำสะอาดจำนวนมาก หรือฝักบัวฉุกเฉิน <b>ประมาณ 15 นาที</b> ถอดเสื้อผ้าที่เปื้อนออก <b>อย่าใช้ยาแก้พิษทางเคมี</b> เพราะความร้อนจากปฏิกิริยาอาจทำให้อันตรายขึ้น</td></tr>
+    <tr><td><b>เข้าตา</b></td><td>ล้างตาด้วยน้ำนาน <b>15 นาที</b> เปิดน้ำไหลรินค่อยๆ อย่าใช้ยาแก้พิษ ปิดตาแล้วนำส่งโรงพยาบาล</td></tr>
+    <tr><td><b>กลืนกิน</b></td><td>ห้ามให้อาเจียนหรือดื่มสิ่งใดถ้าผู้ป่วยหมดสติ (หยุดหายใจต้อง CPR ก่อน) ทำให้สารเจือจางด้วยน้ำหรือนมในกรณีรู้สึกตัว</td></tr>
+  </tbody>
+</table>
+<div class="callout warn"><b>ห้ามทำให้ผู้ป่วยอาเจียน</b> เมื่อ: หมดสติ · ได้รับสารกัดเนื้อ เช่น กรด ด่าง · ได้รับสารพวกน้ำมันปิโตรเลียม เช่น น้ำมันก๊าด เบนซิน · มีสุขภาพไม่ดี เช่น โรคหัวใจ</div>
+<p class="tag">บริเวณทำงานกับสารเคมีต้องมีที่ล้างตาและฝักบัวชำระร่างกายฉุกเฉิน ที่ล้างมือ/หน้าอย่างน้อย 1 ห้องต่อลูกจ้าง 15 คน และเครื่องปฐมพยาบาล</p>`,
+      },
+      {
+        title: "สารเคมีหกรั่วไหลและแผนฉุกเฉิน",
+        minutes: 7,
+        body: `
+<h3>หลักสำคัญในการควบคุมสารเคมีรั่วไหล</h3>
+<ol class="steps">
+  <li><span class="step-no">1</span><b>หยุดการรั่วไหล</b> (Stop Leak)</li>
+  <li><span class="step-no">2</span><b>จำกัดพื้นที่</b> (Confine)</li>
+  <li><span class="step-no">3</span><b>ดูดซับสารด้วยวัสดุดูดซับ</b> (Absorb)</li>
+  <li><span class="step-no">4</span><b>เก็บกวาดและนำไปกำจัด</b> (Clean up &amp; Disposal)</li>
+</ol>
+<div class="grid2">
+  <div class="card"><h4>กรณีไม่รุนแรง (Minor)</h4><ul><li>แจ้งผู้อยู่ในบริเวณให้ทราบ</li><li>หลีกเลี่ยงการสูดดมไอ/แก๊ส</li><li>สวม PPE ที่เหมาะสม</li><li>จำกัดพื้นที่รั่วไหลให้แคบ</li><li>ใช้วัสดุทำลายฤทธิ์กรด-เบส และวัสดุดูดซับ (Spill Kit)</li><li>เก็บวัสดุที่ใช้แล้วใส่ภาชนะของเสีย และทำความสะอาดพื้นที่</li></ul></div>
+  <div class="card"><h4>กรณีรุนแรง (Major)</h4><ul><li>ช่วยเหลือ/ปฐมพยาบาลผู้บาดเจ็บ และเคลื่อนย้ายออกนอกพื้นที่</li><li>แจ้งเตือนภัยให้ผู้อยู่ในพื้นที่<b>อพยพ</b></li><li>สารไวไฟ: ปิด/ทำลายแหล่งความร้อน/ประกายไฟ</li><li>โทรแจ้ง <b>สายด่วน 1669 และ 191</b></li></ul></div>
+</div>
+<p>ขยะปนเปื้อนสารเคมีต้องแยกเป็น<b>ขยะพิษ</b> พร้อมติดป้ายแจ้งที่ถุงขยะทุกถุง</p>
+
+<h3>การแบ่งพื้นที่ควบคุม (Zoning)</h3>
+<div class="grid3">
+  <div class="card"><h4>🔴 Hot Zone</h4><p>พื้นที่อันตราย เฉพาะทีม Hazmat/ผู้ระงับเหตุ</p></div>
+  <div class="card"><h4>🟡 Warm Zone</h4><p>พื้นที่ชำระล้าง (Decontamination) จำกัดการเข้าถึง</p></div>
+  <div class="card"><h4>🟢 Cold Zone</h4><p>พื้นที่ปลอดภัย ผู้ช่วยเหลือ แพทย์ พยาบาล</p></div>
+</div>
+<p class="tag">ตั้งพื้นที่โดยคำนึงถึง<b>ทิศทางลม</b> — อยู่เหนือลมเสมอ</p>
+
+<h3>องค์ประกอบแผนฉุกเฉิน</h3>
+<p>ลักษณะเหตุฉุกเฉิน · สัญญาณเตือนภัย · การประกาศภาวะฉุกเฉิน · ผังองค์กรในภาวะฉุกเฉิน · หน้าที่รับผิดชอบ · การสื่อสาร · การยกเลิกภาวะฉุกเฉิน · การสอบสวนหลังเกิดเหตุ · <b>การซ้อมตามแผน (สำคัญที่สุด)</b></p>
+<div class="callout"><b>อบรมและซ้อมแผนฉุกเฉินสารเคมีรั่วไหลอย่างน้อยปีละ 1 ครั้ง</b> · ตรวจวัดความเข้มข้นสารเคมีอันตรายอย่างน้อยปีละ 1 ครั้ง · แอปช่วยเหลือ: <b>ERG4Thai</b> และ <b>ERG 2020</b> ค้นหาวิธีรับมือด้วยเลข UN</div>`,
+      },
+    ],
+    quiz: [
+      { q: "ป้าย NFPA 704 สีแดงหมายถึงอะไร?", options: ["อันตรายต่อสุขภาพ", "ความไวไฟ", "ความไวต่อปฏิกิริยา", "อันตรายพิเศษ"], answer: 1 },
+      { q: "ฉลากตามระบบ GHS ประกอบด้วย 6 ส่วน ข้อใด “ไม่ใช่” องค์ประกอบของฉลาก?", options: ["รูปสัญลักษณ์ (Pictograms)", "คำสัญญาณ (Signal Words)", "ราคาสินค้า", "ข้อมูลผู้ผลิต/ผู้จัดจำหน่าย"], answer: 2 },
+      { q: "เมื่อแบ่งถ่ายสารเคมีใส่ขวดสเปรย์เพื่อใช้งาน ต้องทำอย่างไร?", options: ["ไม่ต้องทำอะไร", "ติดฉลากใหม่ที่ภาชนะใหม่ทุกครั้ง", "เขียนชื่อคนใช้", "เก็บไว้ในตู้เย็น"], answer: 1 },
+      { q: "เอกสาร SDS มีทั้งหมดกี่หัวข้อ?", options: ["6 หัวข้อ", "9 หัวข้อ", "12 หัวข้อ", "16 หัวข้อ"], answer: 3 },
+      { q: "ค่า LD50 ยิ่งน้อย หมายความว่าอย่างไร?", options: ["สารยิ่งปลอดภัย", "สารยิ่งอันตรายมาก", "สารยิ่งไวไฟ", "ไม่มีความหมาย"], answer: 1 },
+      { q: "หลักการจัดเก็บข้อใดถูกต้อง?", options: ["ภาชนะใหญ่และหนักวางไว้ชั้นบนสุด", "วางขวดซ้อนกันเพื่อประหยัดที่", "มาก่อนใช้ก่อน (FIFO) และไม่วางขวดบนพื้นโดยตรง", "รับประทานอาหารในห้องเก็บได้ถ้าปิดฝา"], answer: 2 },
+      { q: "สารเคมีกระเด็นเข้าตา ควรล้างตาด้วยน้ำนานเท่าใด?", options: ["30 วินาที", "2 นาที", "ประมาณ 15 นาที", "ไม่ต้องล้าง ใช้ยาแก้พิษแทน"], answer: 2 },
+      { q: "กรณีใด “ห้าม” ทำให้ผู้ป่วยอาเจียน?", options: ["กลืนกรดหรือด่าง หรือน้ำมันเบนซิน", "กลืนน้ำเปล่า", "กินอาหารมากเกินไป", "ทุกกรณีต้องให้อาเจียน"], answer: 0 },
+      { q: "หลักการควบคุมสารเคมีรั่วไหลตามลำดับคือ?", options: ["ดูดซับ → หยุดรั่ว → กำจัด → จำกัดพื้นที่", "หยุดการรั่วไหล → จำกัดพื้นที่ → ดูดซับ → เก็บกวาดและกำจัด", "อพยพ → กินข้าว → ทำความสะอาด", "รอหัวหน้ามาก่อน"], answer: 1 },
+      { q: "กรณีสารเคมีรั่วไหลรุนแรง ควรโทรแจ้งหมายเลขใด?", options: ["1111", "1669 และ 191", "1555", "1323"], answer: 1 },
+    ],
+  },
+
+  /* ================================================================
+   * 8) การขับรถ Forklift อย่างปลอดภัย  (ความรู้ภายนอก/การขับรถForkliftอย่างถูกวิธีและปลอดภัย - Toyota.pdf)
+   * ================================================================ */
+  {
+    id: "forklift-safety",
+    title: "การขับรถ Forklift อย่างถูกวิธีและปลอดภัย",
+    subtitle: "ตรวจก่อนใช้งาน · Load Center · ขั้นตอนขับ · ดูแลแบตเตอรี่ · กฎความปลอดภัย",
+    source: "การควบคุมรถโฟร์คลิฟท์อย่างถูกต้องและปลอดภัย — บริษัท โตโยต้า ทูโช ฟอร์คลิฟท์ (ไทยแลนด์) จำกัด",
+    icon: "🚜",
+    color: "#ea580c",
+    lessons: [
+      {
+        title: "รู้จักรถ Forklift และกฎหมายที่เกี่ยวข้อง",
+        minutes: 5,
+        body: `
+<p>รถยก (Forklift) มีความสำคัญมากในภาคอุตสาหกรรม แต่ยังมีผู้ใช้งานไม่ถูกวิธีจำนวนมาก จึงเกิดอุบัติเหตุ สินค้าเสียหาย เฉี่ยวชนอาคาร หรือร้ายแรงถึงบาดเจ็บ/เสียชีวิต <b>ผู้ขับจึงต้องผ่านการฝึกอบรม</b> ตามกฎกระทรวง (ราชกิจจานุเบกษา 6 ส.ค. 2564)</p>
+
+<h3>ประเภทรถยก</h3>
+<div class="grid2">
+  <div class="card"><h4>Counterbalanced Trucks</h4><p>ชนิดน้ำหนักถ่วงสมดุล — เครื่องยนต์ (8FD/8FG), ไฟฟ้านั่งขับ 4 ล้อ (8FBN/8FB), 3 ล้อ (8FBE)</p></div>
+  <div class="card"><h4>Reach Trucks</h4><p>เสาเลื่อนเข้า-ออกได้ — ยืนขับ หรือนั่งขับหันข้าง</p></div>
+  <div class="card"><h4>Order Picker Trucks</h4><p>คนขับขึ้นไปจัดเรียงสินค้าบนที่สูง</p></div>
+  <div class="card"><h4>Electric Motor Hand Trucks</h4><p>ชนิดมีแขนลากจูง เช่น Stacker, Power Pallet</p></div>
+</div>
+
+<h3>โครงสร้างหลัก</h3>
+<p>เสา (Mast) · โซ่ยก (Lift Chains) · กระบอกยกเสา · แผงกั้นของ (Backrest) · งา (Fork) · หลังคา (Head Guard) · กระจกมองหลัง · น้ำหนักถ่วง (Counter Weight) · กระบอกคว่ำหงาย (Tilt Cylinder) · ล้อหน้า/ล้อหลัง</p>
+
+<h3>กฎหมายกำหนดให้นายจ้าง (ส่วนที่ 4 รถยก)</h3>
+<ul>
+  <li>มีโครงหลังคาแข็งแรง ป้องกันวัสดุตกหล่น และป้ายบอกพิกัดน้ำหนักยก</li>
+  <li><b>ตรวจสอบรถยกให้ใช้งานได้ดีและปลอดภัยก่อนใช้งานทุกครั้ง</b> และเก็บเอกสารการตรวจไว้</li>
+  <li>มีสัญญาณเสียงหรือแสงไฟเตือนภัย และอุปกรณ์ช่วยการมองเห็น</li>
+  <li>ผู้ขับรถยกนั่งขับ<b>ต้องสวมเข็มขัดนิรภัยตลอดเวลา</b></li>
+  <li>ตีเส้นช่องทางเดินรถยก ติดกระจกนูนที่ทางแยก/ทางโค้ง</li>
+  <li>ผู้ขับต้องผ่านการฝึกอบรมการใช้รถยกแต่ละประเภท</li>
+  <li><b>ห้ามบุคคลอื่นโดยสารหรือขึ้นไปบนส่วนใดของรถยก</b></li>
+  <li>รักษาระยะห่างจากสายไฟฟ้าแรงสูง เช่น ไม่เกิน 69 kV ห่างไม่น้อยกว่า 3.1 เมตร</li>
+</ul>`,
+      },
+      {
+        title: "ตรวจสอบรถก่อนใช้งานประจำวัน",
+        minutes: 5,
+        body: `
+<p>ตรวจด้วย<b>ประสาทสัมผัสทั้งห้า</b> (ตาดู หูฟัง จมูกดมกลิ่น มือและเท้าสัมผัส) ก่อนใช้งานทุกวัน และลงบันทึกในแบบตรวจสอบ ✓ = ปกติ ✗ = ไม่ปกติ</p>
+<h3>รายการตรวจสอบหลัก</h3>
+<ol class="cols2">
+  <li>ความเสียหายภายนอก และการรั่วไหลต่างๆ</li><li>สภาพนอต กะทะล้อ ลมยาง และยาง</li>
+  <li>สัญญาณไฟต่างๆ และการทำงาน</li><li>กระจกมองหลัง</li>
+  <li>ระดับน้ำมันไฮดรอลิก</li><li>แผ่นเนมเพลทและป้ายเตือน</li>
+  <li>สายไฟและปลั๊กแบตเตอรี่</li><li>เบรก แป้นเบรก และระดับน้ำมันเบรก</li>
+  <li>เบรกมือ</li><li>ระบบบังคับเลี้ยว</li>
+  <li>แตร</li><li>สัญลักษณ์บนหน้าปัด และปริมาณไฟแบตเตอรี่</li>
+  <li>ระบบไฮดรอลิก (ยก-ลง คว่ำ-หงาย)</li><li>เสียงและความผิดปกติของมอเตอร์</li>
+  <li>หลังคาและแผงกั้นสัมภาระ</li><li>เข็มขัดนิรภัย</li>
+</ol>
+<div class="callout warn">ถ้าพบปัญหาหรือสิ่งผิดปกติ <b>ต้องบันทึกและแจ้งหัวหน้างาน/ผู้รับผิดชอบทันที</b> เพื่อพิจารณาเรื่องการใช้งานรถยก</div>
+<h3>การบำรุงรักษาตามระยะเวลา</h3>
+<p>ตรวจโดยช่างประจำบริษัทหรือตัวแทนจำหน่าย เช่น น้ำมันไฮดรอลิกและน้ำมันเบรกเปลี่ยนทุก 6 เดือน (1,000 ชม.), ท่อน้ำมันเบรก/ไฮดรอลิกทุก 2 ปี, โซ่ทุก 3 ปี</p>`,
+      },
+      {
+        title: "น้ำหนักบรรทุกและ Load Center",
+        minutes: 5,
+        body: `
+<div class="grid2">
+  <div class="card"><h4>Load Capacity</h4><p>น้ำหนักรวมของสัมภาระที่รถยกยกได้ <b>โดยที่ท้ายรถไม่กระดก</b> ขึ้นกับ Load Center ความสูงของเสา และอุปกรณ์เสริม</p></div>
+  <div class="card"><h4>Load Center</h4><p>ระยะจากหน้าโคนงาถึงจุดศูนย์ถ่วง (C.G.) ของสินค้า มาตรฐานสากล (ISO) = <b>500 mm</b> — <b>ถ้า Load Center มากขึ้น ความสามารถบรรทุกจะลดลง</b></p></div>
+</div>
+<h3>ตัวอย่าง: รุ่น 8FBN25 (V Mast)</h3>
+<table class="compare">
+  <thead><tr><th>Load Center (B)</th><th>ยกสูง 4,000 mm</th><th>4,500 mm</th><th>5,000 mm</th></tr></thead>
+  <tbody>
+    <tr><td>500 mm</td><td>2,500 kg</td><td>2,300 kg</td><td>1,800 kg</td></tr>
+    <tr><td>600 mm</td><td>2,250 kg</td><td>2,070 kg</td><td>1,620 kg</td></tr>
+    <tr><td>1,000 mm</td><td>1,620 kg</td><td>1,490 kg</td><td>1,170 kg</td></tr>
+  </tbody>
+</table>
+<div class="callout">สังเกตจากพาเลท: เสียบงาเข้าพาเลทยาว <b>1,200 mm → Load Center ≈ 600 mm</b> · พาเลทยาว <b>1,000 mm → Load Center ≈ 500 mm</b> — ยิ่งยกสูงและยิ่งของยาว ยิ่งยกได้น้อยลง</div>
+<p class="tag">ดูพิกัดของรถแต่ละคันได้จากแผ่นเนมเพลท (ช่อง Capacity และ Load Center)</p>`,
+      },
+      {
+        title: "ขั้นตอนการขับรถยกที่ถูกต้อง",
+        minutes: 6,
+        body: `
+<h3>การเตรียมความพร้อม</h3>
+<ol><li>เดินตรวจสภาพรถ 1 รอบ ชี้นิ้วออกเสียง “OK”</li><li>ขึ้นรถ: มือซ้ายจับหูจับเสาหลังคา มือขวาจับหูเบาะ ก้าวเท้าซ้ายเหยียบบันได (ขึ้นลงทางซ้าย)</li><li>นั่งประจำที่ แล้ว<b>คาดเข็มขัดนิรภัย</b> ปรับเบาะให้เหมาะสม</li></ol>
+<h3>การเคลื่อนที่</h3>
+<ol><li>เปิดสวิตช์กุญแจ หงายงาขึ้น (โคนงาสูงจากพื้น <b>10–20 ซม.</b>)</li><li>ตรวจเส้นทางโดยชี้นิ้วออกเสียง “OK” ทุกทางแยก เข้าเกียร์ ปลดเบรกมือ บีบแตร</li><li>มือซ้ายจับปุ่มพวงมาลัย ขณะรถเคลื่อนที่ห้ามวางเท้าซ้ายที่แป้นเบรก</li></ol>
+<h3>การเข้าตักสินค้า</h3>
+<ol><li>หยุดรถ ปลดเกียร์ว่าง ปรับงาให้ขนาน ยกงาถึงตำแหน่งเสียบพาเลท</li><li>เสียบให้สุดโคนงา หยุดรถ ยกสินค้าขึ้นไม่เกิน 20 ซม.</li><li>หันมองหลัง ชี้นิ้วออกเสียง “หลัง OK” ก่อนเข้าเกียร์ถอย</li><li>ลดงาให้พาเลทสูงจากพื้น 10–20 ซม. หงายงาขึ้น</li></ol>
+<h3>การจอดรถ</h3>
+<ol><li>ปลดเกียร์ว่าง ล็อกเบรกมือ <b>วางปลายงาแนบพื้น</b></li><li>ปิดสวิตช์ นำกุญแจออก ปลดเข็มขัด แล้วลงจากรถให้ถูกต้อง</li><li>จอดในพื้นที่ที่กำหนดไว้ชัดเจน <b>ไม่จอดบนพื้นลาดเอียง</b></li></ol>`,
+      },
+      {
+        title: "แบตเตอรี่รถยกไฟฟ้า",
+        minutes: 5,
+        body: `
+<div class="grid2">
+  <div class="card"><h4>แบตเตอรี่ตะกั่วกรด (Lead-Acid)</h4><ul><li>ชาร์จแบบ <b>Normal</b> ทุกวัน หลังเลิกใช้ หรือใช้ไปไม่เกิน 75%</li><li>ชาร์จแบบ <b>Equal</b> เดือนละ 1 ครั้ง (ห้ามใช้ทุกวัน แบตจะร้อนและเสื่อมเร็ว)</li><li>ตรวจน้ำกลั่นก่อนชาร์จ รักษาระดับน้ำกรดให้พอดี</li></ul></div>
+  <div class="card"><h4>แบตเตอรี่ลิเธียม (Lithium-Ion)</h4><ul><li>อายุใช้งาน ~3,500 รอบ (8–10 ปี) ชาร์จเต็ม 2–3 ชม.</li><li>ชาร์จเมื่อใดก็ได้ ไม่ต้องเติมน้ำกลั่น ไม่มีกลิ่น</li><li>อย่าให้ไฟเหลือน้อยกว่า 10%</li></ul></div>
+</div>
+<h3>การดูแลแบตเตอรี่ประจำวัน</h3>
+<ul class="check">
+  <li>หลีกเลี่ยงการใช้งานหนักเกินไป — ใช้ไม่เกิน 75%</li>
+  <li>หลีกเลี่ยงการอัดไฟมากเกินไป (อายุสั้นลง)</li>
+  <li>อย่าให้อุณหภูมิแบตเตอรี่เกิน 60 องศา</li>
+  <li><b>ห้ามใช้งานใกล้ไฟ</b> เพราะมีก๊าซไฮโดรเจน</li>
+  <li>รักษาแบตให้แห้งและสะอาด ป้องกันไฟรั่วและการผุกร่อน</li>
+  <li>ชาร์จให้เต็มก่อนใช้งานทุกครั้ง</li>
+</ul>
+<div class="callout warn"><b>ข้อควรระวัง:</b> สวมแว่นตาและถุงมือเมื่อตรวจแบตเตอรี่ · ดึงปลั๊กโดยจับที่ตัวปลั๊ก ไม่ดึงที่สายไฟ · ชาร์จในที่ร่ม อากาศถ่ายเท ห่างคน · ห้ามทำให้เกิดประกายไฟขณะชาร์จ · <b>น้ำกรดถูกผิวหนังหรือเข้าตา ให้ล้างด้วยน้ำสะอาดแล้วรีบพบแพทย์ทันที</b></div>`,
+      },
+      {
+        title: "กฎความปลอดภัยในการขับรถยก",
+        minutes: 8,
+        body: `
+<h3>คุณสมบัติของผู้ขับ</h3>
+<p>ได้รับการฝึกอบรมตามกฎหมาย · มีความรับผิดชอบ ตรวจรถก่อนใช้ ระมัดระวังไม่ให้เกิดความเสียหาย · <b>พร้อมทั้งร่างกายและจิตใจ</b> (ไม่มึนเมา ไม่เจ็บป่วย พักผ่อนเพียงพอ) · ปฏิบัติตามกฎระเบียบบริษัทอย่างเคร่งครัด</p>
+<p class="tag">ปัจจัยเสี่ยงอุบัติเหตุมาจาก 4 ส่วน: สภาพผู้ขับ · สภาพรถยก · สภาพพื้นที่และสิ่งแวดล้อม · สภาพสินค้า</p>
+
+<h3>✅ ต้องทำ</h3>
+<ul class="check">
+  <li>สวมอุปกรณ์ป้องกันความปลอดภัยและ<b>คาดเข็มขัดทุกครั้ง</b></li>
+  <li>ตรวจสอบและจัดเรียงสินค้าให้สมดุลก่อนยก ตรวจป้ายข้อควรระวังของสินค้า</li>
+  <li>ปรับงาให้เหมาะกับขนาดพาเลท และขนานก่อนเข้าตัก</li>
+  <li>หงายงาให้เหมาะกับสินค้า ความสูงงาขณะเคลื่อนที่<b>ไม่เกิน 20 ซม.</b></li>
+  <li>ตรวจเส้นทางและ<b>ด้านหลังก่อนถอยทุกครั้ง</b> หยุดสำรวจที่ทางร่วม-ทางแยก</li>
+  <li>ใช้ความเร็วตามที่บริษัทกำหนด ระวังพื้นเปียก ไม่เรียบ และพื้นที่จำกัดความสูง</li>
+  <li>ขึ้นทางลาดชันขณะบรรทุก: <b>ขับเดินหน้าขึ้น</b> · ลงทางลาดชันขณะบรรทุก: <b>ถอยหลังลง</b></li>
+  <li>สินค้าบังสายตา ให้<b>ขับถอยหลัง</b> แทนการขับเดินหน้า</li>
+  <li>ตรวจหมอนรองล้อรถบรรทุกก่อนโหลดสินค้าขึ้นรถ</li>
+</ul>
+<h3>❌ ห้ามทำ</h3>
+<ul>
+  <li><b>ห้ามใช้รถยกเพื่อยกคนขึ้น และห้ามโดยสาร</b></li>
+  <li>ห้ามเพิ่มน้ำหนักที่ท้ายรถเพื่อเพิ่มน้ำหนักยก</li>
+  <li>ห้ามยื่นอวัยวะออกนอกตัวรถขณะเคลื่อนที่ หรือยื่นออกไปจัดสินค้า</li>
+  <li>ห้ามใช้รถยก ดึง ดัน ลาก</li>
+  <li>ไม่เบรกกะทันหันโดยไม่จำเป็น และระวังงาที่ถูกยกสูง</li>
+  <li>ผู้อื่นควรห่างจากรถยกที่กำลังทำงาน<b>ไม่น้อยกว่า 3 เมตร</b></li>
+</ul>
+
+<h3>เมื่อรถยกเกิดการพลิกคว่ำ</h3>
+<div class="callout warn">
+<ol><li><b>ห้ามกระโดดออกจากตัวรถเด็ดขาด</b></li><li>ใช้มือทั้งสองข้างจับยึดพวงมาลัยให้แน่น</li><li>กางขาทั้งสองข้างออกและยันไว้กับพื้นรถให้แน่น</li><li>โน้มตัวไปในทิศทางตรงข้ามกับการพลิกคว่ำ</li></ol>
+</div>`,
+      },
+    ],
+    quiz: [
+      { q: "ผู้ขับรถยกนั่งขับต้องทำสิ่งใดตลอดเวลาตามกฎหมาย?", options: ["เปิดเพลง", "สวมเข็มขัดนิรภัย", "เปิดไฟหน้า", "บีบแตรตลอด"], answer: 1 },
+      { q: "ความสูงของงาขณะรถยกเคลื่อนที่ ไม่ควรเกินเท่าใด?", options: ["5 ซม.", "20 ซม.", "50 ซม.", "1 เมตร"], answer: 1 },
+      { q: "ถ้า Load Center ของสินค้ามากขึ้น ความสามารถในการบรรทุกจะเป็นอย่างไร?", options: ["มากขึ้น", "ลดลง", "เท่าเดิม", "ไม่เกี่ยวข้องกัน"], answer: 1 },
+      { q: "ตามมาตรฐาน ISO Load Center มาตรฐานคือเท่าใด?", options: ["300 mm", "500 mm", "800 mm", "1,200 mm"], answer: 1 },
+      { q: "ขณะบรรทุกสินค้าและต้องลงทางลาดชัน ควรขับอย่างไร?", options: ["ขับเดินหน้าลงเร็วๆ", "ถอยหลังลง", "ยกงาสูงๆ แล้วลง", "ปล่อยไหลลงเอง"], answer: 1 },
+      { q: "ถ้าสินค้าที่บรรทุกบังสายตา ควรทำอย่างไร?", options: ["ขับเดินหน้าช้าๆ", "ยื่นหัวออกไปดูด้านข้าง", "ขับถอยหลังแทน", "ให้เพื่อนยืนบนงานำทาง"], answer: 2 },
+      { q: "เมื่อรถยกเกิดการพลิกคว่ำ ข้อใดถูกต้อง?", options: ["กระโดดออกจากรถทันที", "จับพวงมาลัยให้แน่น ยันขา และโน้มตัวไปทางตรงข้ามกับการพลิกคว่ำ", "ปล่อยมือจากพวงมาลัย", "เหยียบคันเร่ง"], answer: 1 },
+      { q: "ข้อใดเป็นสิ่งที่ “ห้ามทำ” กับรถยก?", options: ["ตรวจสอบรถก่อนใช้งาน", "ใช้รถยกยกคนขึ้นที่สูง", "บีบแตรที่ทางแยก", "จอดในพื้นที่ที่กำหนด"], answer: 1 },
+      { q: "การชาร์จแบตเตอรี่ตะกั่วกรดแบบ Equal ควรทำบ่อยแค่ไหน?", options: ["ทุกวัน", "เดือนละ 1 ครั้ง", "ปีละครั้ง", "ไม่ต้องทำเลย"], answer: 1 },
+      { q: "เมื่อจอดรถยก ควรวางงาอย่างไร?", options: ["ยกงาค้างไว้สูง", "วางปลายงาแนบพื้น", "หงายงาสุด", "วางงาบนพาเลท"], answer: 1 },
+    ],
+  },
+];
+
+</script>
+
+<script>
+(function () {
+  "use strict";
+
+  var PASS_PERCENT = 80;
+  var KEY_STORE = "kp:hrkey";
+  var app = document.getElementById("app");
+  var APP_URL = app.getAttribute("data-url");
+  var courses = window.COURSES || [];
+  var LOGO = (window.IMG || {})["logo-sansuisha"] || "assets/logo-sansuisha.png";
+  function brandLogo(small) {
+    return '<span class="brand-logo' + (small ? " small" : "") + '"><img src="' + LOGO + '" alt="Sansuisha">' +
+      '<span class="dept">Human Resource</span></span>';
+  }
+  var state = { rows: [], employees: [], loadedAt: null, dept: "", status: "", search: "" };
+  var hrKey = null;
+
+  function readSession() { try { return sessionStorage.getItem(KEY_STORE); } catch (e) { return null; } }
+  function writeSession(v) {
+    try { if (v) sessionStorage.setItem(KEY_STORE, v); else sessionStorage.removeItem(KEY_STORE); } catch (e) { /* ignore */ }
+  }
+  // same dual mode as App.html: google.script.run inside Apps Script, fetch when standalone
+  function api(name) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    if (!window.google || !google.script) {
+      return fetch(window.KP_API_URL, {
+        method: "POST", credentials: "omit",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ fn: name, args: args }),
+      }).then(function (r) { return r.json(); });
+    }
+    return new Promise(function (resolve, reject) {
+      var runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+      runner[name].apply(runner, args);
+    });
+  }
+  function esc(s) {
+    return String(s === null || s === undefined ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function fmtDate(iso) {
+    if (!iso) return "";
+    var d = new Date(iso);
+    if (isNaN(d)) return "";
+    return d.toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "2-digit" }) +
+      " " + d.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
+  }
+  function getCourse(id) {
+    for (var i = 0; i < courses.length; i++) if (courses[i].id === id) return courses[i];
+    return null;
+  }
+
+  /* ---------- data ---------- */
+  // one entry per employee: roster from the Employees tab plus anyone found only in Progress
+  function buildPeople() {
+    var people = {};
+    var order = [];
+    function person(id, name, dept) {
+      var k = String(id || "").trim().toUpperCase();
+      if (!people[k]) {
+        people[k] = { id: k, name: name || "", dept: dept || "", inRoster: false, courses: {}, last: null };
+        order.push(k);
+      }
+      return people[k];
+    }
+    state.employees.forEach(function (e) {
+      var p = person(e.id, e.name, e.dept);
+      p.inRoster = true;
+      p.team = e.team;
+    });
+    state.rows.forEach(function (r) {
+      var p = person(r.employeeId, r.name, r.dept);
+      var course = getCourse(r.courseId);
+      var total = course ? course.lessons.length : r.lessonsTotal;
+      var doneCount = (r.done || []).filter(function (i) { return i < total; }).length;
+      var passed = r.bestScore !== null && r.bestScore >= PASS_PERCENT;
+      p.courses[r.courseId] = {
+        doneCount: doneCount, total: total, best: r.bestScore, passed: passed,
+        pct: Math.round(((doneCount + (passed ? 1 : 0)) / (total + 1)) * 100),
+      };
+      if (r.updatedAt && (!p.last || r.updatedAt > p.last)) p.last = r.updatedAt;
+    });
+    return order.map(function (k) {
+      var p = people[k];
+      p.completed = courses.filter(function (c) { return p.courses[c.id] && p.courses[c.id].pct === 100; }).length;
+      p.started = Object.keys(p.courses).length > 0;
+      return p;
+    });
+  }
+
+  function filtered(people) {
+    var q = state.search.trim().toLowerCase();
+    return people.filter(function (p) {
+      if (state.dept && p.dept !== state.dept) return false;
+      if (state.status === "all-done" && p.completed !== courses.length) return false;
+      if (state.status === "in-progress" && (!p.started || p.completed === courses.length)) return false;
+      if (state.status === "not-started" && p.started) return false;
+      if (q && (p.id + " " + p.name + " " + (p.team || "")).toLowerCase().indexOf(q) === -1) return false;
+      return true;
+    });
+  }
+
+  function load(key) {
+    return api("apiReport", key).then(function (res) {
+      if (!res || !res.ok) throw new Error((res && res.error) || "error");
+      state.rows = res.rows || [];
+      state.employees = res.employees || [];
+      state.loadedAt = new Date();
+      hrKey = key;
+    });
+  }
+
+  /* ---------- views ---------- */
+  function renderLogin(message) {
+    app.innerHTML =
+      '<div class="login-wrap"><form class="login-card" id="login" autocomplete="off">' +
+      '<div class="login-brand">' + brandLogo(false) + '</div><h1>รายงานความคืบหน้า</h1>' +
+      '<p class="sub">สำหรับฝ่ายบุคคล (HR) — ดูว่าพนักงานคนใดเรียนจบหลักสูตรใด และได้คะแนนเท่าไร</p>' +
+      '<div class="field"><label for="hrkey">รหัสผ่าน HR</label>' +
+      '<input id="hrkey" type="password" required autofocus></div>' +
+      '<div class="error" id="err">' + esc(message || "") + "</div>" +
+      '<button class="btn block" type="submit" id="go">เปิดรายงาน</button>' +
+      '<div class="login-foot"><a href="' + esc(app.getAttribute("data-home") || APP_URL) + '" target="_top">← กลับหน้าเรียนรู้</a></div>' +
+      "</form></div>";
+    document.getElementById("login").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var key = document.getElementById("hrkey").value;
+      var btn = document.getElementById("go");
+      btn.disabled = true; btn.textContent = "กำลังโหลด…";
+      load(key).then(function () {
+        writeSession(key);
+        renderReport();
+      }, function (err) {
+        btn.disabled = false; btn.textContent = "เปิดรายงาน";
+        document.getElementById("err").textContent = err.message === "unauthorized"
+          ? "รหัสผ่านไม่ถูกต้อง" : "เชื่อมต่อระบบไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต";
+      });
+    });
+  }
+
+  function cell(c) {
+    if (!c) return '<td class="c-none">–</td>';
+    if (c.pct === 100) {
+      return '<td class="c-done"><b>✓ จบแล้ว</b><small>คะแนน ' + c.best + "%</small></td>";
+    }
+    return '<td class="c-doing"><b>' + c.pct + "%</b><small>อ่าน " + c.doneCount + "/" + c.total +
+      " บท" + (c.best !== null ? " · คะแนน " + c.best + "%" : "") + "</small></td>";
+  }
+
+  function renderReport() {
+    var people = buildPeople();
+    var list = filtered(people);
+    var depts = [];
+    people.forEach(function (p) { if (p.dept && depts.indexOf(p.dept) === -1) depts.push(p.dept); });
+    depts.sort();
+
+    var summary = courses.map(function (c) {
+      var done = 0, doing = 0, scores = [];
+      list.forEach(function (p) {
+        var x = p.courses[c.id];
+        if (!x) return;
+        if (x.pct === 100) done++; else doing++;
+        if (x.best !== null) scores.push(x.best);
+      });
+      var avg = scores.length ? Math.round(scores.reduce(function (a, b) { return a + b; }, 0) / scores.length) : null;
+      var pct = list.length ? Math.round((done / list.length) * 100) : 0;
+      return (
+        '<div class="sum-card" style="--c:' + c.color + '"><div class="sum-title">' + c.icon + " " + esc(c.title) + "</div>" +
+        '<div class="sum-big">' + done + ' <span>/ ' + list.length + " คนจบแล้ว</span></div>" +
+        '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
+        '<div class="foot-row"><span>กำลังเรียน ' + doing + " · ยังไม่เริ่ม " + (list.length - done - doing) +
+        "</span><span>" + (avg !== null ? "คะแนนเฉลี่ย " + avg + "%" : "") + "</span></div></div>"
+      );
+    }).join("");
+
+    var head = "<tr><th>รหัส</th><th>ชื่อ</th><th>ฝ่าย</th>" +
+      courses.map(function (c) { return '<th title="' + esc(c.title) + '">' + c.icon + " " + esc(c.title) + "</th>"; }).join("") +
+      "<th>จบ</th><th>ใช้งานล่าสุด</th></tr>";
+    var body = list.map(function (p) {
+      return "<tr><td>" + esc(p.id) + (p.inRoster ? "" : ' <span class="badge doing" title="ไม่อยู่ในแท็บ Employees">นอกรายชื่อ</span>') +
+        "</td><td>" + esc(p.name) + "</td><td>" + esc(p.dept) + "</td>" +
+        courses.map(function (c) { return cell(p.courses[c.id]); }).join("") +
+        '<td class="c-count">' + p.completed + "/" + courses.length + "</td>" +
+        '<td class="c-date">' + esc(fmtDate(p.last)) + "</td></tr>";
+    }).join("") || '<tr><td colspan="' + (courses.length + 5) + '" class="c-none">ไม่พบพนักงานตามเงื่อนไข</td></tr>';
+
+    app.innerHTML =
+      '<header class="topbar"><div class="topbar-inner">' +
+      '<span class="brand">' + brandLogo(true) + '<span class="site-name">รายงานความคืบหน้า</span></span><div class="spacer"></div>' +
+      '<button class="btn ghost" id="refresh">↻ โหลดใหม่</button>' +
+      '<button class="btn ghost" id="logout">ออก</button></div></header>' +
+      '<main class="container wide">' +
+      '<div class="report-head"><div><h2>ภาพรวมการเรียนรู้</h2>' +
+      '<p class="muted-text">ข้อมูลจาก Google Sheets · โหลดเมื่อ ' + esc(fmtDate(state.loadedAt && state.loadedAt.toISOString())) +
+      " · จบหลักสูตร = อ่านครบทุกบท และสอบผ่าน " + PASS_PERCENT + "%</p></div></div>" +
+      '<section class="sum-grid">' + summary + "</section>" +
+      '<section class="filters">' +
+      '<input id="search" type="search" placeholder="ค้นหารหัส ชื่อ หรือส่วนงาน" value="' + esc(state.search) + '">' +
+      '<select id="dept"><option value="">ทุกฝ่าย</option>' +
+      depts.map(function (d) { return "<option" + (d === state.dept ? " selected" : "") + ">" + esc(d) + "</option>"; }).join("") +
+      "</select>" +
+      '<select id="status">' +
+      [["", "ทุกสถานะ"], ["all-done", "จบครบทุกหลักสูตร"], ["in-progress", "กำลังเรียน"], ["not-started", "ยังไม่เริ่มเลย"]]
+        .map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === state.status ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") +
+      "</select>" +
+      '<span class="spacer"></span><span class="muted-text">' + list.length + " คน</span>" +
+      '<button class="btn" id="csv">⬇ ดาวน์โหลด Excel (CSV)</button></section>' +
+      '<div class="table-wrap"><table class="report"><thead>' + head + "</thead><tbody>" + body + "</tbody></table></div>" +
+      "</main>";
+
+    document.getElementById("search").addEventListener("input", function (e) {
+      state.search = e.target.value;
+      var pos = e.target.selectionStart;
+      renderReport();
+      var s = document.getElementById("search");
+      s.focus(); s.setSelectionRange(pos, pos);
+    });
+    document.getElementById("dept").addEventListener("change", function (e) { state.dept = e.target.value; renderReport(); });
+    document.getElementById("status").addEventListener("change", function (e) { state.status = e.target.value; renderReport(); });
+    document.getElementById("csv").addEventListener("click", function () { downloadCsv(list); });
+    document.getElementById("logout").addEventListener("click", function () {
+      writeSession(null); hrKey = null; state.rows = []; state.employees = []; renderLogin();
+    });
+    document.getElementById("refresh").addEventListener("click", function (e) {
+      e.target.disabled = true; e.target.textContent = "กำลังโหลด…";
+      load(hrKey).then(renderReport, function () {
+        e.target.disabled = false; e.target.textContent = "↻ โหลดใหม่ (ไม่สำเร็จ)";
+      });
+    });
+  }
+
+  function downloadCsv(list) {
+    var header = ["รหัสพนักงาน", "ชื่อ", "ฝ่าย", "ส่วนงาน"];
+    courses.forEach(function (c) {
+      header.push(c.title + " - สถานะ", c.title + " - ความคืบหน้า%", c.title + " - คะแนนสูงสุด%");
+    });
+    header.push("จำนวนหลักสูตรที่จบ", "ใช้งานล่าสุด");
+    var lines = [header];
+    list.forEach(function (p) {
+      var row = [p.id, p.name, p.dept, p.team || ""];
+      courses.forEach(function (c) {
+        var x = p.courses[c.id];
+        row.push(!x ? "ยังไม่เริ่ม" : x.pct === 100 ? "จบแล้ว" : "กำลังเรียน", x ? x.pct : 0, x && x.best !== null ? x.best : "");
+      });
+      row.push(p.completed, fmtDate(p.last));
+      lines.push(row);
+    });
+    var csv = lines.map(function (r) {
+      return r.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(",");
+    }).join("\r\n");
+    // BOM so Excel opens Thai text correctly
+    var a = document.createElement("a");
+    a.href = "data:text/csv;charset=utf-8," + encodeURIComponent("﻿" + csv);
+    a.download = "knowledge-progress-" + new Date().toISOString().slice(0, 10) + ".csv";
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  /* ---------- start ---------- */
+  var savedKey = readSession();
+  if (savedKey) {
+    app.innerHTML = '<div class="login-wrap"><p>กำลังโหลดรายงาน…</p></div>';
+    load(savedKey).then(renderReport, function () { writeSession(null); renderLogin(); });
+  } else {
+    renderLogin();
+  }
+})();
+</script>
 </body>
 </html>
