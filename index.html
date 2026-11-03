@@ -14,7 +14,7 @@
   --blue: #2563a8;
   --blue-soft: #e9f1fa;
   --blue-softer: #f4f8fc;
-  --bg: #f6f8fb;
+  --bg: #eef3fb;
   --surface: #ffffff;
   --ink: #14233a;
   --ink-2: #55657a;
@@ -33,7 +33,7 @@
   --radius-s: 10px;
   --shadow: 0 1px 2px rgba(15, 42, 74, .05), 0 6px 20px rgba(15, 42, 74, .05);
   --shadow-lift: 0 2px 4px rgba(15, 42, 74, .06), 0 14px 32px rgba(15, 42, 74, .1);
-  --nav-w: 248px;
+  --nav-w: 76px;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -122,38 +122,49 @@ h1, h2, h3, h4 { color: var(--navy); line-height: 1.3; font-weight: 600; }
 /* ---------- App shell ---------- */
 .shell { min-height: 100vh; }
 .nav {
-  position: fixed; inset: 0 auto 0 0; width: var(--nav-w); background: var(--surface); border-right: 1px solid var(--line);
-  display: flex; flex-direction: column; padding: 20px 14px 16px; z-index: 20; overflow-y: auto;
+  position: fixed; inset: 0 auto 0 0; width: var(--nav-w); background: var(--surface); box-shadow: 1px 0 0 var(--line), 4px 0 18px rgba(15, 42, 74, .04);
+  display: flex; flex-direction: column; padding: 16px 14px; z-index: 20; transition: width .2s ease;
 }
-.nav-brand { padding: 2px 8px 22px; display: flex; justify-content: center; }
-.nav nav { display: grid; gap: 2px; }
+.nav nav { display: grid; gap: 4px; }
 .nav-item {
-  display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-s);
+  position: relative; display: flex; align-items: center; justify-content: center; gap: 12px; padding: 11px 0; min-height: 46px; border-radius: 12px; border: 0; background: transparent; width: 100%;
   color: var(--ink-2); text-decoration: none; font-weight: 500; transition: background .15s ease, color .15s ease;
 }
+.nav-item > span { display: none; white-space: nowrap; }
 .nav-item:hover { background: var(--blue-softer); color: var(--navy); }
-.nav-item.active { background: var(--navy); color: #fff; }
-.nav-group { font-size: 12px; color: var(--ink-3); padding: 18px 12px 6px; }
-.nav-foot { margin-top: auto; padding: 16px 12px 0; font-size: 12px; color: var(--ink-3); line-height: 1.5; }
-.workspace { margin-left: var(--nav-w); min-width: 0; }
-.top {
-  position: sticky; top: 0; z-index: 10; height: 64px; display: flex; align-items: center; gap: 12px; padding: 0 28px;
-  background: rgba(255, 255, 255, .94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line);
+.nav-item.active { background: var(--blue-soft); color: var(--navy); }
+.nav-group { height: 1px; margin: 10px 8px; background: var(--line); }
+.nav-group span { display: none; }
+.nav-help { margin-top: auto; background: var(--blue-softer); }
+/* ป้ายชื่อเมื่อเมนูย่ออยู่ */
+.nav-item[data-tip]::after {
+  content: attr(data-tip); position: absolute; left: calc(100% + 12px); top: 50%; transform: translate(-4px, -50%); padding: 5px 10px; border-radius: 8px;
+  background: var(--navy); color: #fff; font-size: 13px; font-weight: 400; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity .12s ease, transform .12s ease; z-index: 30;
 }
-.top-brand { display: none; }
-.top-search { position: relative; width: min(360px, 100%); }
+.nav-item[data-tip]:hover::after, .nav-item[data-tip]:focus-visible::after { opacity: 1; transform: translate(0, -50%); }
+.rail-open { --nav-w: 236px; }
+.rail-open .nav-item { justify-content: flex-start; padding: 11px 12px; }
+.rail-open .nav-item > span { display: inline; }
+.rail-open .nav-item::after { display: none; }
+.rail-open .nav-group { height: auto; background: none; margin: 0; padding: 14px 12px 4px; font-size: 12px; color: var(--ink-3); }
+.rail-open .nav-group span { display: inline; }
+.rail-open .nav-mark { align-self: flex-start; margin-left: 2px; }
+.workspace { margin-left: var(--nav-w); min-width: 0; transition: margin-left .2s ease; }
+.top {
+  position: sticky; top: 0; z-index: 10; height: 68px; display: flex; align-items: center; gap: 10px; padding: 0 28px;
+  background: rgba(238, 243, 251, .9); backdrop-filter: blur(8px);
+}
+.top-left { display: flex; justify-content: flex-end; align-items: center; }
+.top-search { position: relative; width: min(280px, 100%); }
 .top-search .ico { position: absolute; left: 12px; top: 11px; color: var(--ink-3); }
-.top-search input { width: 100%; height: 42px; padding: 0 12px 0 40px; border: 1px solid var(--line); border-radius: var(--radius-s); background: var(--blue-softer); outline: none; }
+.top-search input { width: 100%; height: 42px; padding: 0 12px 0 40px; border: 0; border-radius: 12px; background: #fff; box-shadow: var(--shadow); outline: none; }
 .top-search input:focus { background: #fff; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
 .top-left { flex: 1; min-width: 0; }
 .top .spacer { display: none; }
 .sync { font-size: 13px; color: var(--ink-2); white-space: nowrap; }
 .sync.error { color: var(--danger); font-weight: 500; }
-.user-chip { display: flex; align-items: center; gap: 10px; line-height: 1.3; font-size: 14px; }
-.user-chip b { display: block; font-weight: 500; color: var(--navy); white-space: nowrap; }
-.user-chip span.sub { color: var(--ink-2); font-size: 12.5px; white-space: nowrap; }
 .avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--blue-soft); color: var(--navy); display: grid; place-items: center; }
-.page { max-width: 1240px; margin: 0 auto; padding: 28px 28px 64px; animation: rise .28s ease both; }
+.page { max-width: 1320px; margin: 0 auto; padding: 12px 28px 64px; animation: rise .28s ease both; }
 @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
 .page-head h1 { font-size: 26px; margin: 0; }
@@ -173,17 +184,6 @@ h1, h2, h3, h4 { color: var(--navy); line-height: 1.3; font-weight: 600; }
 .notice > span { flex: 1; min-width: 200px; }
 
 /* ---------- Dashboard ---------- */
-.dash-top { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 18px; margin-bottom: 18px; }
-.feature { background: var(--navy); color: #fff; border-radius: var(--radius); padding: 26px 28px; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; }
-.feature .eyebrow { color: #a9c1dc; font-size: 14px; }
-.feature h2 { color: #fff; font-size: 24px; margin: 4px 0 4px; }
-.feature p { color: #c3d3e6; margin: 0; }
-.feature .bar { background: rgba(255, 255, 255, .18); }
-.feature .bar > i { background: #fff; }
-.feature .foot-row { color: #c3d3e6; }
-.feature-action { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-.feature-action > div { flex: 1; min-width: 180px; }
-.ring-panel { display: flex; align-items: center; gap: 20px; }
 .ring { position: relative; width: 128px; flex: none; }
 .ring svg { display: block; }
 .ring circle { fill: none; stroke-width: 11; }
@@ -198,7 +198,6 @@ h1, h2, h3, h4 { color: var(--navy); line-height: 1.3; font-weight: 600; }
 .stat-tile b { display: block; font-size: 24px; font-weight: 600; color: var(--navy); line-height: 1.2; font-variant-numeric: tabular-nums; }
 .stat-tile span { display: block; font-size: 14px; color: var(--ink-2); }
 .stat-tile small { display: block; font-size: 12.5px; color: var(--ink-3); }
-.dash-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
 .event { display: flex; gap: 14px; padding: 12px 0; border-top: 1px solid var(--line); }
 .event:first-child { border-top: 0; padding-top: 0; }
 .event:last-child { padding-bottom: 0; }
@@ -217,11 +216,6 @@ h1, h2, h3, h4 { color: var(--navy); line-height: 1.3; font-weight: 600; }
 .hbar-track { height: 8px; background: #e8edf3; border-radius: 4px; }
 .hbar-track i { display: block; height: 100%; min-width: 2px; background: var(--blue); border-radius: 0 4px 4px 0; transition: width .5s ease; }
 .hbar-val { text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
-.course-row { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); text-decoration: none; color: inherit; }
-.course-row:first-child { border-top: 0; }
-.course-row:hover h3 { color: var(--blue); }
-.course-row h3 { margin: 0; font-size: 15px; font-weight: 500; transition: color .15s ease; }
-.course-row > div { flex: 1; min-width: 0; }
 
 /* ---------- Catalog ---------- */
 .course-ico { width: 42px; height: 42px; flex: none; border-radius: 12px; background: var(--blue-soft); color: var(--navy); display: grid; place-items: center; }
@@ -466,19 +460,134 @@ dialog::backdrop { background: rgba(15, 42, 74, .4); }
 .check-row input { width: 18px; height: 18px; accent-color: var(--navy); }
 .toast { position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%); background: var(--navy); color: #fff; padding: 9px 18px; border-radius: 99px; font-size: 14px; z-index: 50; animation: rise .2s ease both; }
 
+/* ---------- Floating cards on soft blue (reference look) ---------- */
+.panel, .stat-tile, .course-card, .room-head, .side, .lesson, .table-wrap { border-color: transparent; box-shadow: var(--shadow); }
+.panel-head h2 { font-size: 18px; }
+.panel-more { display: block; text-align: center; font-size: 14px; text-decoration: none; padding: 12px 0 0; margin-top: 10px; border-top: 1px solid var(--line); }
+.panel-more:hover { text-decoration: underline; }
+.num { font-variant-numeric: tabular-nums; }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { display: inline-block; max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; padding: 3px 10px; border-radius: 7px; background: var(--blue-soft); color: var(--navy-2); }
+.pill b { font-weight: 600; margin-right: 2px; }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.good { background: var(--good-soft); color: var(--good); }
+.art { display: block; width: 100%; height: 100%; }
+.thumb { flex: none; display: block; width: 62px; height: 44px; border-radius: 9px; overflow: hidden; }
+
+/* Rail + top bar */
+.nav-mark { display: grid; place-items: center; align-self: center; width: 44px; height: 44px; margin-bottom: 18px; flex: none; border-radius: 12px; background: var(--navy); color: #fff; text-decoration: none; font-family: "Orbitron", "Segoe UI", sans-serif; font-weight: 600; font-size: 15px; letter-spacing: .04em; }
+.icon-btn { position: relative; flex: none; display: grid; place-items: center; width: 42px; height: 42px; border: 0; border-radius: 12px; background: transparent; color: var(--ink-2); transition: background .15s ease, color .15s ease; }
+.icon-btn:hover { background: #dfe8f5; color: var(--navy); }
+.bell-dot { position: absolute; top: 9px; right: 10px; width: 9px; height: 9px; border-radius: 50%; background: #e5484d; border: 2px solid var(--bg); }
+button.avatar { flex: none; width: 42px; height: 42px; border: 2px solid #fff; padding: 0; font-weight: 600; font-size: 17px; box-shadow: var(--shadow); }
+.pop-wrap { position: relative; }
+.pop { position: absolute; right: 0; top: calc(100% + 8px); z-index: 40; width: 300px; max-width: calc(100vw - 32px); background: var(--surface); border-radius: 14px; box-shadow: var(--shadow-lift); padding: 12px; animation: rise .16s ease both; }
+.pop[hidden] { display: none; }
+.pop h3 { margin: 2px 6px 8px; font-size: 15px; }
+.pop p { margin: 6px; font-size: 14px; }
+.pop .who { padding: 4px 8px 10px; margin-bottom: 4px; border-bottom: 1px solid var(--line); }
+.pop .who b { display: block; font-weight: 500; color: var(--navy); }
+.pop .who span { font-size: 13px; color: var(--ink-2); }
+.pop-user { width: 240px; }
+.notice-item { display: flex; gap: 10px; align-items: center; padding: 8px 6px; border-radius: 10px; font-size: 14px; line-height: 1.4; color: var(--ink); text-decoration: none; }
+.notice-item:hover, .menu-row:hover { background: var(--blue-softer); }
+.menu-row { display: flex; gap: 10px; align-items: center; width: 100%; padding: 9px 8px; border: 0; border-radius: 10px; background: transparent; text-align: left; font-size: 14.5px; }
+.help-list { margin: 0 0 12px; padding-left: 1.3em; display: grid; gap: 6px; }
+
+/* Dashboard */
+.dash { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 22px; align-items: start; }
+.dash-main, .dash-side { display: grid; gap: 22px; min-width: 0; }
+.hero { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 22px; margin: 26px 0; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 26px; }
+.hero h1 { margin: 0 0 2px; font-size: 25px; }
+.hero p { margin: 0; color: var(--ink-2); }
+.hero-text { display: flex; flex-direction: column; min-width: 0; }
+.hero small { display: block; font-size: 13.5px; color: var(--ink-2); margin-bottom: 6px; }
+.hero-skills { margin-top: 18px; }
+.hero-prog { margin-top: auto; padding-top: 20px; }
+.hero-prog .bar { height: 7px; }
+.hero-card { margin: -50px -6px -50px 0; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-lift); overflow: hidden; align-self: center; transition: transform .2s ease, box-shadow .2s ease; animation: rise .4s ease both; }
+.hero-card:hover { transform: translateY(-3px); }
+.hero-art { height: 112px; }
+.hero-card-body { padding: 14px 16px 16px; }
+.hero-card h2 { font-size: 18px; margin: 8px 0 14px; }
+.hero-card .pill { max-width: 100%; }
+.dash .stats { margin: 0; }
+.stat-tile { align-items: center; }
+.stat-ico { border-radius: 50%; width: 46px; height: 46px; }
+.stats .stat-tile:nth-child(1) .stat-ico { background: #e5f4ed; color: #14734f; }
+.stats .stat-tile:nth-child(2) .stat-ico { background: #e4eefb; color: #2563a8; }
+.stats .stat-tile:nth-child(3) .stat-ico { background: #fcf0e3; color: #b8651b; }
+.stats .stat-tile:nth-child(4) .stat-ico { background: #fbf5d9; color: #8a6d0b; }
+.stat-tile b small { display: inline; font-size: 14px; font-weight: 400; color: var(--ink-3); }
+.prog-head, .prog-row { display: grid; grid-template-columns: minmax(0, 1fr) 110px 150px 20px; gap: 14px; align-items: center; }
+.prog-head { font-size: 13.5px; color: var(--ink-2); padding: 0 8px 8px; border-bottom: 1px solid var(--line); }
+.prog-head span:first-child { grid-column: 1; }
+.prog-row { grid-template-columns: 62px minmax(0, 1fr) 110px 150px 20px; padding: 10px 8px; border-bottom: 1px solid var(--line); text-decoration: none; color: inherit; border-radius: 10px; transition: background .15s ease; }
+.prog-row:hover { background: var(--blue-softer); }
+.prog-row > .ico { color: var(--ink-3); }
+.prog-title { font-weight: 500; color: var(--navy); line-height: 1.35; font-size: 14.5px; }
+.prog-pct { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+.prog-next { font-size: 13.5px; color: var(--ink-2); line-height: 1.35; }
+.prog-next.due { color: var(--warn); font-weight: 500; }
+.mini-ring { flex: none; }
+.mini-ring circle { fill: none; stroke: #e4ebf5; stroke-width: 5; }
+.mini-ring .on { stroke: var(--blue); }
+.mini-ring.full .on { stroke: #2f9e6e; }
+.wk-head { display: flex; align-items: center; gap: 2px; margin-bottom: 8px; }
+.wk-head h2 { flex: 1; margin: 0; font-size: 21px; }
+.wk-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
+.wk-day { display: grid; justify-items: center; gap: 2px; padding: 6px 0 5px; border: 0; border-radius: 10px; background: transparent; font-variant-numeric: tabular-nums; transition: background .15s ease; }
+.wk-day:hover { background: var(--blue-softer); }
+.wk-day small { font-size: 12.5px; color: var(--ink-2); }
+.wk-day b { font-weight: 500; font-size: 15px; }
+.wk-day.today b { color: var(--blue); font-weight: 700; }
+.wk-day.sel { background: var(--blue-soft); }
+.wk-dots { display: flex; gap: 3px; height: 5px; }
+.wk-dots i { width: 5px; height: 5px; border-radius: 50%; background: var(--blue); }
+.wk-title { font-size: 17px; margin: 18px 0 0; }
+.wk-date { font-size: 14px; margin-bottom: 12px; }
+.wk-none { font-size: 14px; margin: 0 0 10px; }
+.tl { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 10px; padding-bottom: 14px; }
+.tl time { font-size: 13.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; padding-top: 2px; }
+.tl-body { border-left: 3px solid #f0b37e; padding-left: 12px; min-width: 0; }
+.tl-body .pill { background: var(--warn-soft); color: var(--warn); font-size: 12.5px; }
+.tl-body.online { border-color: var(--blue); }
+.tl-body.online .pill { background: var(--blue-soft); color: var(--navy-2); }
+.tl-body h3 { margin: 5px 0 1px; font-size: 15px; font-weight: 500; line-height: 1.35; }
+.tl-body h3 a { color: inherit; text-decoration: none; }
+.tl-body h3 a:hover { color: var(--blue); }
+.tl-body p { margin: 0 0 4px; font-size: 13.5px; line-height: 1.4; }
+.donut { display: flex; align-items: center; gap: 18px; }
+.donut .ring { width: 124px; }
+.donut .ring circle { fill: none; stroke-width: 15; }
+.donut-key { list-style: none; margin: 0; padding: 0; flex: 1; min-width: 0; display: grid; gap: 5px; font-size: 13.5px; }
+.donut-key li { display: flex; align-items: center; gap: 8px; }
+.donut-key i { flex: none; width: 10px; height: 10px; border-radius: 3px; }
+.donut-key span { flex: 1; color: var(--ink-2); line-height: 1.3; }
+.donut-key b { font-weight: 600; color: var(--navy); font-variant-numeric: tabular-nums; }
+circle.k-done { stroke: var(--navy); } i.k-done { background: var(--navy); }
+circle.k-doing { stroke: #4d8fe0; } i.k-doing { background: #4d8fe0; }
+circle.k-due { stroke: #efa24c; } i.k-due { background: #efa24c; }
+circle.k-todo { stroke: #d3e0f0; } i.k-todo { background: #d3e0f0; }
+
+/* Catalog cards with a picture on top */
+.course-card { padding: 0 0 16px; overflow: hidden; }
+.course-card > :not(.card-art) { margin-left: 18px; margin-right: 18px; }
+.card-art { height: 112px; }
+.card-cat { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; }
+.title-cell .thumb { width: 50px; height: 36px; }
+
 /* ---------- Responsive ---------- */
-@media (max-width: 1180px) {
-  :root { --nav-w: 76px; }
-  .nav { padding: 16px 10px; align-items: stretch; }
-  .nav-brand, .nav-foot { display: none; }
-  .nav-item { justify-content: center; padding: 12px 0; }
-  .nav-item span { display: none; }
-  .nav-group { height: 1px; padding: 0; margin: 10px 8px; background: var(--line); font-size: 0; }
-  .top-brand { display: block; }
+@media (max-width: 1240px) {
+  .dash { grid-template-columns: minmax(0, 1fr); }
+  .dash-side { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
 }
 @media (max-width: 980px) {
-  .dash-top, .dash-grid, .report-grid, .cal-grid-wrap { grid-template-columns: minmax(0, 1fr); }
+  .report-grid, .cal-grid-wrap { grid-template-columns: minmax(0, 1fr); }
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .prog-head, .prog-row { grid-template-columns: 62px minmax(0, 1fr) 96px 20px; }
+  .prog-head { grid-template-columns: minmax(0, 1fr) 96px 20px; }
+  .prog-head span:last-child, .prog-next { display: none; }
   .room-grid { grid-template-columns: minmax(0, 1fr); }
   .side { position: static; max-height: none; }
   .side summary { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; font-weight: 500; color: var(--navy); cursor: pointer; }
@@ -496,9 +605,20 @@ dialog::backdrop { background: rgba(15, 42, 74, .4); }
   .nav { display: none; }
   .workspace { margin-left: 0; padding-bottom: 68px; }
   .top { padding: 0 16px; height: 58px; }
-  .top-left { display: none; }
+  .top-left, .rail-btn { display: none; }
   .top .spacer { display: block; }
-  .user-chip { display: none; }
+  .hero { grid-template-columns: minmax(0, 1fr); margin: 0; padding: 18px; }
+  .hero h1 { font-size: 22px; }
+  .hero-prog { padding-top: 16px; }
+  .hero-card { margin: 0; align-self: stretch; }
+  .dash-side { grid-template-columns: minmax(0, 1fr); }
+  .prog-head, .prog-row { gap: 10px; padding-left: 0; padding-right: 0; }
+  .prog-head { grid-template-columns: minmax(0, 1fr) 66px; }
+  .prog-row { grid-template-columns: 50px minmax(0, 1fr) 66px; }
+  .prog-row .thumb { width: 50px; height: 36px; }
+  .prog-row > .ico, .prog-head span:nth-child(3) { display: none; }
+  .prog-pct { gap: 5px; font-size: 13px; }
+  .donut { flex-wrap: wrap; justify-content: center; }
   .filters .control, .filters input.control { width: 100%; min-width: 0; }
   .sync { font-size: 12px; white-space: normal; text-align: right; }
   .page { padding: 18px 16px 40px; }
@@ -507,11 +627,9 @@ dialog::backdrop { background: rgba(15, 42, 74, .4); }
   .lesson { padding: 18px 16px; }
   .room-head { padding: 16px; }
   .room-title h1 { font-size: 19px; }
-  .feature { padding: 20px; }
-  .feature h2 { font-size: 20px; }
-  .feature .btn { width: 100%; }
   .stats { gap: 10px; }
-  .stat-tile { padding: 12px; gap: 10px; flex-direction: column; }
+  .stat-tile { padding: 12px; gap: 10px; }
+  .stat-ico { width: 40px; height: 40px; }
   .hbar, .pair { grid-template-columns: minmax(0, 104px) minmax(30px, 1fr) 58px; gap: 8px; }
   .pair { grid-template-columns: minmax(0, 104px) minmax(30px, 1fr) 76px; }
   .tabbar {
@@ -597,6 +715,10 @@ window.KP = (function () {
     quality: '<circle cx="12" cy="9.500" r="6"/><path d="m9.500 9.500 1.800 1.800 3.200-3.300M8.500 14.500 7 21l5-2.500 5 2.500-1.500-6.500"/>',
     communication: '<path d="M4 5h16v11H10l-4.500 3.500V16H4z"/><path d="M8.500 9h7M8.500 12.200h4.500"/>',
     safety: '<path d="M12 3.500 19.500 6v6c0 4.500-3 7.500-7.500 9-4.500-1.500-7.500-4.500-7.500-9V6z"/><path d="m9 12 2.200 2.200L15.200 10"/>',
+    menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
+    bell: '<path d="M6 16.500V11a6 6 0 0 1 12 0v5.500l1.500 2h-15z"/><path d="M10 21h4"/>',
+    help: '<circle cx="12" cy="12" r="8.500"/><path d="M9.500 9.500a2.500 2.500 0 1 1 3.800 2.100c-.8.500-1.300 1-1.300 1.900"/><path d="M12 16.800v.2"/>',
+    trend: '<path d="M4 17l5.500-5.500 3.500 3.500L20 8"/><path d="M15 8h5v5"/>',
   };
   function icon(name, size) {
     return '<svg class="ico" width="' + (size || 20) + '" height="' + (size || 20) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.700" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || "") + "</svg>";
@@ -654,6 +776,34 @@ window.KP = (function () {
   function courseIcon(c, size) {
     return '<span class="course-ico">' + icon(ICONS[c.group] ? c.group : "file", size || 22) + "</span>";
   }
+  // ภาพประกอบของแต่ละหมวดหลักสูตร วาดเองเป็น SVG จึงไม่ต้องโหลดรูปเพิ่ม
+  var ART = {
+    production:
+      '<rect y="106" width="320" height="24" fill="#0f2a4a"/>' +
+      '<path d="M62 106V64l36 20V64l36 20V50h44v56z" fill="#1a3d68"/><rect x="146" y="26" width="14" height="30" fill="#0f2a4a"/>' +
+      '<g fill="#9cc2ee"><rect x="76" y="88" width="14" height="10" rx="2"/><rect x="112" y="88" width="14" height="10" rx="2"/><rect x="148" y="70" width="14" height="10" rx="2"/><rect x="148" y="88" width="14" height="10" rx="2"/></g>' +
+      '<g fill="none" stroke="#3b7dd8"><circle cx="232" cy="72" r="27" stroke-width="8" stroke-dasharray="8 6.100"/><circle cx="232" cy="72" r="20" stroke-width="7"/></g><circle cx="232" cy="72" r="7" fill="#0f2a4a"/>',
+    quality:
+      '<rect x="104" y="20" width="88" height="102" rx="9" fill="#fff"/><rect x="130" y="12" width="36" height="16" rx="5" fill="#1a3d68"/>' +
+      '<g fill="#3b7dd8"><circle cx="122" cy="50" r="6"/><circle cx="122" cy="74" r="6"/><circle cx="122" cy="98" r="6"/></g>' +
+      '<g fill="#c9dbf2"><rect x="136" y="46" width="42" height="8" rx="4"/><rect x="136" y="70" width="42" height="8" rx="4"/><rect x="136" y="94" width="28" height="8" rx="4"/></g>' +
+      '<path d="M214 84l-9 38 19-10 19 10-9-38z" fill="#1a3d68"/><circle cx="224" cy="68" r="26" fill="#f5b94a"/><path d="m213 68 8 8 15-15" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>',
+    communication:
+      '<rect y="118" width="320" height="12" fill="#0f2a4a"/>' +
+      '<path d="M76 118c0-28 12-42 28-42s28 14 28 42z" fill="#1a3d68"/><circle cx="104" cy="56" r="17" fill="#f2c9a5"/><path d="M87 54c-1-15 9-20 18-20 8 0 16 6 16 16-9 1-16-2-20-7-3 6-8 10-14 11z" fill="#0f2a4a"/>' +
+      '<path d="M188 118c0-28 12-42 28-42s28 14 28 42z" fill="#3b7dd8"/><circle cx="216" cy="56" r="17" fill="#e8b48c"/><path d="M199 52c0-13 9-18 17-18 9 0 17 6 17 18-11 0-22-2-27-8-2 4-4 7-7 8z" fill="#14233a"/>' +
+      '<rect x="128" y="18" width="62" height="34" rx="10" fill="#fff"/><path d="m146 50-6 13 16-11z" fill="#fff"/><g fill="#3b7dd8"><circle cx="146" cy="35" r="4"/><circle cx="159" cy="35" r="4"/><circle cx="172" cy="35" r="4"/></g>',
+    safety:
+      '<rect y="112" width="320" height="18" fill="#0f2a4a"/>' +
+      '<path d="M160 14 208 30v36c0 28-19 44-48 56-29-12-48-28-48-56V30z" fill="#1a3d68"/><path d="m140 66 14 14 27-28" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<path d="M46 96a30 30 0 0 1 60 0z" fill="#f5b94a"/><rect x="38" y="96" width="76" height="8" rx="4" fill="#e09a2b"/><rect x="70" y="62" width="12" height="16" rx="4" fill="#e09a2b"/>' +
+      '<path d="M252 112l14-56h8l14 56z" fill="#ef8a3c"/><path d="M258 88h24l3 12h-30z" fill="#fff"/><rect x="240" y="108" width="60" height="8" rx="4" fill="#d9722a"/>',
+  };
+  function courseArt(c) {
+    return '<svg class="art" viewBox="0 0 320 130" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="320" height="130" fill="#dbe8f8"/>' +
+      '<circle cx="44" cy="28" r="58" fill="#e9f1fb"/><circle cx="288" cy="16" r="46" fill="#c9dcf5"/>' + (ART[c && c.group] || ART.quality) + "</svg>";
+  }
+  function courseThumb(c) { return '<span class="thumb">' + courseArt(c) + "</span>"; }
   function minutes(c) {
     return c.lessons.reduce(function (s, l) { return s + (l.minutes || 0); }, 0);
   }
@@ -675,24 +825,87 @@ window.KP = (function () {
   function navLink(item, opt) {
     var target = item.page === opt.page ? "" : ' target="_top"';
     return '<a class="nav-item' + (item.key === opt.active ? " active" : "") + '" href="' + esc(navHref(item, opt.page)) + '"' + target +
-      (item.key === opt.active ? ' aria-current="page"' : "") + ">" + icon(item.icon) + "<span>" + item.label + "</span></a>";
+      (item.key === opt.active ? ' aria-current="page"' : "") + ' data-tip="' + item.label + '">' + icon(item.icon) + "<span>" + item.label + "</span></a>";
   }
 
-  // opt: { page, active, content, userHtml, topLeft, topActions }
+  // เมนูด้านข้างแบบย่อ/ขยาย: จำค่าที่พนักงานเลือกไว้ในเครื่อง
+  var RAIL_KEY = "kp:rail";
+  function setRail(open) {
+    document.documentElement.classList.toggle("rail-open", open);
+    try { localStorage.setItem(RAIL_KEY, open ? "1" : ""); } catch (e) { /* ignore */ }
+  }
+  try { document.documentElement.classList.toggle("rail-open", localStorage.getItem(RAIL_KEY) === "1"); } catch (e) { /* ignore */ }
+
+  function closePops(except) {
+    document.querySelectorAll(".pop").forEach(function (p) {
+      if (p !== except) { p.hidden = true; p.previousElementSibling.setAttribute("aria-expanded", "false"); }
+    });
+  }
+  function showHelp() {
+    var d = document.createElement("dialog");
+    d.innerHTML = '<div class="dlg-head"><h2>วิธีใช้งาน</h2></div><div class="dlg-body"><ol class="help-list">' +
+      "<li>ทำข้อสอบก่อนเรียน 1 ครั้ง เพื่อวัดความรู้เดิม</li>" +
+      "<li>อ่านบทเรียนให้ครบทุกบท ย้อนกลับมาอ่านได้ตลอด</li>" +
+      "<li>ทำข้อสอบหลังเรียนให้ได้อย่างน้อย 80% จึงจะเรียนจบ</li>" +
+      "<li>เรียนจบแล้วอ่านทบทวนได้ และเรียนรอบใหม่ได้เมื่อครบ 6 เดือน</li></ol>" +
+      '<p class="muted">เข้าระบบไม่ได้หรือข้อมูลไม่ถูกต้อง กรุณาติดต่อฝ่ายบุคคล</p></div>' +
+      '<div class="dlg-foot"><button class="btn" type="button">ปิด</button></div>';
+    document.body.appendChild(d);
+    d.querySelector("button").addEventListener("click", function () { d.close(); d.remove(); });
+    d.addEventListener("close", function () { d.remove(); });
+    d.showModal();
+  }
+  document.addEventListener("click", function (e) {
+    if (e.target.closest("#rail-toggle")) { setRail(!document.documentElement.classList.contains("rail-open")); return; }
+    if (e.target.closest("[data-help]")) { closePops(); showHelp(); return; }
+    var toggle = e.target.closest("[data-pop]");
+    if (toggle) {
+      var pop = toggle.nextElementSibling;
+      closePops(pop);
+      pop.hidden = !pop.hidden;
+      toggle.setAttribute("aria-expanded", String(!pop.hidden));
+    } else if (!e.target.closest(".pop") || e.target.closest("a")) {
+      closePops();
+    }
+  });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closePops(); });
+
+  // ชื่อย่อในวงกลมผู้ใช้: ข้ามคำนำหน้าและสระหน้า
+  function initial(name) {
+    return String(name || "").trim().replace(/^(นางสาว|นาย|นาง|น\.ส\.)\s*/, "").replace(/^[เแโใไ]/, "").charAt(0);
+  }
+  function bell(notices) {
+    return '<div class="pop-wrap"><button class="icon-btn" type="button" data-pop aria-expanded="false" aria-label="การแจ้งเตือน ' + notices.length + ' รายการ">' + icon("bell", 22) +
+      (notices.length ? '<i class="bell-dot"></i>' : "") + "</button>" +
+      '<div class="pop pop-notices" hidden><h3>การแจ้งเตือน</h3>' +
+      (notices.length ? notices.map(function (n) {
+        return '<a class="notice-item" href="' + esc(n.href) + '"><span class="res-ico">' + icon(n.icon, 18) + "</span><span>" + esc(n.text) + "</span></a>";
+      }).join("") : '<p class="muted">ยังไม่มีการแจ้งเตือน</p>') + "</div></div>";
+  }
+  function userMenu(user) {
+    var mark = initial(user.name);
+    return '<div class="pop-wrap"><button class="avatar" type="button" data-pop aria-expanded="false" aria-label="เมนูผู้ใช้">' + (user.mark ? icon(user.mark) : esc(mark) || icon("user")) + "</button>" +
+      '<div class="pop pop-user" hidden><div class="who"><b>' + esc(user.name) + "</b><span>" + esc(user.sub || "") + "</span></div>" +
+      '<button class="menu-row" type="button" data-help>' + icon("help", 18) + "วิธีใช้งาน</button>" +
+      '<button class="menu-row" type="button" id="logout">' + icon("logout", 18) + "ออกจากระบบ</button></div></div>";
+  }
+
+  // opt: { page, active, content, user: {name, sub, mark}, notices, topLeft, topActions }
   function shell(opt) {
     var main = NAV.filter(function (n) { return !n.hr; });
     var hr = NAV.filter(function (n) { return n.hr; });
     return (
       '<div class="shell">' +
-      '<aside class="nav"><div class="nav-brand">' + brandLogo(true) + "</div>" +
+      '<aside class="nav"><a class="nav-mark" href="' + esc(opt.page === "app" ? "#/" : homeUrl + "#/") + '"' + (opt.page === "app" ? "" : ' target="_top"') + ' aria-label="หน้าภาพรวม">HR</a>' +
       '<nav aria-label="เมนูหลัก">' + main.map(function (n) { return navLink(n, opt); }).join("") +
-      '<div class="nav-group">สำหรับฝ่ายบุคคล</div>' + hr.map(function (n) { return navLink(n, opt); }).join("") + "</nav>" +
-      '<div class="nav-foot">ระบบความรู้องค์กร<br>Sansuisha (Thailand)</div></aside>' +
+      '<div class="nav-group"><span>สำหรับฝ่ายบุคคล</span></div>' + hr.map(function (n) { return navLink(n, opt); }).join("") + "</nav>" +
+      '<button class="nav-item nav-help" type="button" data-help data-tip="วิธีใช้งาน">' + icon("help") + "<span>วิธีใช้งาน</span></button></aside>" +
       '<div class="workspace"><header class="top">' +
+      '<button class="icon-btn rail-btn" id="rail-toggle" type="button" aria-label="ย่อหรือขยายเมนู">' + icon("menu", 22) + "</button>" +
       '<div class="top-brand">' + brandLogo(true) + "</div>" +
       '<div class="top-left">' + (opt.topLeft || "") + "</div>" +
       '<div class="spacer"></div><span id="sync" class="sync" role="status"></span>' +
-      (opt.topActions || "") + (opt.userHtml || "") + "</header>" +
+      (opt.topActions || "") + (opt.notices ? bell(opt.notices) : "") + userMenu(opt.user) + "</header>" +
       '<main class="page" id="page">' + opt.content + "</main></div>" +
       '<nav class="tabbar" aria-label="เมนูหลัก">' +
       (opt.page === "report" ? hr.concat(main.slice(0, 1)) : main).map(function (n) { return navLink(n, opt); }).join("") + "</nav>" +
@@ -715,6 +928,28 @@ window.KP = (function () {
       '<circle cx="60" cy="60" r="' + r + '" class="ring-on" stroke-dasharray="' + on.toFixed(1) + " " + (c - on).toFixed(1) + '" transform="rotate(-90 60 60)"/></svg>' +
       '<div class="ring-text"><b>' + esc(big) + "</b><span>" + esc(small) + "</span></div></div>";
   }
+  // วงแหวนเล็กในแถวตาราง: เขียว = จบแล้ว น้ำเงิน = กำลังเรียน
+  function miniRing(pct) {
+    var r = 9, c = 2 * Math.PI * r, on = c * Math.max(0, Math.min(100, pct)) / 100;
+    return '<svg class="mini-ring' + (pct >= 100 ? " full" : "") + '" width="26" height="26" viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="' + r + '"/>' +
+      '<circle class="on" cx="13" cy="13" r="' + r + '" stroke-dasharray="' + on.toFixed(1) + " " + (c - on).toFixed(1) + '" transform="rotate(-90 13 13)"/></svg>';
+  }
+  // โดนัทสัดส่วน: parts = [{label, value, cls}] มีช่องว่างระหว่างส่วน และคำอธิบายพร้อมตัวเลขเสมอ ไม่ต้องดูจากสีอย่างเดียว
+  function donut(parts, big, small) {
+    var r = 48, c = 2 * Math.PI * r, total = parts.reduce(function (s, p) { return s + p.value; }, 0), at = 0, gap = 3;
+    var arcs = parts.filter(function (p) { return p.value > 0; }).map(function (p, i, shown) {
+      var len = c * p.value / total, g = shown.length > 1 ? gap : 0;
+      var out = '<circle class="' + p.cls + '" cx="60" cy="60" r="' + r + '" stroke-dasharray="' + Math.max(1, len - g).toFixed(1) + " " + (c - Math.max(1, len - g)).toFixed(1) +
+        '" stroke-dashoffset="' + (-at).toFixed(1) + '" transform="rotate(-90 60 60)"><title>' + esc(p.label + ": " + p.value) + "</title></circle>";
+      at += len;
+      return out;
+    }).join("");
+    return '<div class="donut"><div class="ring"><svg viewBox="0 0 120 120" role="img" aria-label="' + esc(big + " " + small) + '">' + arcs + "</svg>" +
+      '<div class="ring-text"><b>' + esc(big) + "</b><span>" + esc(small) + "</span></div></div>" +
+      '<ul class="donut-key">' + parts.map(function (p) {
+        return '<li><i class="' + p.cls + '"></i><span>' + esc(p.label) + "</span><b>" + p.value + "</b></li>";
+      }).join("") + "</ul></div>";
+  }
   function stat(iconName, value, labelText, hint) {
     return '<div class="stat-tile"><div class="stat-ico">' + icon(iconName) + "</div><div><b>" + value + "</b><span>" + labelText + "</span>" +
       (hint ? "<small>" + hint + "</small>" : "") + "</div></div>";
@@ -728,8 +963,8 @@ window.KP = (function () {
   return {
     app: app, homeUrl: homeUrl, reportUrl: reportUrl, SCOPES: SCOPES, GROUPS: GROUPS,
     icon: icon, esc: esc, api: api, brandLogo: brandLogo, fmtDay: fmtDay, localDate: localDate, ymd: ymd,
-    groupLabel: groupLabel, scopeLabel: scopeLabel, courseIcon: courseIcon, minutes: minutes,
-    shell: shell, pageHead: pageHead, emptyState: emptyState, ring: ring, stat: stat, hbar: hbar,
+    groupLabel: groupLabel, scopeLabel: scopeLabel, courseIcon: courseIcon, courseArt: courseArt, courseThumb: courseThumb, minutes: minutes,
+    shell: shell, pageHead: pageHead, emptyState: emptyState, ring: ring, miniRing: miniRing, donut: donut, stat: stat, hbar: hbar,
   };
 })();
 </script>
@@ -2644,15 +2879,25 @@ window.COURSES = [
   }
 
   /* ---------- page frame ---------- */
+  // ข้อมูลจริงเท่านั้น: หลักสูตรที่เรียนรอบใหม่ได้ และการอบรมภายใน 7 วัน
+  function notices() {
+    var soon = KP.ymd(new Date(Date.now() + 7 * 864e5));
+    var due = visibleCourses().filter(function (c) { return courseProgress(c).canRetake; }).map(function (c) {
+      return { icon: "refresh", href: courseHash(c), text: "ครบ 6 เดือนแล้ว เรียนรอบใหม่ได้: " + c.title };
+    });
+    var events = upcoming().filter(function (e) { return e.date <= soon; }).map(function (e) {
+      return { icon: "calendar", href: "#/calendar", text: fmtDay(KP.localDate(e.date).toISOString(), true) + " " + e.title };
+    });
+    return due.concat(events);
+  }
   function mount(active, content) {
     var u = state.user;
     app.innerHTML = KP.shell({
       page: "app", active: active, content: content,
       topLeft: '<form class="top-search" id="top-search" role="search">' + icon("search") +
         '<input id="top-q" type="search" placeholder="ค้นหาหลักสูตร" aria-label="ค้นหาหลักสูตร"></form>',
-      userHtml: '<div class="user-chip"><span class="avatar">' + icon("user") + '</span><div class="who"><b>' + esc(u.name) +
-        '</b><span class="sub">' + esc(u.id) + (u.dept ? " · " + esc(u.dept) : "") + "</span></div></div>" +
-        '<button class="btn ghost icon-only" id="logout" title="ออกจากระบบ" aria-label="ออกจากระบบ">' + icon("logout") + "</button>",
+      user: { name: u.name, sub: u.id + (u.dept ? " · " + u.dept : "") },
+      notices: notices(),
     });
     document.getElementById("logout").addEventListener("click", function () {
       if (state.pending.length && !confirm("ยังมีผลการเรียนที่ยังบันทึกไม่เสร็จ ต้องการออกจากระบบหรือไม่?")) return;
@@ -2679,7 +2924,8 @@ window.COURSES = [
     return '<div class="event"' + (withId ? ' id="ev-' + esc(e.id) + '"' : "") + '><div class="date-chip"><b>' + d.getDate() + "</b><span>" +
       esc(d.toLocaleDateString("th-TH", { month: "short" })) + '</span></div><div class="event-body"><h3>' + title + '</h3><div class="event-meta">' +
       "<span>" + icon("clock") + esc(e.start) + (e.end ? "–" + esc(e.end) : "") + " น.</span>" +
-      (e.location ? "<span>" + icon("pin") + esc(e.location) + "</span>" : "") +
+      (/^https:\/\//i.test(e.location || "") ? "<span>" + icon("video") + '<a href="' + esc(e.location) + '" target="_blank" rel="noopener">เข้าร่วมออนไลน์</a></span>'
+        : e.location ? "<span>" + icon("pin") + esc(e.location) + "</span>" : "") +
       (e.trainer ? "<span>" + icon("user") + esc(e.trainer) + "</span>" : "") +
       (e.capacity ? "<span>รับ " + e.capacity + " คน</span>" : "") + "</div>" +
       (e.note ? '<div class="event-meta">' + esc(e.note) + "</div>" : "") + "</div></div>";
@@ -2697,61 +2943,112 @@ window.COURSES = [
     var gains = done.filter(function (x) { return x.cp.pre !== null && x.cp.best !== null; }).map(function (x) { return x.cp.best - x.cp.pre; });
     var gain = gains.length ? Math.round(gains.reduce(function (a, b) { return a + b; }, 0) / gains.length) : null;
     var overall = list.length ? Math.round((done.length / list.length) * 100) : 0;
+    var retakeCount = due.length, finished = done.length - retakeCount, todoCount = all.length - done.length - doing.length;
 
-    var nextC = continueCourse();
-    var feature;
+    var nextC = continueCourse(), cp = nextC ? courseProgress(nextC) : null, step = nextC ? nextStep(nextC, cp) : null;
+    var chips = "";
     if (nextC) {
-      var cp = courseProgress(nextC), step = nextStep(nextC, cp);
-      feature = '<section class="feature"><div><div class="eyebrow">' + (cp.pct > 0 ? "เรียนต่อจากที่ค้างไว้" : "แนะนำให้เริ่มเรียน") + "</div>" +
-        "<h2>" + esc(nextC.title) + "</h2><p>" + esc(nextC.subtitle) + "</p></div>" +
-        '<div class="feature-action"><div><div class="bar"><i style="width:' + cp.pct + '%"></i></div>' +
-        '<div class="foot-row"><span>' + esc(step.text) + "</span><span>" + cp.pct + "%</span></div></div>" +
-        '<a class="btn light" href="' + courseHash(nextC, step.hash) + '">' + (cp.pct > 0 ? "เรียนต่อ" : "เริ่มเรียน") + " " + icon("right", 18) + "</a></div></section>";
-    } else {
-      feature = '<section class="feature"><div><div class="eyebrow">สถานะของคุณ</div><h2>คุณเรียนจบทุกหลักสูตรแล้ว</h2>' +
-        "<p>อ่านทบทวนเนื้อหาได้ตลอด และเรียนรอบใหม่ได้เมื่อครบ 6 เดือนของแต่ละหลักสูตร</p></div>" +
-        '<div class="feature-action"><a class="btn light" href="#/learning">ดูผลการเรียน ' + icon("right", 18) + "</a></div></section>";
+      chips = nextC.lessons.slice(0, 2).map(function (l) { return '<span class="pill" title="' + esc(l.title) + '">' + esc(l.title) + "</span>"; }).join("") +
+        (nextC.lessons.length > 2 ? '<span class="pill">+' + (nextC.lessons.length - 2) + "</span>" : "");
     }
+    var hero = '<section class="hero"><div class="hero-text"><h1>สวัสดี ' + esc(state.user.name) + "</h1>" +
+      "<p>" + (nextC ? "มาเรียนรู้และพัฒนาทักษะของคุณกันต่อ" : "คุณเรียนจบทุกหลักสูตรแล้ว อ่านทบทวนเนื้อหาได้ตลอด") + "</p>" +
+      (nextC ? '<div class="hero-skills"><small>เนื้อหาในหลักสูตรนี้:</small><div class="pills">' + chips + "</div></div>" +
+        '<div class="hero-prog"><small>' + cp.pct + "% · " + esc(step.text) + '</small><div class="bar"><i style="width:' + cp.pct + '%"></i></div></div>' : "") + "</div>" +
+      '<article class="hero-card"><div class="hero-art">' + KP.courseArt(nextC) + '</div><div class="hero-card-body">' +
+      '<span class="pill">' + (nextC ? (cp.pct > 0 ? "เรียนต่อจากที่ค้างไว้" : "แนะนำให้เริ่มเรียน") : "ผลการเรียน") + "</span>" +
+      "<h2>" + esc(nextC ? nextC.title : "เรียนจบครบทุกหลักสูตร") + "</h2>" +
+      '<a class="btn block" href="' + (nextC ? courseHash(nextC, step.hash) : "#/learning") + '">' + (nextC ? (cp.pct > 0 ? "เรียนต่อ" : "เริ่มเรียน") : "ดูผลการเรียน") + "</a></div></article></section>";
 
-    var events = upcoming().slice(0, 4);
-    var groupBars = KP.GROUPS.map(function (g) {
-      var inG = all.filter(function (x) { return x.c.group === g[0]; });
-      if (!inG.length) return "";
-      var n = inG.filter(function (x) { return x.cp.completed; }).length;
-      return KP.hbar(g[1], Math.round((n / inG.length) * 100), n + "/" + inG.length, g[1] + ": เรียนจบ " + n + " จาก " + inG.length + " หลักสูตร");
-    }).join("");
-    var inProgress = doing.slice(0, 4).map(function (x) {
-      return '<a class="course-row" href="' + courseHash(x.c, nextStep(x.c, x.cp).hash) + '">' + KP.courseIcon(x.c) + "<div><h3>" + esc(x.c.title) + "</h3>" +
-        '<div class="bar" style="margin-top:6px"><i style="width:' + x.cp.pct + '%"></i></div></div><span class="muted num">' + x.cp.pct + "%</span></a>";
+    // เรียงตามสิ่งที่ต้องทำก่อน: กำลังเรียน > เรียนรอบใหม่ได้ > ยังไม่เริ่ม > จบแล้ว
+    var rank = { doing: 0, retake: 1, todo: 2, done: 3 };
+    var rows = all.slice().sort(function (a, b) {
+      var d = rank[courseStatus(a.cp)] - rank[courseStatus(b.cp)];
+      return d || b.cp.pct - a.cp.pct;
+    }).slice(0, 5).map(function (x) {
+      var s = nextStep(x.c, x.cp);
+      return '<a class="prog-row" href="' + courseHash(x.c, s.hash) + '">' + KP.courseThumb(x.c) + '<b class="prog-title">' + esc(x.c.title) + "</b>" +
+        '<span class="prog-pct"><span class="num">' + x.cp.pct + "%</span>" + KP.miniRing(x.cp.pct) + "</span>" +
+        '<span class="prog-next' + (x.cp.canRetake ? " due" : "") + '">' + esc(s.text) + "</span>" + icon("right", 18) + "</a>";
     }).join("");
 
     mount("dashboard",
-      KP.pageHead("สวัสดี " + esc(state.user.name), esc([state.user.position, state.user.dept].filter(Boolean).join(" · "))) +
-      (due.length ? '<div class="notice">' + icon("alert") + "<span>มี " + due.length + " หลักสูตรที่ครบ 6 เดือนแล้ว เรียนรอบใหม่ได้: " +
-        esc(due.slice(0, 3).map(function (x) { return x.c.title; }).join(", ")) + (due.length > 3 ? " และอื่น ๆ" : "") +
-        '</span><a class="btn ghost small" href="#/learning">ดูรายการ</a></div>' : "") +
-      '<div class="dash-top">' + feature +
-      '<section class="panel ring-panel">' + KP.ring(overall, overall + "%", "เรียนจบ") +
-      '<div><h2 style="font-size:17px;margin:0 0 4px">ความคืบหน้ารวม</h2><div class="muted">เรียนจบ ' + done.length + " จาก " + list.length + " หลักสูตร</div></div></section></div>" +
+      '<div class="dash"><div class="dash-main">' +
+      hero +
       '<div class="stats">' +
-      KP.stat("check", done.length, "หลักสูตรที่เรียนจบ") +
-      KP.stat("room", doing.length, "หลักสูตรที่กำลังเรียน") +
-      KP.stat("learning", lessonsDone + "<small style=\"display:inline;font-size:14px\"> / " + lessonsAll + "</small>", "บทเรียนที่อ่านแล้ว") +
-      KP.stat("reports", gain === null ? "–" : (gain >= 0 ? "+" : "") + gain + "%", "คะแนนเพิ่มขึ้นเฉลี่ย", "หลังเรียนเทียบกับก่อนเรียน") +
+      KP.stat("check", done.length, "เรียนจบแล้ว") +
+      KP.stat("room", doing.length, "กำลังเรียน") +
+      KP.stat("learning", lessonsDone + "<small> / " + lessonsAll + "</small>", "บทเรียนที่อ่านแล้ว") +
+      KP.stat("trend", gain === null ? "–" : (gain >= 0 ? "+" : "") + gain + "%", "คะแนนเพิ่มขึ้นเฉลี่ย") +
       "</div>" +
-      '<div class="dash-grid"><section class="panel"><div class="panel-head"><h2>การอบรมที่กำลังจะมาถึง</h2><a href="#/calendar">ดูปฏิทิน</a></div>' +
-      (events.length ? events.map(function (e) { return eventRow(e); }).join("") : KP.emptyState("calendar", "ยังไม่มีตารางอบรม", "เมื่อฝ่ายบุคคลเพิ่มตารางอบรม จะแสดงที่นี่")) +
-      "</section>" +
-      '<div style="display:grid;gap:18px;align-content:start"><section class="panel"><div class="panel-head"><h2>ความคืบหน้าตามหมวด</h2><a href="#/catalog">ดูหลักสูตร</a></div>' + groupBars + "</section>" +
-      (inProgress ? '<section class="panel"><div class="panel-head"><h2>กำลังเรียนอยู่</h2><a href="#/learning">ทั้งหมด</a></div>' + inProgress + "</section>" : "") +
-      "</div></div>");
+      '<section class="panel"><div class="panel-head"><h2>ความคืบหน้าการเรียนของฉัน</h2><div class="pills">' +
+      (retakeCount ? '<span class="pill warn"><b>' + retakeCount + "</b> เรียนรอบใหม่ได้</span>" : "") +
+      '<span class="pill good"><b>' + done.length + "</b> เรียนจบแล้ว</span></div></div>" +
+      '<div class="prog-head"><span>หลักสูตร</span><span>ความคืบหน้า</span><span>ขั้นตอนถัดไป</span></div>' + rows +
+      '<a class="panel-more" href="#/learning">ดูทั้งหมด ' + all.length + " หลักสูตร</a></section></div>" +
+      '<aside class="dash-side"><section class="panel" id="week"></section>' +
+      '<section class="panel"><div class="panel-head"><h2>ภาพรวมหลักสูตรของฉัน</h2></div>' +
+      KP.donut([
+        { label: "เรียนจบแล้ว", value: finished, cls: "k-done" },
+        { label: "กำลังเรียน", value: doing.length, cls: "k-doing" },
+        { label: "เรียนรอบใหม่ได้", value: retakeCount, cls: "k-due" },
+        { label: "ยังไม่เริ่ม", value: todoCount, cls: "k-todo" },
+      ], overall + "%", "เรียนจบ") + "</section></aside></div>");
+    paintWeek();
+  }
+
+  // ปฏิทินรายสัปดาห์ในหน้าภาพรวม: กดวันเพื่อดูการอบรมของวันนั้น
+  function timelineRow(e, withDate) {
+    var online = /^https:\/\//i.test(e.location || "");
+    var course = e.courseId ? getCourse(e.courseId) : null;
+    return '<div class="tl"><time>' + esc(e.start) + '</time><div class="tl-body' + (online ? " online" : "") + '"><span class="pill">' + (online ? "ออนไลน์" : "อบรมในห้อง") + "</span>" +
+      "<h3>" + (course ? '<a href="' + courseHash(course) + '">' + esc(e.title) + "</a>" : esc(e.title)) + "</h3>" +
+      '<p class="muted">' + (withDate ? esc(fmtDay(KP.localDate(e.date).toISOString(), true)) + (online || !e.location ? "" : " · ") : "") + (online ? "" : esc(e.location || "")) + "</p>" +
+      (online ? '<a class="btn small" href="' + esc(e.location) + '" target="_blank" rel="noopener">เข้าร่วม</a>' : "") + "</div></div>";
+  }
+  function paintWeek() {
+    var box = document.getElementById("week");
+    if (!box) return;
+    var now = new Date(), todayKey = KP.ymd(now);
+    if (!state.weekStart) state.weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+    if (!state.weekSel) state.weekSel = todayKey;
+    var ws = state.weekStart, days = "", dow = ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"];
+    for (var i = 0; i < 7; i++) {
+      var d = new Date(ws.getFullYear(), ws.getMonth(), ws.getDate() + i), key = KP.ymd(d);
+      var count = state.schedule.filter(function (e) { return e.date === key; }).length;
+      days += '<button type="button" class="wk-day' + (key === state.weekSel ? " sel" : "") + (key === todayKey ? " today" : "") + '" data-day="' + key + '" aria-pressed="' + (key === state.weekSel) + '"' +
+        (count ? ' aria-label="' + d.getDate() + " มีการอบรม " + count + ' รายการ"' : "") + "><small>" + dow[i] + "</small><b>" + d.getDate() + "</b><span class=\"wk-dots\">" +
+        new Array(Math.min(count, 3) + 1).join("<i></i>") + "</span></button>";
+    }
+    var sel = KP.localDate(state.weekSel);
+    var todays = state.schedule.filter(function (e) { return e.date === state.weekSel; }).sort(function (a, b) { return a.start < b.start ? -1 : 1; });
+    var later = todays.length ? [] : state.schedule.filter(function (e) { return e.date > state.weekSel; }).sort(function (a, b) { return a.date < b.date ? -1 : 1; }).slice(0, 3);
+    box.innerHTML =
+      '<div class="wk-head"><h2>' + esc(ws.toLocaleDateString("th-TH", { month: "long" })) + "</h2>" +
+      '<button class="icon-btn" type="button" id="wk-prev" aria-label="สัปดาห์ก่อนหน้า">' + icon("left", 18) + "</button>" +
+      '<button class="icon-btn" type="button" id="wk-next" aria-label="สัปดาห์ถัดไป">' + icon("right", 18) + "</button></div>" +
+      '<div class="wk-days" id="wk-days">' + days + "</div>" +
+      "<h3 class=\"wk-title\">" + (state.weekSel === todayKey ? "การอบรมวันนี้" : "การอบรมวันที่เลือก") + "</h3>" +
+      '<div class="muted wk-date">' + esc(sel.toLocaleDateString("th-TH", { weekday: "long", day: "numeric", month: "long", year: "numeric" })) + "</div>" +
+      (todays.length ? todays.map(function (e) { return timelineRow(e); }).join("")
+        : later.length ? '<p class="muted wk-none">ไม่มีการอบรมในวันนี้ รายการถัดไป:</p>' + later.map(function (e) { return timelineRow(e, true); }).join("")
+        : KP.emptyState("calendar", "ยังไม่มีตารางอบรม", "เมื่อฝ่ายบุคคลเพิ่มตารางอบรม จะแสดงที่นี่")) +
+      '<a class="panel-more" href="#/calendar">ดูปฏิทินทั้งเดือน</a>';
+    function shift(n) { state.weekStart = new Date(ws.getFullYear(), ws.getMonth(), ws.getDate() + n * 7); paintWeek(); }
+    document.getElementById("wk-prev").addEventListener("click", function () { shift(-1); });
+    document.getElementById("wk-next").addEventListener("click", function () { shift(1); });
+    document.getElementById("wk-days").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-day]");
+      if (b) { state.weekSel = b.getAttribute("data-day"); paintWeek(); }
+    });
   }
 
   /* ---------- 2. Course catalog ---------- */
   function courseCard(c) {
     var cp = courseProgress(c);
     return '<a class="course-card" href="' + courseHash(c) + '">' +
-      '<div class="card-top">' + KP.courseIcon(c) + '<div class="card-cat">' + esc(KP.scopeLabel(c)) + "<br>" + esc(KP.groupLabel(c)) + "</div></div>" +
+      '<div class="card-art">' + KP.courseArt(c) + "</div>" +
+      '<div class="card-cat"><span class="pill">' + esc(KP.groupLabel(c)) + "</span> " + esc(KP.scopeLabel(c)) + "</div>" +
       "<h3>" + esc(c.title) + "</h3><p>" + esc(c.subtitle) + "</p>" +
       '<div class="card-meta"><span>' + icon("learning") + c.lessons.length + " บท</span><span>" + icon("test") + c.quiz.length + " ข้อ</span><span>" + icon("clock") + KP.minutes(c) + " นาที</span></div>" +
       '<div class="card-foot"><div class="card-foot-row">' + statusBadge(cp) + "<span>" +
@@ -3067,9 +3364,9 @@ window.COURSES = [
     var cell = function (label, value, cls) { return '<td data-label="' + label + '"' + (cls ? ' class="' + cls + '"' : "") + ">" + value + "</td>"; };
     var body = rows.map(function (x) {
       var gain = x.cp.pre !== null && x.cp.best !== null ? x.cp.best - x.cp.pre : null;
-      return "<tr>" + '<td class="title"><div class="title-cell">' + KP.courseIcon(x.c, 18) + '<a href="' + courseHash(x.c) + '">' + esc(x.c.title) + "</a></div></td>" +
+      return "<tr>" + '<td class="title"><div class="title-cell">' + KP.courseThumb(x.c) + '<a href="' + courseHash(x.c) + '">' + esc(x.c.title) + "</a></div></td>" +
         cell("สถานะ", statusBadge(x.cp)) +
-        cell("ความคืบหน้า", x.cp.pct + "%", "num") +
+        cell("ความคืบหน้า", '<span class="prog-pct">' + x.cp.pct + "%" + KP.miniRing(x.cp.pct) + "</span>", "num") +
         cell("ก่อนเรียน", x.cp.pre !== null ? x.cp.pre + "%" : "–", "num") +
         cell("หลังเรียน", x.cp.best !== null ? x.cp.best + "%" : "–", "num") +
         cell("เพิ่มขึ้น", gain === null ? "–" : '<span class="' + (gain > 0 ? "up" : "") + '">' + (gain > 0 ? "+" : "") + gain + "</span>", "num") +
