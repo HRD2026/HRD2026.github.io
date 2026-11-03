@@ -146,7 +146,9 @@ a { color: var(--brand-ink); }
   color: var(--ink); text-decoration: none; font-size: 15px; line-height: 1.45;
 }
 .side a:hover { background: #f1f5f4; }
-.side a.active { background: var(--brand-soft); font-weight: 600; }
+.side a.active, .side .side-item.active { background: var(--brand-soft); font-weight: 600; }
+.side .side-item { display: flex; gap: 10px; align-items: flex-start; padding: 9px 10px; border-radius: 10px; font-size: 15px; line-height: 1.45; color: var(--ink-2); }
+.side .side-item.locked { opacity: .55; }
 .side .dot {
   flex: 0 0 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line);
   display: grid; place-items: center; font-size: 12px; color: #fff; margin-top: 1px;
@@ -2055,21 +2057,43 @@ window.COURSES = [
     for (var i = 0; i < courses.length; i++) if (courses[i].id === id) return courses[i];
     return null;
   }
-  function courseProgress(course) {
-    var cp = state.progress[course.id] || { done: [], best: null };
-    var doneCount = cp.done.filter(function (i) { return i < course.lessons.length; }).length;
-    var passed = cp.best !== null && cp.best !== undefined && cp.best >= PASS_PERCENT;
-    // lessons and the quiz together make up 100%
-    var pct = Math.round(((doneCount + (passed ? 1 : 0)) / (course.lessons.length + 1)) * 100);
-    return { done: cp.done, doneCount: doneCount, best: cp.best === undefined ? null : cp.best, passed: passed, pct: pct };
+  function blankProgress() {
+    return { done: [], best: null, pre: null, completedAt: "", retakeAt: "", canRetake: false, round: 1 };
   }
+  function courseProgress(course) {
+    var cp = state.progress[course.id] || blankProgress();
+    var doneCount = cp.done.filter(function (i) { return i < course.lessons.length; }).length;
+    var best = cp.best === undefined ? null : cp.best;
+    var pre = cp.pre === undefined ? null : cp.pre;
+    var passed = best !== null && best >= PASS_PERCENT;
+    var completed = !!cp.completedAt;
+    // ข้อสอบก่อนเรียน + ทุกบทเรียน + ข้อสอบหลังเรียน รวมกันเป็น 100%
+    var pct = completed ? 100
+      : Math.round((((pre !== null ? 1 : 0) + doneCount + (passed ? 1 : 0)) / (course.lessons.length + 2)) * 100);
+    return {
+      done: cp.done, doneCount: doneCount, best: best, pre: pre, passed: passed, pct: pct, completed: completed,
+      needsPre: pre === null && !completed, allRead: doneCount >= course.lessons.length,
+      completedAt: cp.completedAt || "", retakeAt: cp.retakeAt || "", canRetake: !!cp.canRetake, round: cp.round || 1,
+    };
+  }
+  function fmtDay(iso) {
+    var d = iso ? new Date(iso) : null;
+    return d && !isNaN(d) ? d.toLocaleDateString("th-TH", { day: "numeric", month: "long", year: "numeric" }) : "";
+  }
+  // เซิร์ฟเวอร์เป็นเจ้าของผลสอบและวันที่ ส่วนบทเรียนที่ยังบันทึกไม่เสร็จในเครื่องไม่ให้หาย
   function mergeProgress(server) {
     Object.keys(server || {}).forEach(function (id) {
       var s = server[id];
-      var c = state.progress[id] || { done: [], best: null };
+      var c = state.progress[id];
+      if (!c || (s.round || 1) !== (c.round || 1)) {
+        state.progress[id] = s;
+        return;
+      }
       (s.done || []).forEach(function (i) { if (c.done.indexOf(i) === -1) c.done.push(i); });
       if (s.best !== null && s.best !== undefined && (c.best === null || s.best > c.best)) c.best = s.best;
-      state.progress[id] = c;
+      if (s.pre !== null && s.pre !== undefined) c.pre = s.pre;
+      if (s.completedAt) c.completedAt = s.completedAt;
+      c.retakeAt = s.retakeAt; c.canRetake = s.canRetake;
     });
   }
 
@@ -2077,7 +2101,7 @@ window.COURSES = [
   function record(course, event, score) {
     var c = state.progress[course.id];
     state.pending.push({
-      courseId: course.id, courseTitle: course.title, lessonsTotal: course.lessons.length,
+      courseId: course.id, courseTitle: course.title, lessonsTotal: course.lessons.length, round: c.round || 1,
       done: c.done.slice(), best: c.best, event: event, score: score === undefined ? null : score,
     });
     flush();
@@ -2195,14 +2219,17 @@ window.COURSES = [
     var completed = 0, lessonsDone = 0, lessonsAll = 0;
     function courseCard(c) {
       var cp = courseProgress(c);
-      if (cp.pct === 100) completed++;
+      if (cp.completed) completed++;
       lessonsDone += cp.doneCount;
       lessonsAll += c.lessons.length;
       var minutes = c.lessons.reduce(function (s, l) { return s + (l.minutes || 0); }, 0);
-      var status = cp.pct === 100 ? '<span class="badge">✓ เรียนจบแล้ว</span>'
+      var status = cp.canRetake ? '<span class="badge doing">↻ เรียนรอบใหม่ได้แล้ว</span>'
+        : cp.completed ? '<span class="badge">✓ เรียนจบแล้ว</span>'
         : cp.pct > 0 ? '<span class="badge doing">กำลังเรียน</span>'
         : '<span class="badge todo">ยังไม่เริ่ม</span>';
-      var next = cp.doneCount < c.lessons.length ? firstUndone(c, cp) : "quiz";
+      var next = cp.needsPre ? "pre" : cp.canRetake ? "quiz" : cp.completed ? 0 : cp.allRead ? "quiz" : firstUndone(c, cp);
+      var scores = (cp.pre !== null ? "ก่อนเรียน " + cp.pre + "%" : "") +
+        (cp.best !== null ? (cp.pre !== null ? " · " : "") + "หลังเรียน " + cp.best + "%" : "");
       return (
         '<a class="course-card" style="--c:' + c.color + '" href="#/course/' + c.id + "/" + next + '">' +
         '<div class="body"><div class="icon">' + c.icon + "</div>" +
@@ -2211,8 +2238,10 @@ window.COURSES = [
         " ข้อ · ประมาณ " + minutes + " นาที</div></div>" +
         '<div class="foot">' + status +
         '<div class="bar" style="margin-top:10px"><i style="width:' + cp.pct + '%"></i></div>' +
-        '<div class="foot-row"><span>ความคืบหน้า ' + cp.pct + "%</span><span>" +
-        (cp.best !== null ? "คะแนนสูงสุด " + cp.best + "%" : "") + "</span></div></div></a>"
+        '<div class="foot-row"><span>ความคืบหน้า ' + cp.pct + "%</span><span>" + scores + "</span></div>" +
+        (cp.completed && !cp.canRetake && cp.retakeAt
+          ? '<div class="foot-row"><span>เรียนรอบใหม่ได้ ' + esc(fmtDay(cp.retakeAt)) + "</span></div>" : "") +
+        "</div></a>"
       );
     }
 
@@ -2234,8 +2263,8 @@ window.COURSES = [
       topbar() +
       '<main class="container">' +
       '<section class="hero"><p>สวัสดี</p><h2>' + esc(state.user.name) + "</h2>" +
-      "<p>เลือกหลักสูตรด้านล่างเพื่อเริ่มเรียนรู้ เรียนครบทุกบทและทำแบบทดสอบผ่าน " + PASS_PERCENT +
-      "% เพื่อจบหลักสูตร</p></section>" +
+      "<p>แต่ละหลักสูตร: ทำข้อสอบก่อนเรียน → อ่านบทเรียนให้ครบ → ทำข้อสอบหลังเรียนให้ผ่าน " + PASS_PERCENT +
+      "% เมื่อเรียนจบ ยังเข้าอ่านเนื้อหาได้ และเรียนรอบใหม่ได้หลังครบ 6 เดือน</p></section>" +
       '<section class="overall">' +
       '<div class="stat"><b>' + completed + " / " + courses.length + "</b><span>หลักสูตรที่เรียนจบ</span></div>" +
       '<div class="stat"><b>' + lessonsDone + " / " + lessonsAll + "</b><span>บทเรียนที่อ่านแล้ว</span></div>" +
@@ -2251,15 +2280,21 @@ window.COURSES = [
   }
 
   function sidebar(course, cp, active) {
-    var items = course.lessons.map(function (l, i) {
+    // ข้อสอบก่อนเรียนเป็นข้อความเฉย ๆ ไม่ใช่ลิงก์: ทำแล้วกลับไปทำใหม่ไม่ได้
+    var items = '<div class="side-item' + (active === "pre" ? " active" : "") + '">' +
+      '<span class="dot' + (cp.pre !== null ? " done" : "") + '">' + (cp.pre !== null ? "✓" : "") + "</span>" +
+      "<span>📝 ข้อสอบก่อนเรียน" + (cp.pre !== null ? " (" + cp.pre + "%)" : "") + "</span></div>";
+    items += course.lessons.map(function (l, i) {
       var done = cp.done.indexOf(i) !== -1;
-      return '<a href="#/course/' + course.id + "/" + i + '"' + (active === i ? ' class="active"' : "") + ">" +
-        '<span class="dot' + (done ? " done" : "") + '">' + (done ? "✓" : "") + "</span>" +
-        "<span>" + (i + 1) + ". " + esc(l.title) + "</span></a>";
+      var label = '<span class="dot' + (done ? " done" : "") + '">' + (done ? "✓" : "") + "</span>" +
+        "<span>" + (i + 1) + ". " + esc(l.title) + "</span>";
+      if (cp.needsPre) return '<div class="side-item locked">' + label + "</div>";
+      return '<a href="#/course/' + course.id + "/" + i + '"' + (active === i ? ' class="active"' : "") + ">" + label + "</a>";
     }).join("");
-    items += '<a href="#/course/' + course.id + '/quiz"' + (active === "quiz" ? ' class="active"' : "") + ">" +
-      '<span class="dot' + (cp.passed ? " done" : "") + '">' + (cp.passed ? "✓" : "") + "</span>" +
-      "<span>📝 แบบทดสอบท้ายบท</span></a>";
+    var postLabel = '<span class="dot' + (cp.completed ? " done" : "") + '">' + (cp.completed ? "✓" : "") + "</span>" +
+      "<span>📝 ข้อสอบหลังเรียน" + (cp.best !== null ? " (" + cp.best + "%)" : "") + "</span>";
+    items += cp.needsPre ? '<div class="side-item locked">' + postLabel + "</div>"
+      : '<a href="#/course/' + course.id + '/quiz"' + (active === "quiz" ? ' class="active"' : "") + ">" + postLabel + "</a>";
     return (
       '<aside class="side"><a class="back" href="#/">← กลับหน้าหลัก</a>' +
       "<h4>" + course.icon + " " + esc(course.title) + "</h4>" + items +
@@ -2273,7 +2308,9 @@ window.COURSES = [
     var cp = courseProgress(course);
     var isDone = cp.done.indexOf(idx) !== -1;
     var prev = idx > 0 ? '<a class="btn ghost" href="#/course/' + course.id + "/" + (idx - 1) + '">← บทก่อนหน้า</a>' : "<span></span>";
-    var nextLabel = idx < course.lessons.length - 1 ? "อ่านแล้ว ไปบทถัดไป →" : "อ่านแล้ว ไปทำแบบทดสอบ →";
+    var isLast = idx >= course.lessons.length - 1;
+    var nextLabel = cp.completed ? (isLast ? "กลับหน้าหลัก" : "บทถัดไป →")
+      : isLast ? "อ่านแล้ว ไปทำข้อสอบหลังเรียน →" : "อ่านแล้ว ไปบทถัดไป →";
 
     app.innerHTML =
       topbar() +
@@ -2284,6 +2321,7 @@ window.COURSES = [
       (isDone ? " · ✓ อ่านแล้ว" : "") + "</div>" +
       "<h2>" + esc(lesson.title) + "</h2>" +
       '<div class="src">ที่มา: ' + esc(course.source) + " · ประมาณ " + (lesson.minutes || 3) + " นาที</div>" +
+      (cp.completed ? '<div class="callout">คุณเรียนจบหลักสูตรนี้แล้ว อ่านทบทวนเนื้อหาได้ตลอด</div>' : "") +
       lesson.body +
       '<div class="lesson-nav">' + prev +
       '<button class="btn" id="next">' + nextLabel + "</button></div>" +
@@ -2291,37 +2329,96 @@ window.COURSES = [
 
     afterRender();
     document.getElementById("next").addEventListener("click", function () {
-      var c = state.progress[course.id] || { done: [], best: null };
+      if (cp.completed) {
+        location.hash = isLast ? "#/" : "#/course/" + course.id + "/" + (idx + 1);
+        return;
+      }
+      var c = state.progress[course.id] || blankProgress();
       var already = c.done.indexOf(idx) !== -1;
       if (!already) c.done.push(idx);
       state.progress[course.id] = c;
       if (!already) record(course, "lesson");
-      location.hash = "#/course/" + course.id + "/" + (idx < course.lessons.length - 1 ? idx + 1 : "quiz");
+      location.hash = "#/course/" + course.id + "/" + (isLast ? "quiz" : idx + 1);
     });
   }
 
-  function renderQuiz(course) {
+  function shuffled(list) {
+    var a = list.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  // หน้าหลังเรียนเมื่อยังทำข้อสอบไม่ได้: ยังอ่านไม่ครบ หรือเรียนจบแล้ว
+  function renderPostClosed(course, cp) {
+    var body;
+    if (cp.completed) {
+      body = '<div class="result"><div class="score">✓ เรียนจบแล้ว</div>' +
+        "<div>คะแนนก่อนเรียน " + (cp.pre !== null ? cp.pre + "%" : "ไม่มีข้อมูล") + " · คะแนนหลังเรียน " + (cp.best !== null ? cp.best + "%" : "ไม่มีข้อมูล") + "</div>" +
+        (cp.completedAt ? "<div>เรียนจบเมื่อ " + esc(fmtDay(cp.completedAt)) + "</div>" : "") + "</div>" +
+        (cp.canRetake
+          ? '<p>ครบ 6 เดือนแล้ว คุณเรียนรอบใหม่ได้ โดยเริ่มจากข้อสอบก่อนเรียนอีกครั้ง</p>' +
+            '<div class="error" id="restart-err"></div>' +
+            '<button class="btn" id="restart">เริ่มเรียนรอบใหม่</button>'
+          : '<div class="callout">ตอนนี้อ่านเนื้อหาได้ แต่ทำข้อสอบไม่ได้' +
+            (cp.retakeAt ? " จะเรียนและสอบรอบใหม่ได้ตั้งแต่วันที่ <b>" + esc(fmtDay(cp.retakeAt)) + "</b>" : " จนกว่าจะครบ 6 เดือน") + "</div>");
+    } else {
+      body = '<div class="callout warn">ต้องอ่านบทเรียนให้ครบก่อน จึงจะทำข้อสอบหลังเรียนได้ (อ่านแล้ว ' +
+        cp.doneCount + "/" + course.lessons.length + ' บท)</div>' +
+        '<a class="btn" href="#/course/' + course.id + "/" + firstUndone(course, cp) + '">ไปบทที่ยังไม่ได้อ่าน</a>';
+    }
+    app.innerHTML =
+      topbar() +
+      '<main class="container"><div class="course-layout" style="--c:' + course.color + '">' +
+      sidebar(course, cp, "quiz") +
+      '<article class="lesson"><div class="kicker">ข้อสอบหลังเรียน</div><h2>' + esc(course.title) + "</h2>" + body +
+      "</article></div></main>";
+    afterRender();
+    var restart = document.getElementById("restart");
+    if (restart) restart.addEventListener("click", function () {
+      restart.disabled = true; restart.textContent = "กำลังเริ่ม…";
+      api("apiRestart", state.token, course.id).then(function (res) {
+        if (!res || !res.ok) throw new Error("restart");
+        state.progress[course.id] = (res.progress || {})[course.id] || blankProgress();
+        location.hash = "#/course/" + course.id + "/pre";
+        route();
+      }, function () { throw new Error("restart"); }).catch(function () {
+        restart.disabled = false; restart.textContent = "เริ่มเรียนรอบใหม่";
+        document.getElementById("restart-err").textContent = "เริ่มรอบใหม่ไม่สำเร็จ กรุณาลองอีกครั้ง";
+      });
+    });
+  }
+
+  // kind: "pre" ทำได้ครั้งเดียว ไม่เฉลย / "post" ทำซ้ำได้จนผ่าน เฉลยเมื่อสอบผ่านเท่านั้น
+  function renderTest(course, kind) {
     var cp = courseProgress(course);
-    var questions = course.quiz.map(function (q, qi) {
-      var opts = q.options.map(function (o, oi) {
-        return '<label data-q="' + qi + '" data-o="' + oi + '"><input type="radio" name="q' + qi +
-          '" value="' + oi + '"><span>' + esc(o) + "</span></label>";
+    var isPre = kind === "pre";
+    if (!isPre && (cp.completed || !cp.allRead)) { renderPostClosed(course, cp); return; }
+
+    var questions = shuffled(course.quiz.map(function (q, qi) { return { q: q, qi: qi }; })).map(function (item, n) {
+      var q = item.q, qi = item.qi;
+      var opts = shuffled(q.options.map(function (o, oi) { return { o: o, oi: oi }; })).map(function (x) {
+        return '<label data-q="' + qi + '" data-o="' + x.oi + '"><input type="radio" name="q' + qi +
+          '" value="' + x.oi + '"><span>' + esc(x.o) + "</span></label>";
       }).join("");
-      return '<div class="q-item"><div class="q-title">' + (qi + 1) + ". " + esc(q.q) + "</div>" + opts + "</div>";
+      return '<div class="q-item"><div class="q-title">' + (n + 1) + ". " + esc(q.q) + "</div>" + opts + "</div>";
     }).join("");
 
     app.innerHTML =
       topbar() +
       '<main class="container"><div class="course-layout" style="--c:' + course.color + '">' +
-      sidebar(course, cp, "quiz") +
+      sidebar(course, cp, isPre ? "pre" : "quiz") +
       '<article class="lesson">' +
-      '<div class="kicker">แบบทดสอบท้ายบท</div>' +
+      '<div class="kicker">' + (isPre ? "ข้อสอบก่อนเรียน" : "ข้อสอบหลังเรียน") + "</div>" +
       "<h2>" + esc(course.title) + "</h2>" +
-      '<div class="src">' + course.quiz.length + " ข้อ · ผ่านเมื่อได้ " + PASS_PERCENT + "% ขึ้นไป" +
-      (cp.best !== null ? " · คะแนนสูงสุดของคุณ " + cp.best + "%" : "") + "</div>" +
-      (cp.doneCount < course.lessons.length
-        ? '<div class="callout warn">คุณยังอ่านบทเรียนไม่ครบ (' + cp.doneCount + "/" + course.lessons.length +
-          " บท) ทำแบบทดสอบได้ แต่แนะนำให้อ่านให้ครบก่อน</div>"
+      '<div class="src">' + course.quiz.length + " ข้อ" +
+      (isPre ? "" : " · ผ่านเมื่อได้ " + PASS_PERCENT + "% ขึ้นไป") +
+      (!isPre && cp.pre !== null ? " · คะแนนก่อนเรียน " + cp.pre + "%" : "") +
+      (!isPre && cp.best !== null ? " · คะแนนสูงสุด " + cp.best + "%" : "") + "</div>" +
+      (isPre
+        ? '<div class="callout warn"><b>ทำได้ครั้งเดียว ส่งแล้วทำใหม่ไม่ได้</b> ข้อสอบนี้ใช้วัดความรู้ก่อนเรียน ไม่มีผลต่อการจบหลักสูตร ตอบตามที่รู้ได้เลย</div>'
         : "") +
       '<form id="quiz">' + questions +
       '<div id="result"></div>' +
@@ -2344,31 +2441,48 @@ window.COURSES = [
         return;
       }
       var correct = 0;
-      course.quiz.forEach(function (q, qi) {
-        if (answers[qi] === q.answer) correct++;
+      course.quiz.forEach(function (q, qi) { if (answers[qi] === q.answer) correct++; });
+      var pct = Math.round((correct / course.quiz.length) * 100);
+      var passed = !isPre && pct >= PASS_PERCENT;
+      form.querySelectorAll("input").forEach(function (inp) { inp.disabled = true; });
+      // เฉลยเฉพาะตอนสอบหลังเรียนผ่าน เพื่อไม่ให้จำคำตอบไปใช้ในข้อสอบครั้งถัดไป
+      if (passed) course.quiz.forEach(function (q, qi) {
         form.querySelectorAll('label[data-q="' + qi + '"]').forEach(function (lab) {
           var oi = Number(lab.getAttribute("data-o"));
           if (oi === q.answer) lab.classList.add("right");
           else if (oi === answers[qi]) lab.classList.add("wrong");
-          lab.querySelector("input").disabled = true;
         });
       });
-      var pct = Math.round((correct / course.quiz.length) * 100);
-      var c = state.progress[course.id] || { done: [], best: null };
-      c.best = c.best === null ? pct : Math.max(c.best, pct);
-      state.progress[course.id] = c;
-      record(course, "quiz", pct);
 
-      var passed = pct >= PASS_PERCENT;
+      var c = state.progress[course.id] || blankProgress();
+      if (isPre) {
+        c.pre = pct;
+      } else {
+        c.best = c.best === null || c.best === undefined ? pct : Math.max(c.best, pct);
+        if (passed) c.completedAt = new Date().toISOString();
+      }
+      state.progress[course.id] = c;
+      record(course, kind, pct);
+
+      var message = isPre ? "บันทึกคะแนนก่อนเรียนแล้ว เริ่มอ่านบทเรียนได้เลย"
+        : passed ? "🎉 ยินดีด้วย! คุณเรียนจบหลักสูตรนี้แล้ว อ่านเนื้อหาทบทวนได้ตลอด และเรียนรอบใหม่ได้หลังครบ 6 เดือน"
+        : "ยังไม่ผ่านเกณฑ์ " + PASS_PERCENT + "% — ทบทวนบทเรียนแล้วทำใหม่ได้";
       resultBox.innerHTML =
-        '<div class="result' + (passed ? "" : " fail") + '">' +
+        '<div class="result' + (isPre || passed ? "" : " fail") + '">' +
         '<div class="score">' + correct + " / " + course.quiz.length + " (" + pct + "%)</div>" +
-        "<div>" + (passed ? "🎉 ยินดีด้วย! คุณผ่านแบบทดสอบหลักสูตรนี้แล้ว"
-          : "ยังไม่ผ่านเกณฑ์ " + PASS_PERCENT + "% — ลองทบทวนบทเรียนแล้วทำใหม่อีกครั้ง") + "</div></div>";
+        "<div>" + message + "</div></div>";
       var submit = document.getElementById("submit");
-      submit.textContent = "ทำแบบทดสอบใหม่";
       submit.type = "button";
-      submit.onclick = function () { renderQuiz(course); };
+      if (isPre) {
+        submit.textContent = "เริ่มบทเรียน →";
+        submit.onclick = function () { location.hash = "#/course/" + course.id + "/0"; };
+      } else if (passed) {
+        submit.textContent = "กลับหน้าหลัก";
+        submit.onclick = function () { location.hash = "#/"; };
+      } else {
+        submit.textContent = "ทำข้อสอบใหม่";
+        submit.onclick = function () { renderTest(course, "post"); };
+      }
       resultBox.scrollIntoView({ behavior: "smooth", block: "center" });
     });
   }
@@ -2380,7 +2494,9 @@ window.COURSES = [
     if (parts[0] === "course") {
       var course = getCourse(parts[1]);
       if (course) {
-        if (parts[2] === "quiz") { renderQuiz(course); return; }
+        var cp = courseProgress(course);
+        if (cp.needsPre) { renderTest(course, "pre"); return; }
+        if (parts[2] === "quiz") { renderTest(course, "post"); return; }
         var idx = parseInt(parts[2], 10);
         if (isNaN(idx) || idx < 0 || idx >= course.lessons.length) idx = 0;
         renderLesson(course, idx);

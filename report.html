@@ -146,7 +146,9 @@ a { color: var(--brand-ink); }
   color: var(--ink); text-decoration: none; font-size: 15px; line-height: 1.45;
 }
 .side a:hover { background: #f1f5f4; }
-.side a.active { background: var(--brand-soft); font-weight: 600; }
+.side a.active, .side .side-item.active { background: var(--brand-soft); font-weight: 600; }
+.side .side-item { display: flex; gap: 10px; align-items: flex-start; padding: 9px 10px; border-radius: 10px; font-size: 15px; line-height: 1.45; color: var(--ink-2); }
+.side .side-item.locked { opacity: .55; }
 .side .dot {
   flex: 0 0 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line);
   display: grid; place-items: center; font-size: 12px; color: #fff; margin-top: 1px;
@@ -2001,7 +2003,7 @@ window.COURSES = [
     return '<span class="brand-logo' + (small ? " small" : "") + '"><img src="' + LOGO + '" alt="Sansuisha">' +
       '<span class="dept">Human Resource</span></span>';
   }
-  var state = { rows: [], employees: [], loadedAt: null, dept: "", status: "", search: "" };
+  var state = { rows: [], employees: [], loadedAt: null, dept: "", group: "", status: "", search: "" };
   var hrKey = null;
 
   function readSession() { try { return sessionStorage.getItem(KEY_STORE); } catch (e) { return null; } }
@@ -2064,9 +2066,11 @@ window.COURSES = [
       var total = course ? course.lessons.length : r.lessonsTotal;
       var doneCount = (r.done || []).filter(function (i) { return i < total; }).length;
       var passed = r.bestScore !== null && r.bestScore >= PASS_PERCENT;
+      var pre = r.preScore === undefined ? null : r.preScore;
       p.courses[r.courseId] = {
-        doneCount: doneCount, total: total, best: r.bestScore, passed: passed,
-        pct: Math.round(((doneCount + (passed ? 1 : 0)) / (total + 1)) * 100),
+        doneCount: doneCount, total: total, best: r.bestScore, pre: pre, passed: passed, round: r.round || 1,
+        completedAt: r.completedAt || "", retakeAt: r.retakeAt || "", canRetake: !!r.canRetake,
+        pct: r.completedAt ? 100 : Math.round((((pre !== null ? 1 : 0) + doneCount + (passed ? 1 : 0)) / (total + 2)) * 100),
       };
       if (r.updatedAt && (!p.last || r.updatedAt > p.last)) p.last = r.updatedAt;
     });
@@ -2074,6 +2078,7 @@ window.COURSES = [
       var p = people[k];
       p.completed = courses.filter(function (c) { return p.courses[c.id] && p.courses[c.id].pct === 100; }).length;
       p.started = Object.keys(p.courses).length > 0;
+      p.retakeDue = courses.some(function (c) { return p.courses[c.id] && p.courses[c.id].canRetake; });
       return p;
     });
   }
@@ -2082,6 +2087,7 @@ window.COURSES = [
     var q = state.search.trim().toLowerCase();
     return people.filter(function (p) {
       if (state.dept && p.dept !== state.dept) return false;
+      if (state.status === "retake" && !p.retakeDue) return false;
       if (state.status === "all-done" && p.completed !== courses.length) return false;
       if (state.status === "in-progress" && (!p.started || p.completed === courses.length)) return false;
       if (state.status === "not-started" && p.started) return false;
@@ -2130,11 +2136,22 @@ window.COURSES = [
 
   function cell(c) {
     if (!c) return '<td class="c-none">–</td>';
+    var round = c.round > 1 ? " · รอบ " + c.round : "";
+    var pre = "ก่อน " + (c.pre !== null ? c.pre + "%" : "–");
     if (c.pct === 100) {
-      return '<td class="c-done"><b>✓ จบแล้ว</b><small>คะแนน ' + c.best + "%</small></td>";
+      return '<td class="c-done"><b>✓ จบแล้ว</b><small>' + pre + " → หลัง " + (c.best !== null ? c.best + "%" : "–") + round + "</small>" +
+        "<small>จบ " + esc(fmtDay(c.completedAt)) + "</small>" +
+        "<small>" + (c.canRetake ? "<b>ครบกำหนดเรียนใหม่แล้ว</b>" : "เรียนใหม่ได้ " + esc(fmtDay(c.retakeAt))) + "</small></td>";
     }
-    return '<td class="c-doing"><b>' + c.pct + "%</b><small>อ่าน " + c.doneCount + "/" + c.total +
-      " บท" + (c.best !== null ? " · คะแนน " + c.best + "%" : "") + "</small></td>";
+    return '<td class="c-doing"><b>' + c.pct + "%</b><small>" + pre + (c.best !== null ? " · หลัง " + c.best + "%" : "") + round + "</small>" +
+      "<small>อ่าน " + c.doneCount + "/" + c.total + " บท</small></td>";
+  }
+  function fmtDay(iso) {
+    var d = iso ? new Date(iso) : null;
+    return d && !isNaN(d) ? d.toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "2-digit" }) : "";
+  }
+  function average(nums) {
+    return nums.length ? Math.round(nums.reduce(function (a, b) { return a + b; }, 0) / nums.length) : null;
   }
 
   function renderReport() {
@@ -2143,36 +2160,46 @@ window.COURSES = [
     var depts = [];
     people.forEach(function (p) { if (p.dept && depts.indexOf(p.dept) === -1) depts.push(p.dept); });
     depts.sort();
+    var shown = courses.filter(function (c) { return !state.group || c.scope + "/" + c.group === state.group; });
+    var GROUP_NAMES = {
+      "internal/production": "ภายใน · ฝ่ายผลิต", "internal/quality": "ภายใน · คุณภาพและการปรับปรุงงาน",
+      "internal/communication": "ภายใน · การสื่อสาร", "external/communication": "ภายนอก · การสื่อสาร", "external/safety": "ภายนอก · ความปลอดภัย",
+    };
 
-    var summary = courses.map(function (c) {
-      var done = 0, doing = 0, scores = [];
+    var summary = shown.map(function (c) {
+      var done = 0, doing = 0, pres = [], posts = [];
       list.forEach(function (p) {
         var x = p.courses[c.id];
         if (!x) return;
         if (x.pct === 100) done++; else doing++;
-        if (x.best !== null) scores.push(x.best);
+        if (x.pre !== null) pres.push(x.pre);
+        if (x.best !== null) posts.push(x.best);
       });
-      var avg = scores.length ? Math.round(scores.reduce(function (a, b) { return a + b; }, 0) / scores.length) : null;
+      var avgPre = average(pres), avgPost = average(posts);
       var pct = list.length ? Math.round((done / list.length) * 100) : 0;
       return (
         '<div class="sum-card" style="--c:' + c.color + '"><div class="sum-title">' + c.icon + " " + esc(c.title) + "</div>" +
         '<div class="sum-big">' + done + ' <span>/ ' + list.length + " คนจบแล้ว</span></div>" +
         '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
         '<div class="foot-row"><span>กำลังเรียน ' + doing + " · ยังไม่เริ่ม " + (list.length - done - doing) +
-        "</span><span>" + (avg !== null ? "คะแนนเฉลี่ย " + avg + "%" : "") + "</span></div></div>"
+        "</span></div>" +
+        (avgPre !== null || avgPost !== null
+          ? '<div class="foot-row"><span>เฉลี่ยก่อนเรียน ' + (avgPre !== null ? avgPre + "%" : "–") +
+            " → หลังเรียน " + (avgPost !== null ? avgPost + "%" : "–") + "</span></div>" : "") +
+        "</div>"
       );
     }).join("");
 
     var head = "<tr><th>รหัส</th><th>ชื่อ</th><th>ฝ่าย</th>" +
-      courses.map(function (c) { return '<th title="' + esc(c.title) + '">' + c.icon + " " + esc(c.title) + "</th>"; }).join("") +
+      shown.map(function (c) { return '<th title="' + esc(c.title) + '">' + c.icon + " " + esc(c.title) + "</th>"; }).join("") +
       "<th>จบ</th><th>ใช้งานล่าสุด</th></tr>";
     var body = list.map(function (p) {
       return "<tr><td>" + esc(p.id) + (p.inRoster ? "" : ' <span class="badge doing" title="ไม่อยู่ในแท็บ Employees">นอกรายชื่อ</span>') +
         "</td><td>" + esc(p.name) + "</td><td>" + esc(p.dept) + "</td>" +
-        courses.map(function (c) { return cell(p.courses[c.id]); }).join("") +
+        shown.map(function (c) { return cell(p.courses[c.id]); }).join("") +
         '<td class="c-count">' + p.completed + "/" + courses.length + "</td>" +
         '<td class="c-date">' + esc(fmtDate(p.last)) + "</td></tr>";
-    }).join("") || '<tr><td colspan="' + (courses.length + 5) + '" class="c-none">ไม่พบพนักงานตามเงื่อนไข</td></tr>';
+    }).join("") || '<tr><td colspan="' + (shown.length + 5) + '" class="c-none">ไม่พบพนักงานตามเงื่อนไข</td></tr>';
 
     app.innerHTML =
       '<header class="topbar"><div class="topbar-inner">' +
@@ -2182,15 +2209,18 @@ window.COURSES = [
       '<main class="container wide">' +
       '<div class="report-head"><div><h2>ภาพรวมการเรียนรู้</h2>' +
       '<p class="muted-text">ข้อมูลจาก Google Sheets · โหลดเมื่อ ' + esc(fmtDate(state.loadedAt && state.loadedAt.toISOString())) +
-      " · จบหลักสูตร = อ่านครบทุกบท และสอบผ่าน " + PASS_PERCENT + "%</p></div></div>" +
+      " · จบหลักสูตร = อ่านครบทุกบท และสอบหลังเรียนผ่าน " + PASS_PERCENT + "% · เรียนใหม่ได้หลังครบ 6 เดือน</p></div></div>" +
       '<section class="sum-grid">' + summary + "</section>" +
       '<section class="filters">' +
       '<input id="search" type="search" placeholder="ค้นหารหัส ชื่อ หรือส่วนงาน" value="' + esc(state.search) + '">' +
       '<select id="dept"><option value="">ทุกฝ่าย</option>' +
       depts.map(function (d) { return "<option" + (d === state.dept ? " selected" : "") + ">" + esc(d) + "</option>"; }).join("") +
       "</select>" +
+      '<select id="group"><option value="">ทุกหมวด</option>' +
+      Object.keys(GROUP_NAMES).map(function (g) { return '<option value="' + g + '"' + (g === state.group ? " selected" : "") + ">" + GROUP_NAMES[g] + "</option>"; }).join("") +
+      "</select>" +
       '<select id="status">' +
-      [["", "ทุกสถานะ"], ["all-done", "จบครบทุกหลักสูตร"], ["in-progress", "กำลังเรียน"], ["not-started", "ยังไม่เริ่มเลย"]]
+      [["", "ทุกสถานะ"], ["all-done", "จบครบทุกหลักสูตร"], ["in-progress", "กำลังเรียน"], ["not-started", "ยังไม่เริ่มเลย"], ["retake", "ครบกำหนดเรียนใหม่"]]
         .map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === state.status ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") +
       "</select>" +
       '<span class="spacer"></span><span class="muted-text">' + list.length + " คน</span>" +
@@ -2207,6 +2237,7 @@ window.COURSES = [
     });
     document.getElementById("dept").addEventListener("change", function (e) { state.dept = e.target.value; renderReport(); });
     document.getElementById("status").addEventListener("change", function (e) { state.status = e.target.value; renderReport(); });
+    document.getElementById("group").addEventListener("change", function (e) { state.group = e.target.value; renderReport(); });
     document.getElementById("csv").addEventListener("click", function () { downloadCsv(list); });
     document.getElementById("logout").addEventListener("click", function () {
       writeSession(null); hrKey = null; state.rows = []; state.employees = []; renderLogin();
@@ -2222,7 +2253,8 @@ window.COURSES = [
   function downloadCsv(list) {
     var header = ["รหัสพนักงาน", "ชื่อ", "ฝ่าย", "ส่วนงาน"];
     courses.forEach(function (c) {
-      header.push(c.title + " - สถานะ", c.title + " - ความคืบหน้า%", c.title + " - คะแนนสูงสุด%");
+      header.push(c.title + " - สถานะ", c.title + " - ความคืบหน้า%", c.title + " - คะแนนก่อนเรียน%", c.title + " - คะแนนหลังเรียน%",
+        c.title + " - วันที่จบ", c.title + " - เรียนใหม่ได้ตั้งแต่", c.title + " - รอบที่");
     });
     header.push("จำนวนหลักสูตรที่จบ", "ใช้งานล่าสุด");
     var lines = [header];
@@ -2230,7 +2262,9 @@ window.COURSES = [
       var row = [p.id, p.name, p.dept, p.team || ""];
       courses.forEach(function (c) {
         var x = p.courses[c.id];
-        row.push(!x ? "ยังไม่เริ่ม" : x.pct === 100 ? "จบแล้ว" : "กำลังเรียน", x ? x.pct : 0, x && x.best !== null ? x.best : "");
+        row.push(!x ? "ยังไม่เริ่ม" : x.pct === 100 ? "จบแล้ว" : "กำลังเรียน", x ? x.pct : 0,
+          x && x.pre !== null ? x.pre : "", x && x.best !== null ? x.best : "",
+          x ? fmtDay(x.completedAt) : "", x ? fmtDay(x.retakeAt) : "", x ? x.round : "");
       });
       row.push(p.completed, fmtDate(p.last));
       lines.push(row);
