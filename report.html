@@ -6,172 +6,304 @@
 <title>รายงานความคืบหน้า (HR)</title>
 <script>window.KP_API_URL = "https://script.google.com/macros/s/AKfycbzPjdPRRxNKaTWaR8CP2qFyGToMMiTFM_XJctdxfYMqpFY_04P7L89nMIS3qX5ku8CgWQ/exec";</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Orbitron:wght@600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f4f7f6;
+  --navy: #0f2a4a;
+  --navy-2: #1a3d68;
+  --blue: #2563a8;
+  --blue-soft: #e9f1fa;
+  --blue-softer: #f4f8fc;
+  --bg: #f6f8fb;
   --surface: #ffffff;
-  --ink: #1b2a27;
-  --ink-2: #51625e;
-  --line: #dfe7e4;
-  --brand: #0f8a6c;
-  --brand-ink: #0b6650;
-  --brand-soft: #e3f4ef;
-  --warn-soft: #fff4e5;
-  --warn: #b45309;
-  --danger: #b91c1c;
-  --radius: 14px;
-  --shadow: 0 1px 2px rgba(16, 40, 34, .06), 0 4px 16px rgba(16, 40, 34, .06);
+  --ink: #14233a;
+  --ink-2: #55657a;
+  --ink-3: #8a97a8;
+  --line: #e3e9f0;
+  --brand: #2563a8;
+  --brand-ink: #0f2a4a;
+  --brand-soft: #e9f1fa;
+  --good: #14734f;
+  --good-soft: #e5f4ed;
+  --warn: #9a5a07;
+  --warn-soft: #fcf2e1;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+  --radius: 16px;
+  --radius-s: 10px;
+  --shadow: 0 1px 2px rgba(15, 42, 74, .05), 0 6px 20px rgba(15, 42, 74, .05);
+  --shadow-lift: 0 2px 4px rgba(15, 42, 74, .06), 0 14px 32px rgba(15, 42, 74, .1);
+  --nav-w: 248px;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body {
-  font-family: "Sarabun", "Leelawadee UI", "Tahoma", sans-serif;
-  font-size: 17px; line-height: 1.7;
+  font-family: "IBM Plex Sans Thai", "Leelawadee UI", "Tahoma", sans-serif;
+  font-size: 15.5px; line-height: 1.6;
   color: var(--ink); background: var(--bg);
+  -webkit-font-smoothing: antialiased;
 }
 img { max-width: 100%; height: auto; }
-button { font: inherit; cursor: pointer; }
-a { color: var(--brand-ink); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--blue); }
+h1, h2, h3, h4 { color: var(--navy); line-height: 1.3; font-weight: 600; }
+.ico { flex: none; display: block; }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.spacer { flex: 1; }
+
+/* ---------- Buttons, inputs, badges ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px;
+  border: 1px solid var(--navy); border-radius: var(--radius-s); padding: 8px 18px; font-weight: 500;
+  background: var(--navy); color: #fff; text-decoration: none; white-space: nowrap;
+  transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.btn:hover { background: var(--navy-2); border-color: var(--navy-2); }
+.btn.block { width: 100%; min-height: 48px; }
+.btn.ghost { background: var(--surface); color: var(--navy); border-color: var(--line); }
+.btn.ghost:hover { background: var(--blue-soft); border-color: #c9dbef; }
+.btn.light { background: #fff; color: var(--navy); border-color: #fff; }
+.btn.light:hover { background: var(--blue-soft); border-color: var(--blue-soft); }
+.btn.danger { background: var(--surface); color: var(--danger); border-color: #f0c9c5; }
+.btn.danger:hover { background: var(--danger-soft); }
+.btn.small { min-height: 34px; padding: 4px 12px; font-size: 14px; }
+.btn.icon-only { padding: 0; width: 38px; min-height: 38px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-weight: 500; font-size: 14px; margin-bottom: 5px; color: var(--navy); }
+.field small { display: block; color: var(--ink-2); font-size: 13px; margin-top: 4px; }
+.field input, .field select, .field textarea, .control {
+  width: 100%; padding: 9px 12px; min-height: 42px; border: 1px solid #cfd8e3; border-radius: var(--radius-s);
+  background: var(--surface); outline: none; transition: border-color .15s ease, box-shadow .15s ease;
+}
+.field input:focus, .field select:focus, .field textarea:focus, .control:focus { border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
+.error { color: var(--danger); font-size: 14px; min-height: 22px; margin: 4px 0; }
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 500; padding: 2px 10px; border-radius: 99px; background: var(--good-soft); color: var(--good); white-space: nowrap; }
+.badge .ico { width: 14px; height: 14px; }
+.badge.todo { background: #eef1f5; color: var(--ink-2); }
+.badge.doing { background: var(--blue-soft); color: var(--blue); }
+.badge.due { background: var(--warn-soft); color: var(--warn); }
+.bar { height: 6px; background: #e8edf3; border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; background: var(--blue); border-radius: 99px; transition: width .5s ease; }
+.foot-row { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--ink-2); margin-top: 6px; }
 
 /* ---------- Login ---------- */
-.login-wrap {
-  min-height: 100vh; display: grid; place-items: center; padding: 24px 16px;
-  background: radial-gradient(1200px 600px at 10% -10%, #cdeee4 0%, transparent 60%),
-              radial-gradient(900px 500px at 110% 110%, #dbe7ff 0%, transparent 60%), var(--bg);
-}
-.login-card {
-  width: 100%; max-width: 420px; background: var(--surface); border-radius: 20px;
-  box-shadow: var(--shadow); padding: 36px 28px;
-}
-.login-card .logo { font-size: 40px; line-height: 1; }
-.login-card h1 { font-size: 26px; margin: 12px 0 4px; }
+.login-wrap { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); background: var(--surface); }
+.login-side { background: var(--navy); color: #fff; padding: 56px; display: flex; flex-direction: column; justify-content: flex-end; }
+.login-side h2 { color: #fff; font-size: 34px; margin: 0 0 12px; max-width: 460px; }
+.login-side p { color: #c3d3e6; max-width: 460px; margin: 0; }
+.login-side ul { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 12px; color: #dce7f3; }
+.login-side li { display: flex; gap: 10px; align-items: center; }
+.login-main { display: grid; place-items: center; padding: 32px 20px; }
+.login-card { width: 100%; max-width: 380px; }
+.login-card h1 { font-size: 24px; margin: 0 0 4px; }
 .login-card p.sub { color: var(--ink-2); margin: 0 0 24px; }
-.field label { display: block; font-weight: 600; margin-bottom: 6px; }
-.field input {
-  width: 100%; font: inherit; font-size: 18px; padding: 12px 14px; letter-spacing: .5px;
-  border: 1.5px solid var(--line); border-radius: 10px; outline: none; background: #fbfdfc;
-}
-.field input:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
-.error { color: var(--danger); font-size: 15px; min-height: 24px; margin: 6px 0 4px; }
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  border: 0; border-radius: 10px; padding: 11px 20px; font-weight: 600;
-  background: var(--brand); color: #fff; text-decoration: none;
-}
-.btn:hover { background: var(--brand-ink); }
-.btn.block { width: 100%; padding: 13px; font-size: 18px; }
-.btn.ghost { background: transparent; color: var(--brand-ink); border: 1.5px solid var(--line); }
-.btn.ghost:hover { background: var(--brand-soft); }
-.btn:disabled { opacity: .5; cursor: not-allowed; }
-.login-foot { color: var(--ink-2); font-size: 14px; margin-top: 18px; text-align: center; }
+.login-brand { padding-bottom: 28px; }
+.login-foot { color: var(--ink-2); font-size: 14px; margin-top: 18px; }
+.loading { min-height: 100vh; display: grid; place-items: center; color: var(--ink-2); }
 
 /* ---------- Company logo + department ---------- */
 .brand-logo { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; }
-.brand-logo img { display: block; width: 230px; height: auto; }
+.brand-logo img { display: block; width: 210px; height: auto; }
 .brand-logo .dept {
   display: flex; align-items: center; gap: 10px;
-  font-family: "Orbitron", "Segoe UI", sans-serif; font-weight: 600; font-size: 12.5px;
+  font-family: "Orbitron", "Segoe UI", sans-serif; font-weight: 600; font-size: 11.5px;
   letter-spacing: .38em; margin-right: -.38em; /* letter-spacing adds trailing space; pull it back to stay centered */
-  color: #1f7a5c; text-transform: uppercase; white-space: nowrap;
+  color: var(--navy); text-transform: uppercase; white-space: nowrap;
 }
-.brand-logo .dept::before, .brand-logo .dept::after {
-  content: ""; width: 16px; height: 1.5px; background: linear-gradient(90deg, transparent, #5fb053);
-}
-.brand-logo .dept::after { background: linear-gradient(90deg, #5fb053, transparent); margin-right: .38em; }
+.brand-logo .dept::before, .brand-logo .dept::after { content: ""; width: 16px; height: 1.5px; background: linear-gradient(90deg, transparent, var(--blue)); }
+.brand-logo .dept::after { background: linear-gradient(90deg, var(--blue), transparent); margin-right: .38em; }
 .brand-logo.small { gap: 3px; }
-.brand-logo.small img { width: 128px; }
+.brand-logo.small img { width: 132px; }
 .brand-logo.small .dept { font-size: 7.5px; gap: 6px; letter-spacing: .34em; margin-right: -.34em; }
 .brand-logo.small .dept::before, .brand-logo.small .dept::after { width: 8px; height: 1px; }
-.topbar .brand { flex-shrink: 0; }
-.topbar .btn { white-space: nowrap; }
-.login-brand { display: flex; justify-content: center; padding-bottom: 20px; margin-bottom: 20px; border-bottom: 1px solid var(--line); }
-.site-name { font-weight: 700; font-size: 16px; color: var(--ink); padding-left: 14px; margin-left: 4px; border-left: 1px solid var(--line); line-height: 1.3; }
 
-/* ---------- Top bar ---------- */
-.topbar {
-  position: sticky; top: 0; z-index: 10; background: var(--surface);
-  border-bottom: 1px solid var(--line);
+/* ---------- App shell ---------- */
+.shell { min-height: 100vh; }
+.nav {
+  position: fixed; inset: 0 auto 0 0; width: var(--nav-w); background: var(--surface); border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; padding: 20px 14px 16px; z-index: 20; overflow-y: auto;
 }
-.topbar-inner {
-  max-width: 1100px; margin: 0 auto; padding: 10px 16px;
-  display: flex; align-items: center; gap: 12px;
+.nav-brand { padding: 2px 8px 22px; display: flex; justify-content: center; }
+.nav nav { display: grid; gap: 2px; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-s);
+  color: var(--ink-2); text-decoration: none; font-weight: 500; transition: background .15s ease, color .15s ease;
 }
-.brand { font-weight: 700; font-size: 18px; color: var(--ink); text-decoration: none; display: flex; gap: 8px; align-items: center; }
-.spacer { flex: 1; }
+.nav-item:hover { background: var(--blue-softer); color: var(--navy); }
+.nav-item.active { background: var(--navy); color: #fff; }
+.nav-group { font-size: 12px; color: var(--ink-3); padding: 18px 12px 6px; }
+.nav-foot { margin-top: auto; padding: 16px 12px 0; font-size: 12px; color: var(--ink-3); line-height: 1.5; }
+.workspace { margin-left: var(--nav-w); min-width: 0; }
+.top {
+  position: sticky; top: 0; z-index: 10; height: 64px; display: flex; align-items: center; gap: 12px; padding: 0 28px;
+  background: rgba(255, 255, 255, .94); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line);
+}
+.top-brand { display: none; }
+.top-search { position: relative; width: min(360px, 100%); }
+.top-search .ico { position: absolute; left: 12px; top: 11px; color: var(--ink-3); }
+.top-search input { width: 100%; height: 42px; padding: 0 12px 0 40px; border: 1px solid var(--line); border-radius: var(--radius-s); background: var(--blue-softer); outline: none; }
+.top-search input:focus { background: #fff; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-soft); }
+.top-left { flex: 1; min-width: 0; }
+.top .spacer { display: none; }
 .sync { font-size: 13px; color: var(--ink-2); white-space: nowrap; }
-.sync.error { color: var(--danger); font-weight: 600; }
-.user-chip { color: var(--ink-2); font-size: 15px; text-align: right; line-height: 1.3; }
-.user-chip b { color: var(--ink); display: block; }
+.sync.error { color: var(--danger); font-weight: 500; }
+.user-chip { display: flex; align-items: center; gap: 10px; line-height: 1.3; font-size: 14px; }
+.user-chip b { display: block; font-weight: 500; color: var(--navy); white-space: nowrap; }
+.user-chip span.sub { color: var(--ink-2); font-size: 12.5px; white-space: nowrap; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--blue-soft); color: var(--navy); display: grid; place-items: center; }
+.page { max-width: 1240px; margin: 0 auto; padding: 28px 28px 64px; animation: rise .28s ease both; }
+@keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+.page-head h1 { font-size: 26px; margin: 0; }
+.page-head p { margin: 4px 0 0; color: var(--ink-2); }
+.page-head-right { display: flex; gap: 8px; flex-wrap: wrap; }
+.tabbar { display: none; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.panel-head h2 { font-size: 17px; margin: 0; }
+.panel-head a { font-size: 14px; text-decoration: none; white-space: nowrap; }
+.muted { color: var(--ink-2); }
+.empty { display: grid; justify-items: center; gap: 6px; text-align: center; color: var(--ink-2); padding: 28px 16px; }
+.empty .ico { color: var(--ink-3); }
+.empty b { color: var(--navy); font-weight: 500; }
+.empty p { margin: 0; font-size: 14px; max-width: 380px; }
+.notice { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; background: var(--warn-soft); color: #6d4005; border-radius: var(--radius-s); padding: 12px 16px; margin-bottom: 18px; }
+.notice > span { flex: 1; min-width: 200px; }
 
 /* ---------- Dashboard ---------- */
-.container { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
-.hero h2 { font-size: 28px; margin: 4px 0 2px; }
-.hero p { color: var(--ink-2); margin: 0; }
-.overall {
-  margin: 20px 0 28px; background: var(--surface); border-radius: var(--radius);
-  box-shadow: var(--shadow); padding: 18px 20px; display: flex; gap: 24px; flex-wrap: wrap;
-}
-.overall .stat b { font-size: 26px; display: block; line-height: 1.2; }
-.overall .stat span { color: var(--ink-2); font-size: 14px; }
-.course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+.dash-top { display: grid; grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr); gap: 18px; margin-bottom: 18px; }
+.feature { background: var(--navy); color: #fff; border-radius: var(--radius); padding: 26px 28px; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; }
+.feature .eyebrow { color: #a9c1dc; font-size: 14px; }
+.feature h2 { color: #fff; font-size: 24px; margin: 4px 0 4px; }
+.feature p { color: #c3d3e6; margin: 0; }
+.feature .bar { background: rgba(255, 255, 255, .18); }
+.feature .bar > i { background: #fff; }
+.feature .foot-row { color: #c3d3e6; }
+.feature-action { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.feature-action > div { flex: 1; min-width: 180px; }
+.ring-panel { display: flex; align-items: center; gap: 20px; }
+.ring { position: relative; width: 128px; flex: none; }
+.ring svg { display: block; }
+.ring circle { fill: none; stroke-width: 11; }
+.ring-track { stroke: #e8edf3; }
+.ring-on { stroke: var(--blue); stroke-linecap: round; }
+.ring-text { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; line-height: 1.2; }
+.ring-text b { font-size: 24px; font-weight: 600; color: var(--navy); font-variant-numeric: tabular-nums; }
+.ring-text span { font-size: 12px; color: var(--ink-2); }
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 18px; }
+.stat-tile { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; min-width: 0; }
+.stat-ico { width: 40px; height: 40px; border-radius: 12px; background: var(--blue-soft); color: var(--navy); display: grid; place-items: center; flex: none; }
+.stat-tile b { display: block; font-size: 24px; font-weight: 600; color: var(--navy); line-height: 1.2; font-variant-numeric: tabular-nums; }
+.stat-tile span { display: block; font-size: 14px; color: var(--ink-2); }
+.stat-tile small { display: block; font-size: 12.5px; color: var(--ink-3); }
+.dash-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+.event { display: flex; gap: 14px; padding: 12px 0; border-top: 1px solid var(--line); }
+.event:first-child { border-top: 0; padding-top: 0; }
+.event:last-child { padding-bottom: 0; }
+.date-chip { width: 54px; flex: none; border-radius: 12px; background: var(--blue-soft); color: var(--navy); text-align: center; padding: 6px 0; line-height: 1.15; align-self: flex-start; }
+.date-chip b { display: block; font-size: 20px; font-weight: 600; }
+.date-chip span { font-size: 12px; }
+.event-body { min-width: 0; }
+.event-body h3 { margin: 0 0 2px; font-size: 15.5px; font-weight: 500; }
+.event-body h3 a { color: inherit; text-decoration: none; }
+.event-body h3 a:hover { color: var(--blue); }
+.event-meta { display: flex; flex-wrap: wrap; gap: 2px 14px; font-size: 13.5px; color: var(--ink-2); }
+.event-meta span { display: inline-flex; gap: 5px; align-items: center; }
+.event-meta .ico { width: 15px; height: 15px; }
+.hbar { display: grid; grid-template-columns: minmax(0, 190px) minmax(40px, 1fr) 62px; gap: 12px; align-items: center; padding: 6px 0; font-size: 14px; }
+.hbar-name { line-height: 1.3; overflow-wrap: anywhere; }
+.hbar-track { height: 8px; background: #e8edf3; border-radius: 4px; }
+.hbar-track i { display: block; height: 100%; min-width: 2px; background: var(--blue); border-radius: 0 4px 4px 0; transition: width .5s ease; }
+.hbar-val { text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.course-row { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); text-decoration: none; color: inherit; }
+.course-row:first-child { border-top: 0; }
+.course-row:hover h3 { color: var(--blue); }
+.course-row h3 { margin: 0; font-size: 15px; font-weight: 500; transition: color .15s ease; }
+.course-row > div { flex: 1; min-width: 0; }
+
+/* ---------- Catalog ---------- */
+.course-ico { width: 42px; height: 42px; flex: none; border-radius: 12px; background: var(--blue-soft); color: var(--navy); display: grid; place-items: center; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
+.toolbar .control { width: auto; min-width: 150px; }
+.toolbar .search { flex: 1; min-width: 220px; position: relative; }
+.toolbar .search .ico { position: absolute; left: 12px; top: 11px; color: var(--ink-3); }
+.toolbar .search input { width: 100%; padding-left: 40px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.chip { border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); border-radius: 99px; padding: 6px 14px; font-size: 14px; min-height: 36px; transition: all .15s ease; }
+.chip:hover { border-color: #c9dbef; color: var(--navy); }
+.chip.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+.chip em { font-style: normal; opacity: .65; margin-left: 4px; font-variant-numeric: tabular-nums; }
+.course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; }
 .course-card {
-  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
-  overflow: hidden; display: flex; flex-direction: column; text-decoration: none; color: inherit;
-  border-top: 5px solid var(--c, var(--brand)); transition: transform .12s ease;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px;
+  display: flex; flex-direction: column; gap: 10px; text-decoration: none; color: inherit;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
-.course-card:hover { transform: translateY(-2px); }
-.course-card .body { padding: 18px 20px; flex: 1; }
-.course-card .icon { font-size: 30px; }
-.course-card h3 { margin: 6px 0 4px; font-size: 20px; line-height: 1.4; }
-.course-card p { margin: 0; color: var(--ink-2); font-size: 15px; }
-.course-card .meta { color: var(--ink-2); font-size: 14px; margin-top: 10px; }
-.course-card .foot { padding: 12px 20px 16px; border-top: 1px solid var(--line); }
-.bar { height: 8px; background: #e8eeec; border-radius: 99px; overflow: hidden; }
-.bar > i { display: block; height: 100%; background: var(--c, var(--brand)); border-radius: 99px; }
-.foot-row { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-2); margin-top: 6px; }
-.badge { display: inline-block; font-size: 13px; font-weight: 600; padding: 2px 10px; border-radius: 99px; background: var(--brand-soft); color: var(--brand-ink); }
-.badge.todo { background: #eef2f1; color: var(--ink-2); }
-.badge.doing { background: var(--warn-soft); color: var(--warn); }
+.course-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lift); border-color: #d3e0ee; }
+.card-top { display: flex; align-items: center; gap: 12px; }
+.card-cat { font-size: 13px; color: var(--ink-2); line-height: 1.35; }
+.course-card h3 { margin: 0; font-size: 16.5px; font-weight: 600; }
+.course-card p { margin: 0; color: var(--ink-2); font-size: 14px; }
+.card-meta { display: flex; flex-wrap: wrap; gap: 2px 12px; font-size: 13px; color: var(--ink-2); margin-top: auto; }
+.card-meta span { display: inline-flex; gap: 4px; align-items: center; }
+.card-meta .ico { width: 14px; height: 14px; }
+.card-foot { border-top: 1px solid var(--line); padding-top: 12px; }
+.card-foot-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; font-size: 13px; color: var(--ink-2); }
 
-/* ---------- Course layout ---------- */
-.course-layout { display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: start; }
-.side {
-  position: sticky; top: 72px; background: var(--surface); border-radius: var(--radius);
-  box-shadow: var(--shadow); padding: 14px;
+/* ---------- Training room ---------- */
+.crumbs { font-size: 14px; color: var(--ink-2); margin-bottom: 10px; }
+.crumbs a { text-decoration: none; }
+.room-head { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 18px; }
+.room-title { display: flex; gap: 14px; align-items: center; }
+.room-title h1 { font-size: 22px; margin: 0; }
+.room-title p { margin: 0; font-size: 14px; color: var(--ink-2); }
+.stepper { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 18px 0 0; padding: 0; list-style: none; }
+.stepper li { position: relative; font-size: 13px; color: var(--ink-2); padding-top: 12px; border-top: 3px solid #e3e9f0; line-height: 1.35; }
+.stepper li b { display: block; font-weight: 500; color: inherit; font-size: 14px; }
+.stepper li.done { border-color: var(--blue); }
+.stepper li.now { border-color: var(--navy); color: var(--navy); }
+.room-grid { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 18px; align-items: start; }
+.side { position: sticky; top: 82px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; max-height: calc(100vh - 100px); overflow-y: auto; }
+.side summary { list-style: none; display: none; }
+.side summary::-webkit-details-marker { display: none; }
+.side-item {
+  display: flex; gap: 10px; align-items: flex-start; padding: 9px 10px; border-radius: var(--radius-s);
+  color: var(--ink); text-decoration: none; font-size: 14px; line-height: 1.4; transition: background .15s ease;
 }
-.side h4 { margin: 4px 8px 10px; font-size: 15px; color: var(--ink-2); font-weight: 600; }
-.side a {
-  display: flex; gap: 10px; align-items: flex-start; padding: 9px 10px; border-radius: 10px;
-  color: var(--ink); text-decoration: none; font-size: 15px; line-height: 1.45;
-}
-.side a:hover { background: #f1f5f4; }
-.side a.active, .side .side-item.active { background: var(--brand-soft); font-weight: 600; }
-.side .side-item { display: flex; gap: 10px; align-items: flex-start; padding: 9px 10px; border-radius: 10px; font-size: 15px; line-height: 1.45; color: var(--ink-2); }
-.side .side-item.locked { opacity: .55; }
-.side .dot {
-  flex: 0 0 22px; height: 22px; border-radius: 50%; border: 2px solid var(--line);
-  display: grid; place-items: center; font-size: 12px; color: #fff; margin-top: 1px;
-}
-.side .dot.done { background: var(--c, var(--brand)); border-color: var(--c, var(--brand)); }
-.back { display: inline-block; margin-bottom: 12px; text-decoration: none; font-size: 15px; }
-
-.lesson {
-  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
-  padding: 28px 32px; min-width: 0;
-}
-.lesson .kicker { color: var(--c, var(--brand)); font-weight: 600; font-size: 15px; }
-.lesson h2 { margin: 2px 0 6px; font-size: 26px; line-height: 1.35; }
+a.side-item:hover { background: var(--blue-softer); }
+.side-item.active { background: var(--blue-soft); font-weight: 500; color: var(--navy); }
+.side-item.locked { color: var(--ink-3); }
+.side-label { font-size: 12px; color: var(--ink-3); padding: 10px 10px 4px; }
+.dot { flex: 0 0 22px; height: 22px; border-radius: 50%; border: 1.5px solid #cfd8e3; display: grid; place-items: center; color: #fff; margin-top: -1px; }
+.dot .ico { width: 13px; height: 13px; }
+.dot.done { background: var(--blue); border-color: var(--blue); }
+.dot.lock { border: 0; color: var(--ink-3); }
+.dot.lock .ico { width: 16px; height: 16px; }
+.lesson { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 28px 32px; min-width: 0; font-size: 16px; line-height: 1.75; }
+.lesson .kicker { color: var(--blue); font-weight: 500; font-size: 14px; }
+.lesson h2 { margin: 2px 0 6px; font-size: 24px; }
 .lesson .src { color: var(--ink-2); font-size: 14px; margin-bottom: 18px; }
-.lesson h3 { font-size: 20px; margin: 28px 0 10px; color: var(--ink); }
-.lesson h4 { margin: 0 0 6px; font-size: 17px; }
-.lesson .lead { font-size: 18px; color: var(--ink-2); }
+.lesson h3 { font-size: 19px; margin: 28px 0 10px; }
+.lesson h4 { margin: 0 0 6px; font-size: 16.5px; }
+.lesson .lead { font-size: 17px; color: var(--ink-2); }
 .lesson figure { margin: 16px 0; text-align: center; }
 .lesson figure img { border: 1px solid var(--line); border-radius: 10px; background: #fff; max-height: 460px; }
-.lesson figcaption { color: var(--ink-2); font-size: 15px; margin-top: 6px; }
+.lesson figcaption { color: var(--ink-2); font-size: 14px; margin-top: 6px; }
 .lesson ul, .lesson ol { padding-left: 1.4em; }
 .lesson-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+.video-box { position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: var(--navy); margin: 12px 0 8px; }
+.video-box iframe, .video-box video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.res-row { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; text-decoration: none; color: inherit; margin: 8px 0; }
+a.res-row:hover { border-color: #c9dbef; background: var(--blue-softer); }
+.res-row > div { flex: 1; min-width: 0; }
+.res-row b { display: block; font-weight: 500; color: var(--navy); }
+.res-row small { color: var(--ink-2); font-size: 13px; }
+.res-ico { width: 38px; height: 38px; flex: none; border-radius: 10px; background: var(--blue-soft); color: var(--navy); display: grid; place-items: center; }
+.locked-box { display: flex; gap: 12px; align-items: center; padding: 14px 16px; border: 1px dashed #cfd8e3; border-radius: 12px; color: var(--ink-2); margin: 10px 0; font-size: 14.5px; }
 
+/* ---------- Lesson content blocks ---------- */
 .callout { background: var(--brand-soft); border-left: 4px solid var(--brand); padding: 14px 16px; border-radius: 10px; margin: 16px 0; }
 .callout.strong { background: #fdf2f2; border-color: #dc2626; }
 .callout.warn { background: var(--warn-soft); border-color: var(--warn); }
@@ -238,68 +370,180 @@ table.compare tr:nth-child(even) td { background: #f6faf9; }
 .why-chain b { display: inline-block; min-width: 90px; color: #0e7490; }
 .why-chain .root b { color: var(--danger); }
 
-.scope-section { margin-top: 28px; }
-.scope-title { font-size: 22px; margin: 0 0 4px; padding-bottom: 6px; border-bottom: 2px solid var(--line); }
-.group-title { font-size: 17px; color: var(--ink-2); margin: 16px 0 10px; }
+
 .lesson figure img.page-img { max-height: none; width: 100%; max-width: 820px; }
 
 /* ---------- Quiz ---------- */
 .q-item { border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
-.q-item .q-title { font-weight: 600; margin-bottom: 8px; }
+.q-item .q-title { font-weight: 500; margin-bottom: 8px; color: var(--navy); }
 .q-item label {
-  display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border-radius: 8px;
-  cursor: pointer; border: 1px solid transparent;
+  display: flex; gap: 10px; align-items: flex-start; padding: 9px 12px; border-radius: 10px; margin-top: 4px;
+  cursor: pointer; border: 1px solid transparent; transition: background .12s ease, border-color .12s ease;
 }
-.q-item label:hover { background: #f4f8f7; }
-.q-item input { margin-top: 7px; accent-color: var(--brand); }
-.q-item label.right { background: #e7f7ef; border-color: #9ad8b8; }
-.q-item label.wrong { background: #fdecec; border-color: #f2b1b1; }
-.result {
-  border-radius: 14px; padding: 20px; text-align: center; margin: 20px 0;
-  background: var(--brand-soft);
-}
+.q-item label:hover { background: var(--blue-softer); }
+.q-item label:has(input:checked) { background: var(--blue-soft); border-color: #c9dbef; }
+.q-item input { margin-top: 6px; accent-color: var(--navy); }
+.q-item label.right { background: var(--good-soft); border-color: #a5d9c1; }
+.q-item label.wrong { background: var(--danger-soft); border-color: #f2b8b2; }
+.q-count { position: sticky; bottom: 0; background: rgba(255, 255, 255, .95); padding: 8px 0; font-size: 14px; color: var(--ink-2); }
+.result { border-radius: 14px; padding: 20px; text-align: center; margin: 20px 0; background: var(--blue-soft); }
+.result.pass { background: var(--good-soft); }
 .result.fail { background: var(--warn-soft); }
-.result .score { font-size: 40px; font-weight: 700; line-height: 1.2; }
+.result .score { font-size: 34px; font-weight: 600; line-height: 1.2; color: var(--navy); font-variant-numeric: tabular-nums; }
+
+/* ---------- Tables ---------- */
+.table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+table.data { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+table.data th { text-align: left; background: var(--blue-softer); color: var(--ink-2); padding: 10px 14px; font-weight: 500; font-size: 13.5px; white-space: nowrap; }
+table.data td { padding: 11px 14px; border-top: 1px solid var(--line); vertical-align: middle; }
+table.data tbody tr:hover td { background: var(--blue-softer); }
+table.data a { text-decoration: none; font-weight: 500; }
+table.data .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.data .actions { white-space: nowrap; text-align: right; }
+table.data .actions .btn + .btn { margin-left: 6px; }
+.up { color: var(--good); font-weight: 500; }
+.title-cell { display: flex; align-items: center; gap: 10px; min-width: 200px; }
+.title-cell .course-ico { width: 34px; height: 34px; border-radius: 10px; }
+
+/* ---------- Calendar ---------- */
+.cal-grid-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 18px; align-items: start; }
+.cal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.cal-head h2 { font-size: 18px; margin: 0; flex: 1; }
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.cal-dow { font-size: 13px; color: var(--ink-2); text-align: center; padding: 6px 0; background: var(--blue-softer); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.cal-day { min-height: 96px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 5px; min-width: 0; font-size: 13px; }
+.cal-day.off { background: #fafbfd; color: var(--ink-3); }
+.cal-num { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; font-variant-numeric: tabular-nums; }
+.cal-day.today .cal-num { background: var(--navy); color: #fff; }
+.cal-ev { display: block; width: 100%; text-align: left; border: 0; border-radius: 6px; background: var(--blue-soft); color: var(--navy); font-size: 12.5px; padding: 2px 6px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none; }
+.cal-ev:hover { background: #d8e6f5; }
+.event.flash { animation: flash 1.2s ease; border-radius: 8px; }
+@keyframes flash { 0%, 40% { background: var(--blue-soft); } 100% { background: transparent; } }
 
 /* ---------- HR report ---------- */
-.container.wide { max-width: 1400px; }
-.report-head h2 { margin: 0; font-size: 26px; }
-.sum-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin: 18px 0; }
-.sum-card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; border-top: 4px solid var(--c, var(--brand)); }
-.sum-title { font-weight: 600; font-size: 15px; line-height: 1.4; }
-.sum-big { font-size: 30px; font-weight: 700; margin: 4px 0 8px; }
-.sum-big span { font-size: 15px; font-weight: 400; color: var(--ink-2); }
-.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 8px 0 12px; }
-.filters input, .filters select { font: inherit; font-size: 15px; padding: 8px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: var(--surface); }
-.filters input { min-width: 220px; }
-.table-wrap { overflow-x: auto; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); }
-table.report { width: 100%; border-collapse: collapse; font-size: 15px; }
-table.report th { text-align: left; background: #f1f5f4; padding: 10px 12px; font-weight: 600; white-space: nowrap; max-width: 220px; overflow: hidden; text-overflow: ellipsis; position: sticky; top: 0; }
+.seg { display: inline-flex; background: #eef1f5; border-radius: 12px; padding: 3px; gap: 2px; margin-bottom: 18px; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+.seg a, .seg button { border: 0; background: transparent; color: var(--ink-2); border-radius: 9px; padding: 7px 16px; font-size: 14px; text-decoration: none; white-space: nowrap; min-height: 36px; display: inline-flex; align-items: center; }
+.seg .active { background: #fff; color: var(--navy); font-weight: 500; box-shadow: 0 1px 2px rgba(15, 42, 74, .12); }
+.report-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; margin-bottom: 18px; }
+.legend { display: flex; gap: 14px; font-size: 13px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; }
+.key-pre { background: #9dbbdc; }
+.key-post { background: var(--navy); }
+.pair { display: grid; grid-template-columns: minmax(0, 190px) minmax(40px, 1fr) 82px; gap: 12px; align-items: center; padding: 6px 0; font-size: 14px; }
+.pair-name { line-height: 1.3; overflow-wrap: anywhere; }
+.pair-bars { display: grid; gap: 2px; }
+.pair-bars i { display: block; height: 7px; min-width: 2px; border-radius: 0 4px 4px 0; transition: width .5s ease; }
+.pair-val { text-align: right; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.months { display: flex; gap: 8px; align-items: flex-end; height: 170px; padding-top: 18px; }
+.month { flex: 1; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; font-size: 12.5px; color: var(--ink-2); }
+.month i { display: block; width: min(32px, 70%); min-height: 2px; background: var(--blue); border-radius: 4px 4px 0 0; transition: height .5s ease; }
+.month b { font-weight: 500; color: var(--navy); font-variant-numeric: tabular-nums; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 4px 0 12px; }
+.filters .control { width: auto; }
+.filters input.control { min-width: 220px; }
+table.report { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.report th { text-align: left; background: var(--blue-softer); color: var(--ink-2); padding: 10px 12px; font-weight: 500; white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
 table.report td { padding: 9px 12px; border-top: 1px solid var(--line); vertical-align: top; white-space: nowrap; }
-table.report td small { display: block; color: var(--ink-2); font-size: 13px; }
-td.c-done b { color: var(--brand-ink); }
-td.c-doing b { color: var(--warn); }
-td.c-none { color: #9aa8a5; text-align: center; }
-td.c-count { font-weight: 700; text-align: center; }
-td.c-date { color: var(--ink-2); font-size: 14px; }
+table.report td small { display: block; color: var(--ink-2); font-size: 12.5px; }
+table.report th:nth-child(2), table.report td:nth-child(2) { position: sticky; left: 0; background: var(--surface); z-index: 1; }
+table.report th:nth-child(2) { background: var(--blue-softer); }
+td.c-done b { color: var(--good); font-weight: 500; }
+td.c-doing b { color: var(--blue); font-weight: 500; }
+td.c-none { color: var(--ink-3); text-align: center; }
+td.c-count { font-weight: 500; text-align: center; }
+td.c-date { color: var(--ink-2); font-size: 13px; }
+.more-row { text-align: center; padding: 14px; }
+
+/* ---------- Dialog ---------- */
+dialog { border: 0; border-radius: var(--radius); padding: 0; width: min(520px, calc(100vw - 32px)); box-shadow: var(--shadow-lift); color: var(--ink); }
+dialog::backdrop { background: rgba(15, 42, 74, .4); }
+.dlg-head { padding: 18px 22px 0; }
+.dlg-head h2 { margin: 0; font-size: 18px; }
+.dlg-body { padding: 16px 22px 4px; max-height: 70vh; overflow-y: auto; }
+.dlg-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 22px 18px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.check-row { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
+.check-row input { width: 18px; height: 18px; accent-color: var(--navy); }
+.toast { position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%); background: var(--navy); color: #fff; padding: 9px 18px; border-radius: 99px; font-size: 14px; z-index: 50; animation: rise .2s ease both; }
 
 /* ---------- Responsive ---------- */
-@media (max-width: 860px) {
-  .course-layout { grid-template-columns: 1fr; }
-  .side { position: static; }
-  .lesson { padding: 20px 18px; }
+@media (max-width: 1180px) {
+  :root { --nav-w: 76px; }
+  .nav { padding: 16px 10px; align-items: stretch; }
+  .nav-brand, .nav-foot { display: none; }
+  .nav-item { justify-content: center; padding: 12px 0; }
+  .nav-item span { display: none; }
+  .nav-group { height: 1px; padding: 0; margin: 10px 8px; background: var(--line); font-size: 0; }
+  .top-brand { display: block; }
+}
+@media (max-width: 980px) {
+  .dash-top, .dash-grid, .report-grid, .cal-grid-wrap { grid-template-columns: minmax(0, 1fr); }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .room-grid { grid-template-columns: minmax(0, 1fr); }
+  .side { position: static; max-height: none; }
+  .side summary { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; font-weight: 500; color: var(--navy); cursor: pointer; }
+  .side summary small { color: var(--ink-2); font-weight: 400; }
+  .login-wrap { grid-template-columns: minmax(0, 1fr); }
+  .login-side { display: none; }
   .grid2, .grid3 { grid-template-columns: 1fr; }
   .frame4, .smcr { grid-template-columns: 1fr 1fr; }
   .grid5s { grid-template-columns: repeat(3, 1fr); }
   .ghs-grid { grid-template-columns: 1fr 1fr; }
   .cols2 { columns: 1; }
-  .user-chip span { display: none; }
-  .site-name { display: none; }
 }
-@media (max-width: 520px) {
-  .topbar .user-chip { display: none; }
-  .topbar .btn { padding: 8px 12px; font-size: 15px; }
-  .topbar .sync { font-size: 12px; white-space: normal; text-align: right; }
+@media (max-width: 720px) {
+  body { font-size: 15px; }
+  .nav { display: none; }
+  .workspace { margin-left: 0; padding-bottom: 68px; }
+  .top { padding: 0 16px; height: 58px; }
+  .top-left { display: none; }
+  .top .spacer { display: block; }
+  .user-chip { display: none; }
+  .filters .control, .filters input.control { width: 100%; min-width: 0; }
+  .sync { font-size: 12px; white-space: normal; text-align: right; }
+  .page { padding: 18px 16px 40px; }
+  .page-head h1 { font-size: 22px; }
+  .panel { padding: 16px; }
+  .lesson { padding: 18px 16px; }
+  .room-head { padding: 16px; }
+  .room-title h1 { font-size: 19px; }
+  .feature { padding: 20px; }
+  .feature h2 { font-size: 20px; }
+  .feature .btn { width: 100%; }
+  .stats { gap: 10px; }
+  .stat-tile { padding: 12px; gap: 10px; flex-direction: column; }
+  .hbar, .pair { grid-template-columns: minmax(0, 104px) minmax(30px, 1fr) 58px; gap: 8px; }
+  .pair { grid-template-columns: minmax(0, 104px) minmax(30px, 1fr) 76px; }
+  .tabbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: flex; background: var(--surface);
+    border-top: 1px solid var(--line); padding: 4px 4px calc(4px + env(safe-area-inset-bottom));
+  }
+  .tabbar .nav-item { flex: 1 1 0; min-width: 0; flex-direction: column; gap: 1px; padding: 6px 0; font-size: 11px; justify-content: center; }
+  .tabbar .nav-item span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+  .tabbar .nav-item.active { background: transparent; color: var(--navy); font-weight: 600; }
+  .tabbar .nav-item.active .ico { color: var(--blue); }
+  .cal-day { min-height: 58px; padding: 3px; }
+  .cal-ev { font-size: 0; height: 6px; padding: 0; width: 6px; border-radius: 50%; background: var(--blue); display: inline-block; margin: 2px 2px 0 0; }
+  .stepper li { font-size: 12px; }
+  .stepper li b { font-size: 12.5px; }
+  .stepper li small { display: none; }
+  .btn.block-sm { width: 100%; }
+  /* ตารางกลายเป็นการ์ดเรียงลงมาบนมือถือ */
+  table.stack thead { display: none; }
+  table.stack, table.stack tbody, table.stack tr, table.stack td { display: block; width: 100%; }
+  table.stack tr { padding: 10px 14px; border-top: 1px solid var(--line); }
+  table.stack tr:first-child { border-top: 0; }
+  table.stack td { border: 0; padding: 3px 0; display: flex; justify-content: space-between; gap: 12px; text-align: right; }
+  table.stack td::before { content: attr(data-label); color: var(--ink-2); font-size: 13px; text-align: left; flex: none; }
+  table.stack td.title { display: block; text-align: left; padding-bottom: 6px; }
+  table.stack td.title::before { display: none; }
+  table.stack td.actions { justify-content: flex-end; padding-top: 8px; }
+  table.stack td.actions::before { display: none; }
+  table.stack tbody tr:hover td { background: transparent; }
+  .field-row { grid-template-columns: 1fr; gap: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
 </style>
@@ -310,6 +554,184 @@ td.c-date { color: var(--ink-2); font-size: 14px; }
 <script>
 window.IMG = window.IMG || {};
 window.IMG["logo-sansuisha"] = "data:image/png;base64,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";
+</script>
+
+<script>
+// ส่วนที่หน้าเรียนรู้และหน้า HR ใช้ร่วมกัน: เรียก API, ไอคอน, เมนูด้านข้าง, หมวดหลักสูตร
+window.KP = (function () {
+  "use strict";
+
+  var app = document.getElementById("app");
+  var homeUrl = app.getAttribute("data-home") || app.getAttribute("data-url");
+  var reportUrl = app.getAttribute("data-report") || app.getAttribute("data-url") + "?page=report";
+  var LOGO = (window.IMG || {})["logo-sansuisha"] || "assets/logo-sansuisha.png";
+
+  var ICONS = {
+    home: '<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/>',
+    catalog: '<rect x="3.5" y="4" width="7" height="7" rx="1.5"/><rect x="13.5" y="4" width="7" height="7" rx="1.5"/><rect x="3.5" y="14" width="7" height="6.5" rx="1.5"/><rect x="13.5" y="14" width="7" height="6.5" rx="1.5"/>',
+    room: '<rect x="3" y="4.5" width="18" height="12.5" rx="2"/><path d="m10.5 8 4 2.7-4 2.8z"/><path d="M8 20.5h8"/>',
+    learning: '<path d="M12 6.5C10 5 7 4.5 3.5 5v14c3.500-.5 6.500 0 8.500 1.500 2-1.500 5-2 8.500-1.500V5C17 4.500 14 5 12 6.500Z"/><path d="M12 6.500v14"/>',
+    calendar: '<rect x="3.500" y="5" width="17" height="15.500" rx="2"/><path d="M3.500 10h17M8 3v4M16 3v4"/>',
+    reports: '<path d="M4 20.500h16"/><path d="M7 17v-5M12 17V6M17 17v-8"/>',
+    admin: '<circle cx="12" cy="12" r="3"/><path d="M12 3.500v2.500M12 18v2.500M3.500 12H6M18 12h2.500M6 6l1.800 1.800M16.200 16.200 18 18M18 6l-1.800 1.800M7.800 16.200 6 18"/>',
+    search: '<circle cx="11" cy="11" r="6.500"/><path d="m20 20-4.200-4.200"/>',
+    logout: '<path d="M10 4.500H5.500v15H10"/><path d="M14.500 8l4 4-4 4M18.500 12H9.500"/>',
+    user: '<circle cx="12" cy="8.500" r="4"/><path d="M4.500 20.500c.8-4 3.800-6 7.500-6s6.700 2 7.500 6"/>',
+    check: '<path d="m5 12.500 4.500 4.500L19 7.500"/>',
+    lock: '<rect x="5.500" y="10.500" width="13" height="10" rx="2"/><path d="M8.500 10.500V7.500a3.500 3.500 0 0 1 7 0v3"/>',
+    clock: '<circle cx="12" cy="12" r="8.500"/><path d="M12 7.500V12l3 2"/>',
+    pin: '<path d="M12 21s-7-6.200-7-11.500a7 7 0 0 1 14 0C19 14.800 12 21 12 21Z"/><circle cx="12" cy="9.500" r="2.500"/>',
+    file: '<path d="M6.500 3.500h7.500l4 4v13h-11.500z"/><path d="M14 3.500v4h4M9.500 12.500h5M9.500 16h5"/>',
+    test: '<path d="M8 4.500h8M8 3v3M16 3v3"/><rect x="4.500" y="4.500" width="15" height="16" rx="2"/><path d="m8.500 13 2.500 2.500 4.500-4.500"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    edit: '<path d="M4.500 19.500 5.500 15 16 4.500l3.500 3.500L9 18.500z"/>',
+    trash: '<path d="M4.500 7h15M9.500 7V4.500h5V7M6.500 7l1 13.500h9l1-13.500"/>',
+    download: '<path d="M12 4v11M7.500 11l4.500 4.500 4.500-4.500M4.500 20h15"/>',
+    refresh: '<path d="M19.500 12a7.500 7.500 0 1 1-2.200-5.300L19.500 9"/><path d="M19.500 4v5h-5"/>',
+    left: '<path d="m14.500 5.500-6.500 6.500 6.500 6.500"/>',
+    right: '<path d="m9.500 5.500 6.500 6.500-6.500 6.500"/>',
+    alert: '<path d="M12 4 2.800 20h18.400z"/><path d="M12 10v5M12 17.500v.5"/>',
+    video: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10.500 5-3v9l-5-3"/>',
+    external: '<path d="M10 5.500H5.500v13h13V14"/><path d="M13.500 4.500h6v6M19.500 4.500 11 13"/>',
+    production: '<path d="M3.500 20.500V10l6 3.500V10l6 3.500V4.500h5v16z"/><path d="M7.500 17h1.500M12.500 17H14"/>',
+    quality: '<circle cx="12" cy="9.500" r="6"/><path d="m9.500 9.500 1.800 1.800 3.200-3.300M8.500 14.500 7 21l5-2.500 5 2.500-1.500-6.500"/>',
+    communication: '<path d="M4 5h16v11H10l-4.500 3.500V16H4z"/><path d="M8.500 9h7M8.500 12.200h4.500"/>',
+    safety: '<path d="M12 3.500 19.500 6v6c0 4.500-3 7.500-7.500 9-4.500-1.500-7.500-4.500-7.500-9V6z"/><path d="m9 12 2.200 2.200L15.200 10"/>',
+  };
+  function icon(name, size) {
+    return '<svg class="ico" width="' + (size || 20) + '" height="' + (size || 20) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.700" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || "") + "</svg>";
+  }
+
+  function esc(s) {
+    return String(s === null || s === undefined ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  // inside Apps Script use google.script.run; standalone (GitHub Pages) call the same functions over fetch,
+  // without the browser's Google cookies, so phones signed in to several Google accounts still work
+  function api(name) {
+    var args = Array.prototype.slice.call(arguments, 1);
+    if (!window.google || !google.script) {
+      return fetch(window.KP_API_URL, {
+        method: "POST", credentials: "omit",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ fn: name, args: args }),
+      }).then(function (r) { return r.json(); });
+    }
+    return new Promise(function (resolve, reject) {
+      var runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
+      runner[name].apply(runner, args);
+    });
+  }
+
+  function brandLogo(small) {
+    return '<span class="brand-logo' + (small ? " small" : "") + '"><img src="' + LOGO + '" alt="Sansuisha">' +
+      '<span class="dept">Human Resource</span></span>';
+  }
+  function fmtDay(iso, short) {
+    var d = iso ? new Date(iso) : null;
+    return d && !isNaN(d)
+      ? d.toLocaleDateString("th-TH", short ? { day: "numeric", month: "short", year: "2-digit" } : { day: "numeric", month: "long", year: "numeric" })
+      : "";
+  }
+  // "2026-11-03" เป็นวันที่ตามเวลาท้องถิ่น (new Date ตรง ๆ จะตีเป็น UTC)
+  function localDate(ymd) {
+    var p = String(ymd).split("-");
+    return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+  }
+  function ymd(d) {
+    return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+  }
+
+  var SCOPES = [["internal", "ความรู้ภายใน"], ["external", "ความรู้ภายนอก"]];
+  var GROUPS = [["production", "ฝ่ายผลิต"], ["quality", "คุณภาพและการปรับปรุงงาน"], ["communication", "การสื่อสารและการทำงานร่วมกัน"], ["safety", "ความปลอดภัย"]];
+  function label(list, key) {
+    for (var i = 0; i < list.length; i++) if (list[i][0] === key) return list[i][1];
+    return "";
+  }
+  function groupLabel(c) { return label(GROUPS, c.group); }
+  function scopeLabel(c) { return label(SCOPES, c.scope); }
+  function courseIcon(c, size) {
+    return '<span class="course-ico">' + icon(ICONS[c.group] ? c.group : "file", size || 22) + "</span>";
+  }
+  function minutes(c) {
+    return c.lessons.reduce(function (s, l) { return s + (l.minutes || 0); }, 0);
+  }
+
+  // ลิงก์ของเมนู: หน้าเดียวกันใช้ # ส่วนข้ามไปอีกหน้าใช้ URL เต็มและเปิดใน _top (Apps Script อยู่ใน iframe)
+  var NAV = [
+    { key: "dashboard", page: "app", hash: "#/", icon: "home", label: "ภาพรวม" },
+    { key: "catalog", page: "app", hash: "#/catalog", icon: "catalog", label: "คลังหลักสูตร" },
+    { key: "room", page: "app", hash: "#/room", icon: "room", label: "ห้องอบรม" },
+    { key: "learning", page: "app", hash: "#/learning", icon: "learning", label: "การเรียนของฉัน" },
+    { key: "calendar", page: "app", hash: "#/calendar", icon: "calendar", label: "ปฏิทินอบรม" },
+    { key: "reports", page: "report", hash: "#/reports", icon: "reports", label: "รายงาน", hr: true },
+    { key: "admin", page: "report", hash: "#/admin", icon: "admin", label: "จัดการระบบ", hr: true },
+  ];
+  function navHref(item, thisPage) {
+    if (item.page === thisPage) return item.hash;
+    return (item.page === "report" ? reportUrl : homeUrl) + item.hash;
+  }
+  function navLink(item, opt) {
+    var target = item.page === opt.page ? "" : ' target="_top"';
+    return '<a class="nav-item' + (item.key === opt.active ? " active" : "") + '" href="' + esc(navHref(item, opt.page)) + '"' + target +
+      (item.key === opt.active ? ' aria-current="page"' : "") + ">" + icon(item.icon) + "<span>" + item.label + "</span></a>";
+  }
+
+  // opt: { page, active, content, userHtml, topLeft, topActions }
+  function shell(opt) {
+    var main = NAV.filter(function (n) { return !n.hr; });
+    var hr = NAV.filter(function (n) { return n.hr; });
+    return (
+      '<div class="shell">' +
+      '<aside class="nav"><div class="nav-brand">' + brandLogo(true) + "</div>" +
+      '<nav aria-label="เมนูหลัก">' + main.map(function (n) { return navLink(n, opt); }).join("") +
+      '<div class="nav-group">สำหรับฝ่ายบุคคล</div>' + hr.map(function (n) { return navLink(n, opt); }).join("") + "</nav>" +
+      '<div class="nav-foot">ระบบความรู้องค์กร<br>Sansuisha (Thailand)</div></aside>' +
+      '<div class="workspace"><header class="top">' +
+      '<div class="top-brand">' + brandLogo(true) + "</div>" +
+      '<div class="top-left">' + (opt.topLeft || "") + "</div>" +
+      '<div class="spacer"></div><span id="sync" class="sync" role="status"></span>' +
+      (opt.topActions || "") + (opt.userHtml || "") + "</header>" +
+      '<main class="page" id="page">' + opt.content + "</main></div>" +
+      '<nav class="tabbar" aria-label="เมนูหลัก">' +
+      (opt.page === "report" ? hr.concat(main.slice(0, 1)) : main).map(function (n) { return navLink(n, opt); }).join("") + "</nav>" +
+      "</div>"
+    );
+  }
+
+  function pageHead(title, sub, right) {
+    return '<div class="page-head"><div><h1>' + title + "</h1>" + (sub ? "<p>" + sub + "</p>" : "") + "</div>" +
+      (right ? '<div class="page-head-right">' + right + "</div>" : "") + "</div>";
+  }
+  function emptyState(iconName, title, text) {
+    return '<div class="empty">' + icon(iconName, 32) + "<b>" + title + "</b>" + (text ? "<p>" + text + "</p>" : "") + "</div>";
+  }
+  // วงแหวนความคืบหน้าแบบค่าเดียว (ไม่ใช้สีอื่นนอกจากน้ำเงินหลัก)
+  function ring(pct, big, small) {
+    var r = 52, c = 2 * Math.PI * r, on = c * Math.max(0, Math.min(100, pct)) / 100;
+    return '<div class="ring"><svg viewBox="0 0 120 120" role="img" aria-label="' + esc(big + " " + small) + '">' +
+      '<circle cx="60" cy="60" r="' + r + '" class="ring-track"/>' +
+      '<circle cx="60" cy="60" r="' + r + '" class="ring-on" stroke-dasharray="' + on.toFixed(1) + " " + (c - on).toFixed(1) + '" transform="rotate(-90 60 60)"/></svg>' +
+      '<div class="ring-text"><b>' + esc(big) + "</b><span>" + esc(small) + "</span></div></div>";
+  }
+  function stat(iconName, value, labelText, hint) {
+    return '<div class="stat-tile"><div class="stat-ico">' + icon(iconName) + "</div><div><b>" + value + "</b><span>" + labelText + "</span>" +
+      (hint ? "<small>" + hint + "</small>" : "") + "</div></div>";
+  }
+  // แถบแนวนอนค่าเดียว: ป้ายอยู่ซ้าย ตัวเลขอยู่ขวา เอาเมาส์ชี้ดูรายละเอียดได้
+  function hbar(name, pct, value, tip) {
+    return '<div class="hbar" title="' + esc(tip || "") + '"><div class="hbar-name">' + esc(name) + '</div>' +
+      '<div class="hbar-track"><i style="width:' + Math.max(0, Math.min(100, pct)) + '%"></i></div><div class="hbar-val">' + esc(value) + "</div></div>";
+  }
+
+  return {
+    app: app, homeUrl: homeUrl, reportUrl: reportUrl, SCOPES: SCOPES, GROUPS: GROUPS,
+    icon: icon, esc: esc, api: api, brandLogo: brandLogo, fmtDay: fmtDay, localDate: localDate, ymd: ymd,
+    groupLabel: groupLabel, scopeLabel: scopeLabel, courseIcon: courseIcon, minutes: minutes,
+    shell: shell, pageHead: pageHead, emptyState: emptyState, ring: ring, stat: stat, hbar: hbar,
+  };
+})();
 </script>
 
 <script>
@@ -1995,40 +2417,18 @@ window.COURSES = [
 
   var PASS_PERCENT = 80;
   var KEY_STORE = "kp:hrkey";
-  var app = document.getElementById("app");
-  var APP_URL = app.getAttribute("data-url");
+  var app = KP.app, esc = KP.esc, icon = KP.icon, api = KP.api;
   var courses = window.COURSES || [];
-  var LOGO = (window.IMG || {})["logo-sansuisha"] || "assets/logo-sansuisha.png";
-  function brandLogo(small) {
-    return '<span class="brand-logo' + (small ? " small" : "") + '"><img src="' + LOGO + '" alt="Sansuisha">' +
-      '<span class="dept">Human Resource</span></span>';
-  }
-  var state = { rows: [], employees: [], loadedAt: null, dept: "", group: "", status: "", search: "" };
+  var state = {
+    rows: [], employees: [], schedule: [], settings: {}, loadedAt: null,
+    dept: "", group: "", status: "", search: "", tableLimit: 30,
+    adminQ: "", adminLimit: 30,
+  };
   var hrKey = null;
 
   function readSession() { try { return sessionStorage.getItem(KEY_STORE); } catch (e) { return null; } }
   function writeSession(v) {
     try { if (v) sessionStorage.setItem(KEY_STORE, v); else sessionStorage.removeItem(KEY_STORE); } catch (e) { /* ignore */ }
-  }
-  // same dual mode as App.html: google.script.run inside Apps Script, fetch when standalone
-  function api(name) {
-    var args = Array.prototype.slice.call(arguments, 1);
-    if (!window.google || !google.script) {
-      return fetch(window.KP_API_URL, {
-        method: "POST", credentials: "omit",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ fn: name, args: args }),
-      }).then(function (r) { return r.json(); });
-    }
-    return new Promise(function (resolve, reject) {
-      var runner = google.script.run.withSuccessHandler(resolve).withFailureHandler(reject);
-      runner[name].apply(runner, args);
-    });
-  }
-  function esc(s) {
-    return String(s === null || s === undefined ? "" : s).replace(/[&<>"']/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
-    });
   }
   function fmtDate(iso) {
     if (!iso) return "";
@@ -2037,10 +2437,15 @@ window.COURSES = [
     return d.toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "2-digit" }) +
       " " + d.toLocaleTimeString("th-TH", { hour: "2-digit", minute: "2-digit" });
   }
+  function fmtDay(iso) { return KP.fmtDay(iso, true); }
   function getCourse(id) {
     for (var i = 0; i < courses.length; i++) if (courses[i].id === id) return courses[i];
     return null;
   }
+  function average(nums) {
+    return nums.length ? Math.round(nums.reduce(function (a, b) { return a + b; }, 0) / nums.length) : null;
+  }
+  function percent(n, total) { return total ? Math.round((n / total) * 100) : 0; }
 
   /* ---------- data ---------- */
   // one entry per employee: roster from the Employees tab plus anyone found only in Progress
@@ -2095,29 +2500,35 @@ window.COURSES = [
       return true;
     });
   }
-
+  function applyData(res) {
+    if (res.rows) state.rows = res.rows;
+    state.employees = res.employees || state.employees;
+    state.schedule = res.schedule || state.schedule;
+    state.settings = res.courseSettings || state.settings;
+  }
   function load(key) {
     return api("apiReport", key).then(function (res) {
       if (!res || !res.ok) throw new Error((res && res.error) || "error");
-      state.rows = res.rows || [];
-      state.employees = res.employees || [];
+      applyData(res);
       state.loadedAt = new Date();
       hrKey = key;
     });
   }
 
-  /* ---------- views ---------- */
+  /* ---------- login ---------- */
   function renderLogin(message) {
     app.innerHTML =
-      '<div class="login-wrap"><form class="login-card" id="login" autocomplete="off">' +
-      '<div class="login-brand">' + brandLogo(false) + '</div><h1>รายงานความคืบหน้า</h1>' +
-      '<p class="sub">สำหรับฝ่ายบุคคล (HR) — ดูว่าพนักงานคนใดเรียนจบหลักสูตรใด และได้คะแนนเท่าไร</p>' +
+      '<div class="login-wrap"><section class="login-side"><h2>รายงานและการจัดการระบบ</h2>' +
+      "<p>ดูภาพรวมการเรียนรู้ของทั้งบริษัท จัดการพนักงาน หลักสูตร และตารางอบรม</p></section>" +
+      '<section class="login-main"><form class="login-card" id="login" autocomplete="off">' +
+      '<div class="login-brand">' + KP.brandLogo(false) + "</div><h1>สำหรับฝ่ายบุคคล</h1>" +
+      '<p class="sub">กรุณาใส่รหัสผ่าน HR</p>' +
       '<div class="field"><label for="hrkey">รหัสผ่าน HR</label>' +
       '<input id="hrkey" type="password" required autofocus></div>' +
-      '<div class="error" id="err">' + esc(message || "") + "</div>" +
-      '<button class="btn block" type="submit" id="go">เปิดรายงาน</button>' +
-      '<div class="login-foot"><a href="' + esc(app.getAttribute("data-home") || APP_URL) + '" target="_top">← กลับหน้าเรียนรู้</a></div>' +
-      "</form></div>";
+      '<div class="error" id="err" role="alert">' + esc(message || "") + "</div>" +
+      '<button class="btn block" type="submit" id="go">เข้าสู่ระบบ</button>' +
+      '<div class="login-foot"><a href="' + esc(KP.homeUrl) + '" target="_top">กลับหน้าเรียนรู้</a></div>' +
+      "</form></section></div>";
     document.getElementById("login").addEventListener("submit", function (e) {
       e.preventDefault();
       var key = document.getElementById("hrkey").value;
@@ -2125,33 +2536,66 @@ window.COURSES = [
       btn.disabled = true; btn.textContent = "กำลังโหลด…";
       load(key).then(function () {
         writeSession(key);
-        renderReport();
+        route();
       }, function (err) {
-        btn.disabled = false; btn.textContent = "เปิดรายงาน";
+        btn.disabled = false; btn.textContent = "เข้าสู่ระบบ";
         document.getElementById("err").textContent = err.message === "unauthorized"
           ? "รหัสผ่านไม่ถูกต้อง" : "เชื่อมต่อระบบไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ต";
       });
     });
   }
 
+  function mount(active, content) {
+    app.innerHTML = KP.shell({
+      page: "report", active: active, content: content,
+      topLeft: '<span class="muted">ข้อมูลล่าสุด ' + esc(fmtDate(state.loadedAt && state.loadedAt.toISOString())) + "</span>",
+      topActions: '<button class="btn ghost small" id="refresh">' + icon("refresh", 16) + " โหลดใหม่</button>",
+      userHtml: '<div class="user-chip"><span class="avatar">' + icon("user") + '</span><div class="who"><b>ฝ่ายบุคคล</b><span class="sub">ผู้ดูแลระบบ</span></div></div>' +
+        '<button class="btn ghost icon-only" id="logout" title="ออกจากระบบ" aria-label="ออกจากระบบ">' + icon("logout") + "</button>",
+    });
+    document.getElementById("logout").addEventListener("click", function () {
+      writeSession(null); hrKey = null; state.rows = []; state.employees = [];
+      location.hash = "";
+      renderLogin();
+    });
+    document.getElementById("refresh").addEventListener("click", function (e) {
+      var b = e.currentTarget;
+      b.disabled = true; b.textContent = "กำลังโหลด…";
+      load(hrKey).then(route, function () {
+        b.disabled = false; b.textContent = "โหลดใหม่ไม่สำเร็จ";
+      });
+    });
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- 6. Reports ---------- */
   function cell(c) {
     if (!c) return '<td class="c-none">–</td>';
     var round = c.round > 1 ? " · รอบ " + c.round : "";
     var pre = "ก่อน " + (c.pre !== null ? c.pre + "%" : "–");
     if (c.pct === 100) {
-      return '<td class="c-done"><b>✓ จบแล้ว</b><small>' + pre + " → หลัง " + (c.best !== null ? c.best + "%" : "–") + round + "</small>" +
+      return '<td class="c-done"><b>จบแล้ว</b><small>' + pre + " → หลัง " + (c.best !== null ? c.best + "%" : "–") + round + "</small>" +
         "<small>จบ " + esc(fmtDay(c.completedAt)) + "</small>" +
-        "<small>" + (c.canRetake ? "<b>ครบกำหนดเรียนใหม่แล้ว</b>" : "เรียนใหม่ได้ " + esc(fmtDay(c.retakeAt))) + "</small></td>";
+        "<small>" + (c.canRetake ? "ครบกำหนดเรียนใหม่แล้ว" : "เรียนใหม่ได้ " + esc(fmtDay(c.retakeAt))) + "</small></td>";
     }
     return '<td class="c-doing"><b>' + c.pct + "%</b><small>" + pre + (c.best !== null ? " · หลัง " + c.best + "%" : "") + round + "</small>" +
       "<small>อ่าน " + c.doneCount + "/" + c.total + " บท</small></td>";
   }
-  function fmtDay(iso) {
-    var d = iso ? new Date(iso) : null;
-    return d && !isNaN(d) ? d.toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "2-digit" }) : "";
-  }
-  function average(nums) {
-    return nums.length ? Math.round(nums.reduce(function (a, b) { return a + b; }, 0) / nums.length) : null;
+  function monthlyCompletions(list) {
+    var now = new Date(), months = [];
+    for (var i = 5; i >= 0; i--) {
+      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({ key: KP.ymd(d).slice(0, 7), label: d.toLocaleDateString("th-TH", { month: "short" }), n: 0 });
+    }
+    list.forEach(function (p) {
+      Object.keys(p.courses).forEach(function (id) {
+        var at = p.courses[id].completedAt;
+        if (!at) return;
+        var key = KP.ymd(new Date(at)).slice(0, 7);
+        months.forEach(function (m) { if (m.key === key) m.n++; });
+      });
+    });
+    return months;
   }
 
   function renderReport() {
@@ -2161,12 +2605,33 @@ window.COURSES = [
     people.forEach(function (p) { if (p.dept && depts.indexOf(p.dept) === -1) depts.push(p.dept); });
     depts.sort();
     var shown = courses.filter(function (c) { return !state.group || c.scope + "/" + c.group === state.group; });
-    var GROUP_NAMES = {
-      "internal/production": "ภายใน · ฝ่ายผลิต", "internal/quality": "ภายใน · คุณภาพและการปรับปรุงงาน",
-      "internal/communication": "ภายใน · การสื่อสาร", "external/communication": "ภายนอก · การสื่อสาร", "external/safety": "ภายนอก · ความปลอดภัย",
-    };
+    var GROUP_NAMES = {};
+    courses.forEach(function (c) { GROUP_NAMES[c.scope + "/" + c.group] = KP.scopeLabel(c) + " · " + KP.groupLabel(c); });
 
-    var summary = shown.map(function (c) {
+    // ตัวเลขสรุป: คิดจากพนักงานและหมวดที่กรองอยู่
+    var enrolled = 0, finished = 0, gains = [];
+    list.forEach(function (p) {
+      shown.forEach(function (c) {
+        var x = p.courses[c.id];
+        if (!x) return;
+        enrolled++;
+        if (x.pct === 100) finished++;
+        if (x.pct === 100 && x.pre !== null && x.best !== null) gains.push(x.best - x.pre);
+      });
+    });
+    var participants = list.filter(function (p) { return shown.some(function (c) { return p.courses[c.id]; }); }).length;
+    var dueCount = list.filter(function (p) { return p.retakeDue; }).length;
+    var gain = average(gains);
+
+    var deptBars = depts.filter(function (d) { return !state.dept || d === state.dept; }).map(function (d) {
+      var inDept = list.filter(function (p) { return p.dept === d; });
+      var started = inDept.filter(function (p) { return p.started; }).length;
+      return { d: d, started: started, total: inDept.length, pct: percent(started, inDept.length) };
+    }).filter(function (x) { return x.total; }).sort(function (a, b) { return b.pct - a.pct; }).map(function (x) {
+      return KP.hbar(x.d, x.pct, x.pct + "%", x.d + ": เริ่มเรียนแล้ว " + x.started + " จาก " + x.total + " คน");
+    }).join("");
+
+    var courseStats = shown.map(function (c) {
       var done = 0, doing = 0, pres = [], posts = [];
       list.forEach(function (p) {
         var x = p.courses[c.id];
@@ -2175,58 +2640,60 @@ window.COURSES = [
         if (x.pre !== null) pres.push(x.pre);
         if (x.best !== null) posts.push(x.best);
       });
-      var avgPre = average(pres), avgPost = average(posts);
-      var pct = list.length ? Math.round((done / list.length) * 100) : 0;
-      return (
-        '<div class="sum-card" style="--c:' + c.color + '"><div class="sum-title">' + c.icon + " " + esc(c.title) + "</div>" +
-        '<div class="sum-big">' + done + ' <span>/ ' + list.length + " คนจบแล้ว</span></div>" +
-        '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
-        '<div class="foot-row"><span>กำลังเรียน ' + doing + " · ยังไม่เริ่ม " + (list.length - done - doing) +
-        "</span></div>" +
-        (avgPre !== null || avgPost !== null
-          ? '<div class="foot-row"><span>เฉลี่ยก่อนเรียน ' + (avgPre !== null ? avgPre + "%" : "–") +
-            " → หลังเรียน " + (avgPost !== null ? avgPost + "%" : "–") + "</span></div>" : "") +
-        "</div>"
-      );
+      return { c: c, done: done, doing: doing, pre: average(pres), post: average(posts) };
+    });
+    var courseBars = courseStats.slice().sort(function (a, b) { return b.done - a.done; }).map(function (x) {
+      return KP.hbar(x.c.title, percent(x.done, list.length), x.done + " คน",
+        x.c.title + ": จบ " + x.done + " · กำลังเรียน " + x.doing + " · ยังไม่เริ่ม " + (list.length - x.done - x.doing) + " คน");
     }).join("");
+    var scoreRows = courseStats.filter(function (x) { return x.pre !== null || x.post !== null; }).map(function (x) {
+      return '<div class="pair" title="' + esc(x.c.title + ": ก่อนเรียน " + (x.pre === null ? "–" : x.pre + "%") + " · หลังเรียน " + (x.post === null ? "–" : x.post + "%")) + '">' +
+        '<div class="pair-name">' + esc(x.c.title) + '</div><div class="pair-bars"><i class="key-pre" style="width:' + (x.pre || 0) + '%"></i><i class="key-post" style="width:' + (x.post || 0) + '%"></i></div>' +
+        '<div class="pair-val">' + (x.pre === null ? "–" : x.pre) + " → " + (x.post === null ? "–" : x.post) + "</div></div>";
+    }).join("");
+    var months = monthlyCompletions(list);
+    var maxMonth = Math.max.apply(null, months.map(function (m) { return m.n; }).concat([1]));
+    var monthChart = '<div class="months">' + months.map(function (m) {
+      return '<div class="month" title="' + esc(m.label + ": จบ " + m.n + " หลักสูตร") + '"><b>' + m.n + '</b><i style="height:' + Math.round((m.n / maxMonth) * 100) + '%"></i><span>' + esc(m.label) + "</span></div>";
+    }).join("") + "</div>";
 
     var head = "<tr><th>รหัส</th><th>ชื่อ</th><th>ฝ่าย</th>" +
-      shown.map(function (c) { return '<th title="' + esc(c.title) + '">' + c.icon + " " + esc(c.title) + "</th>"; }).join("") +
+      shown.map(function (c) { return '<th title="' + esc(c.title) + '">' + esc(c.title) + "</th>"; }).join("") +
       "<th>จบ</th><th>ใช้งานล่าสุด</th></tr>";
-    var body = list.map(function (p) {
-      return "<tr><td>" + esc(p.id) + (p.inRoster ? "" : ' <span class="badge doing" title="ไม่อยู่ในแท็บ Employees">นอกรายชื่อ</span>') +
+    var body = list.slice(0, state.tableLimit).map(function (p) {
+      return "<tr><td>" + esc(p.id) + (p.inRoster ? "" : ' <span class="badge due" title="ไม่อยู่ในแท็บ Employees">นอกรายชื่อ</span>') +
         "</td><td>" + esc(p.name) + "</td><td>" + esc(p.dept) + "</td>" +
         shown.map(function (c) { return cell(p.courses[c.id]); }).join("") +
         '<td class="c-count">' + p.completed + "/" + courses.length + "</td>" +
         '<td class="c-date">' + esc(fmtDate(p.last)) + "</td></tr>";
     }).join("") || '<tr><td colspan="' + (shown.length + 5) + '" class="c-none">ไม่พบพนักงานตามเงื่อนไข</td></tr>';
 
-    app.innerHTML =
-      '<header class="topbar"><div class="topbar-inner">' +
-      '<span class="brand">' + brandLogo(true) + '<span class="site-name">รายงานความคืบหน้า</span></span><div class="spacer"></div>' +
-      '<button class="btn ghost" id="refresh">↻ โหลดใหม่</button>' +
-      '<button class="btn ghost" id="logout">ออก</button></div></header>' +
-      '<main class="container wide">' +
-      '<div class="report-head"><div><h2>ภาพรวมการเรียนรู้</h2>' +
-      '<p class="muted-text">ข้อมูลจาก Google Sheets · โหลดเมื่อ ' + esc(fmtDate(state.loadedAt && state.loadedAt.toISOString())) +
-      " · จบหลักสูตร = อ่านครบทุกบท และสอบหลังเรียนผ่าน " + PASS_PERCENT + "% · เรียนใหม่ได้หลังครบ 6 เดือน</p></div></div>" +
-      '<section class="sum-grid">' + summary + "</section>" +
+    mount("reports",
+      KP.pageHead("รายงานการอบรม", "การเข้าร่วม อัตราการเรียนจบ และสถิติตามฝ่าย", '<button class="btn" id="csv">' + icon("download", 18) + " ดาวน์โหลด Excel (CSV)</button>") +
       '<section class="filters">' +
-      '<input id="search" type="search" placeholder="ค้นหารหัส ชื่อ หรือส่วนงาน" value="' + esc(state.search) + '">' +
-      '<select id="dept"><option value="">ทุกฝ่าย</option>' +
-      depts.map(function (d) { return "<option" + (d === state.dept ? " selected" : "") + ">" + esc(d) + "</option>"; }).join("") +
-      "</select>" +
-      '<select id="group"><option value="">ทุกหมวด</option>' +
-      Object.keys(GROUP_NAMES).map(function (g) { return '<option value="' + g + '"' + (g === state.group ? " selected" : "") + ">" + GROUP_NAMES[g] + "</option>"; }).join("") +
-      "</select>" +
-      '<select id="status">' +
+      '<input class="control" id="search" type="search" placeholder="ค้นหารหัส ชื่อ หรือส่วนงาน" aria-label="ค้นหาพนักงาน" value="' + esc(state.search) + '">' +
+      '<select class="control" id="dept" aria-label="ฝ่าย"><option value="">ทุกฝ่าย</option>' +
+      depts.map(function (d) { return "<option" + (d === state.dept ? " selected" : "") + ">" + esc(d) + "</option>"; }).join("") + "</select>" +
+      '<select class="control" id="group" aria-label="หมวด"><option value="">ทุกหมวด</option>' +
+      Object.keys(GROUP_NAMES).map(function (g) { return '<option value="' + g + '"' + (g === state.group ? " selected" : "") + ">" + esc(GROUP_NAMES[g]) + "</option>"; }).join("") + "</select>" +
+      '<select class="control" id="status" aria-label="สถานะ">' +
       [["", "ทุกสถานะ"], ["all-done", "จบครบทุกหลักสูตร"], ["in-progress", "กำลังเรียน"], ["not-started", "ยังไม่เริ่มเลย"], ["retake", "ครบกำหนดเรียนใหม่"]]
         .map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === state.status ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") +
-      "</select>" +
-      '<span class="spacer"></span><span class="muted-text">' + list.length + " คน</span>" +
-      '<button class="btn" id="csv">⬇ ดาวน์โหลด Excel (CSV)</button></section>' +
+      "</select></section>" +
+      '<div class="stats">' +
+      KP.stat("user", percent(participants, list.length) + "%", "อัตราการเข้าร่วม", participants + " จาก " + list.length + " คน") +
+      KP.stat("check", percent(finished, enrolled) + "%", "อัตราการเรียนจบ", finished + " จาก " + enrolled + " การลงเรียน") +
+      KP.stat("reports", gain === null ? "–" : (gain >= 0 ? "+" : "") + gain + "%", "คะแนนเพิ่มขึ้นเฉลี่ย", "หลังเรียนเทียบกับก่อนเรียน") +
+      KP.stat("refresh", dueCount, "ครบกำหนดเรียนใหม่", "พนักงานที่เรียนรอบใหม่ได้แล้ว") + "</div>" +
+      '<div class="report-grid">' +
+      '<section class="panel"><div class="panel-head"><h2>การเข้าร่วมตามฝ่าย</h2></div>' + (deptBars || KP.emptyState("reports", "ไม่มีข้อมูล")) + "</section>" +
+      '<section class="panel"><div class="panel-head"><h2>หลักสูตรที่จบต่อเดือน</h2><span class="muted" style="font-size:13px">6 เดือนล่าสุด</span></div>' + monthChart + "</section>" +
+      '<section class="panel"><div class="panel-head"><h2>จำนวนคนที่เรียนจบตามหลักสูตร</h2></div>' + courseBars + "</section>" +
+      '<section class="panel"><div class="panel-head"><h2>คะแนนเฉลี่ยก่อน–หลังเรียน</h2><div class="legend"><span><i class="key-pre"></i>ก่อนเรียน</span><span><i class="key-post"></i>หลังเรียน</span></div></div>' +
+      (scoreRows || KP.emptyState("test", "ยังไม่มีคะแนนสอบ")) + "</section></div>" +
+      '<h2 style="font-size:17px;margin:0 0 10px">รายละเอียดรายบุคคล <span class="muted" style="font-weight:400;font-size:14px">' + list.length + " คน</span></h2>" +
       '<div class="table-wrap"><table class="report"><thead>' + head + "</thead><tbody>" + body + "</tbody></table></div>" +
-      "</main>";
+      (list.length > state.tableLimit ? '<div class="more-row"><button class="btn ghost" id="more">แสดงเพิ่มอีก 30 คน</button></div>' : ""));
 
     document.getElementById("search").addEventListener("input", function (e) {
       state.search = e.target.value;
@@ -2239,14 +2706,10 @@ window.COURSES = [
     document.getElementById("status").addEventListener("change", function (e) { state.status = e.target.value; renderReport(); });
     document.getElementById("group").addEventListener("change", function (e) { state.group = e.target.value; renderReport(); });
     document.getElementById("csv").addEventListener("click", function () { downloadCsv(list); });
-    document.getElementById("logout").addEventListener("click", function () {
-      writeSession(null); hrKey = null; state.rows = []; state.employees = []; renderLogin();
-    });
-    document.getElementById("refresh").addEventListener("click", function (e) {
-      e.target.disabled = true; e.target.textContent = "กำลังโหลด…";
-      load(hrKey).then(renderReport, function () {
-        e.target.disabled = false; e.target.textContent = "↻ โหลดใหม่ (ไม่สำเร็จ)";
-      });
+    var more = document.getElementById("more");
+    if (more) more.addEventListener("click", function () {
+      var y = window.scrollY;
+      state.tableLimit += 30; renderReport(); window.scrollTo(0, y);
     });
   }
 
@@ -2279,11 +2742,220 @@ window.COURSES = [
     document.body.appendChild(a); a.click(); a.remove();
   }
 
+  /* ---------- 7. Admin panel ---------- */
+  var ADMIN_ERRORS = {
+    "duplicate-id": "มีรหัสพนักงานนี้ในระบบแล้ว", "missing-fields": "กรุณากรอกข้อมูลที่จำเป็นให้ครบ",
+    "bad-time": "เวลาไม่ถูกต้อง เวลาเลิกต้องหลังเวลาเริ่ม", "bad-url": "ลิงก์ต้องขึ้นต้นด้วย https://",
+    "not-found": "ไม่พบรายการนี้ อาจถูกลบไปแล้ว", unauthorized: "หมดสิทธิ์ใช้งาน กรุณาเข้าสู่ระบบใหม่",
+  };
+  function adminCall(action, item, extra) {
+    var req = { action: action, item: item };
+    Object.keys(extra || {}).forEach(function (k) { req[k] = extra[k]; });
+    return api("apiAdmin", hrKey, req).then(function (res) {
+      if (!res || !res.ok) throw new Error(ADMIN_ERRORS[res && res.error] || "บันทึกไม่สำเร็จ กรุณาลองใหม่");
+      applyData(res);
+    }, function () {
+      throw new Error("เชื่อมต่อระบบไม่สำเร็จ กรุณาลองใหม่");
+    });
+  }
+  function toast(text) {
+    var old = document.querySelector(".toast");
+    if (old) old.remove();
+    var el = document.createElement("div");
+    el.className = "toast"; el.setAttribute("role", "status"); el.textContent = text;
+    document.body.appendChild(el);
+    setTimeout(function () { el.remove(); }, 2600);
+  }
+  // ฟอร์มใน dialog: onSave(values) คืน Promise, ปิดเมื่อสำเร็จ แสดงข้อความเมื่อไม่สำเร็จ
+  function openForm(title, fieldsHtml, onSave) {
+    var dlg = document.createElement("dialog");
+    dlg.innerHTML = '<form id="dlg-form"><div class="dlg-head"><h2>' + esc(title) + '</h2></div><div class="dlg-body">' + fieldsHtml +
+      '<div class="error" id="dlg-err" role="alert"></div></div><div class="dlg-foot"><button type="button" class="btn ghost" id="dlg-cancel">ยกเลิก</button>' +
+      '<button type="submit" class="btn" id="dlg-save">บันทึก</button></div></form>';
+    document.body.appendChild(dlg);
+    dlg.addEventListener("close", function () { dlg.remove(); });
+    dlg.querySelector("#dlg-cancel").addEventListener("click", function () { dlg.close(); dlg.remove(); });
+    dlg.querySelector("form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var values = {};
+      dlg.querySelectorAll("[name]").forEach(function (el) { values[el.name] = el.type === "checkbox" ? el.checked : el.value.trim(); });
+      var btn = dlg.querySelector("#dlg-save");
+      btn.disabled = true; btn.textContent = "กำลังบันทึก…";
+      onSave(values).then(function () {
+        dlg.close();
+        dlg.remove();
+        toast("บันทึกแล้ว");
+        route();
+      }, function (err) {
+        btn.disabled = false; btn.textContent = "บันทึก";
+        dlg.querySelector("#dlg-err").textContent = err.message;
+      });
+    });
+    dlg.showModal();
+  }
+  function input(name, labelText, value, attrs, hint) {
+    return '<div class="field"><label for="f-' + name + '">' + labelText + '</label><input id="f-' + name + '" name="' + name + '" value="' + esc(value === undefined || value === null ? "" : value) + '"' + (attrs || "") + ">" + (hint ? "<small>" + hint + "</small>" : "") + "</div>";
+  }
+
+  function adminFrame(tab, content, right) {
+    var tabs = [["employees", "พนักงาน", state.employees.length], ["courses", "หลักสูตร", courses.length], ["schedule", "ตารางอบรม", state.schedule.length]];
+    mount("admin",
+      KP.pageHead("จัดการระบบ", "จัดการพนักงาน หลักสูตร และตารางอบรม ทุกการแก้ไขบันทึกลง Google Sheet ทันที", right) +
+      '<div class="seg" role="tablist">' + tabs.map(function (t) {
+        return '<a role="tab" href="#/admin/' + t[0] + '" class="' + (t[0] === tab ? "active" : "") + '" aria-selected="' + (t[0] === tab) + '">' + t[1] + " (" + t[2] + ")</a>";
+      }).join("") + '<a href="#/reports">รายงาน</a></div>' + content);
+  }
+
+  function renderAdminEmployees() {
+    adminFrame("employees",
+      '<div class="toolbar"><div class="search">' + icon("search") + '<input class="control" id="adm-q" type="search" placeholder="ค้นหารหัส ชื่อ ฝ่าย หรือตำแหน่ง" aria-label="ค้นหาพนักงาน" value="' + esc(state.adminQ) + '"></div></div>' +
+      '<div id="adm-list"></div>', '<button class="btn" id="add">' + icon("plus", 18) + " เพิ่มพนักงาน</button>");
+
+    function form(emp) {
+      var isNew = !emp;
+      emp = emp || {};
+      openForm(isNew ? "เพิ่มพนักงาน" : "แก้ไขข้อมูลพนักงาน",
+        input("id", "รหัสพนักงาน *", emp.id, ' required maxlength="40"' + (isNew ? "" : " readonly"), isNew ? "" : "รหัสพนักงานแก้ไขไม่ได้") +
+        input("name", "ชื่อ-นามสกุล *", emp.name, ' required maxlength="120"') +
+        input("position", "ตำแหน่ง", emp.position, ' maxlength="80"') +
+        '<div class="field-row">' + input("team", "ส่วนงาน", emp.team, ' maxlength="80"') + input("dept", "ฝ่าย", emp.dept, ' maxlength="80" list="dept-list"') + "</div>" +
+        '<datalist id="dept-list">' + uniq(state.employees.map(function (e) { return e.dept; })).map(function (d) { return '<option value="' + esc(d) + '">'; }).join("") + "</datalist>",
+        function (v) { return adminCall("saveEmployee", v, { isNew: isNew }); });
+    }
+    function paint() {
+      var q = state.adminQ.trim().toLowerCase();
+      var list = state.employees.filter(function (e) {
+        return !q || (e.id + " " + e.name + " " + e.team + " " + e.dept + " " + e.position).toLowerCase().indexOf(q) !== -1;
+      });
+      document.getElementById("adm-list").innerHTML = (list.length
+        ? '<div class="table-wrap"><table class="data stack"><thead><tr><th>รหัส</th><th>ชื่อ</th><th>ตำแหน่ง</th><th>ส่วนงาน</th><th>ฝ่าย</th><th></th></tr></thead><tbody>' +
+          list.slice(0, state.adminLimit).map(function (e) {
+            return '<tr><td data-label="รหัส" class="num">' + esc(e.id) + '</td><td data-label="ชื่อ">' + esc(e.name) + '</td><td data-label="ตำแหน่ง">' + (esc(e.position) || "–") + '</td><td data-label="ส่วนงาน">' + (esc(e.team) || "–") + '</td><td data-label="ฝ่าย">' + (esc(e.dept) || "–") + "</td>" +
+              '<td class="actions"><button class="btn ghost small" data-edit="' + esc(e.id) + '">แก้ไข</button><button class="btn danger small" data-del="' + esc(e.id) + '">ลบ</button></td></tr>';
+          }).join("") + "</tbody></table></div>"
+        : '<div class="table-wrap">' + KP.emptyState("search", "ไม่พบพนักงาน") + "</div>") +
+        (list.length > state.adminLimit ? '<div class="more-row"><button class="btn ghost" id="adm-more">แสดงเพิ่มอีก 30 คน (ทั้งหมด ' + list.length + " คน)</button></div>" : "");
+    }
+    paint();
+    document.getElementById("add").addEventListener("click", function () { form(); });
+    document.getElementById("adm-q").addEventListener("input", function (e) { state.adminQ = e.target.value; state.adminLimit = 30; paint(); });
+    document.getElementById("adm-list").addEventListener("click", function (e) {
+      if (e.target.id === "adm-more") { state.adminLimit += 30; paint(); return; }
+      var edit = e.target.closest("[data-edit]"), del = e.target.closest("[data-del]");
+      if (edit) { form(findEmp(edit.getAttribute("data-edit"))); return; }
+      if (!del) return;
+      var emp = findEmp(del.getAttribute("data-del"));
+      if (!emp || !confirm("ลบ " + emp.name + " (" + emp.id + ") ออกจากรายชื่อ?\n\nคนนี้จะเข้าระบบไม่ได้ทันที แต่ผลการเรียนเดิมยังเก็บไว้ในรายงาน")) return;
+      del.disabled = true;
+      adminCall("deleteEmployee", { id: emp.id }).then(function () { toast("ลบแล้ว"); route(); }, function (err) { del.disabled = false; alert(err.message); });
+    });
+  }
+  function findEmp(id) {
+    for (var i = 0; i < state.employees.length; i++) if (state.employees[i].id === id) return state.employees[i];
+    return null;
+  }
+  function uniq(list) {
+    var out = [];
+    list.forEach(function (x) { if (x && out.indexOf(x) === -1) out.push(x); });
+    return out.sort();
+  }
+
+  function renderAdminCourses() {
+    var people = buildPeople();
+    var rows = courses.map(function (c) {
+      var set = state.settings[c.id] || {};
+      var started = 0, done = 0;
+      people.forEach(function (p) { var x = p.courses[c.id]; if (x) { started++; if (x.pct === 100) done++; } });
+      return '<tr><td class="title"><div class="title-cell">' + KP.courseIcon(c, 18) + "<div>" + esc(c.title) + '<div class="muted" style="font-size:13px">' + esc(KP.scopeLabel(c)) + " · " + esc(KP.groupLabel(c)) + "</div></div></div></td>" +
+        '<td data-label="เนื้อหา" class="num">' + c.lessons.length + " บท · " + c.quiz.length + " ข้อ</td>" +
+        '<td data-label="ผู้เรียน" class="num">' + started + " คน · จบ " + done + "</td>" +
+        '<td data-label="สื่อเสริม">' + (set.videoUrl ? "วิดีโอ" : "") + (set.videoUrl && set.materialUrl ? " · " : "") + (set.materialUrl ? "เอกสาร" : "") + (!set.videoUrl && !set.materialUrl ? "–" : "") + "</td>" +
+        '<td data-label="สถานะ">' + (set.hidden ? '<span class="badge todo">ซ่อนอยู่</span>' : '<span class="badge">แสดงอยู่</span>') + "</td>" +
+        '<td class="actions"><button class="btn ghost small" data-edit="' + esc(c.id) + '">ตั้งค่า</button></td></tr>';
+    }).join("");
+    adminFrame("courses",
+      '<div class="notice" style="background:var(--blue-soft);color:var(--navy)">' + icon("file") + "<span>หน้านี้ตั้งค่าการแสดงผล วิดีโอ และเอกสารประกอบได้ ส่วนเนื้อหาบทเรียนและข้อสอบแก้ในไฟล์ content.js แล้วอัปเดตเว็บ</span></div>" +
+      '<div class="table-wrap"><table class="data stack" id="course-table"><thead><tr><th>หลักสูตร</th><th>เนื้อหา</th><th>ผู้เรียน</th><th>สื่อเสริม</th><th>สถานะ</th><th></th></tr></thead><tbody>' + rows + "</tbody></table></div>");
+    document.getElementById("course-table").addEventListener("click", function (e) {
+      var b = e.target.closest("[data-edit]");
+      if (!b) return;
+      var c = getCourse(b.getAttribute("data-edit")), set = state.settings[c.id] || {};
+      openForm("ตั้งค่า: " + c.title,
+        '<label class="check-row"><input type="checkbox" name="hidden"' + (set.hidden ? " checked" : "") + "><span>ซ่อนจากคลังหลักสูตร (คนที่เรียนไปแล้วยังเห็น)</span></label>" +
+        input("videoUrl", "ลิงก์วิดีโอ", set.videoUrl, ' type="url" placeholder="https://www.youtube.com/watch?v=..."', "YouTube และ Google Drive จะเล่นในหน้าเว็บ ลิงก์อื่นจะเปิดแท็บใหม่ ไฟล์ใน Drive ต้องแชร์แบบทุกคนที่มีลิงก์") +
+        input("materialName", "ชื่อเอกสารประกอบ", set.materialName, ' maxlength="200"') +
+        input("materialUrl", "ลิงก์เอกสารประกอบ", set.materialUrl, ' type="url" placeholder="https://drive.google.com/..."'),
+        function (v) { v.courseId = c.id; return adminCall("saveCourse", v); });
+    });
+  }
+
+  function renderAdminSchedule() {
+    var today = KP.ymd(new Date());
+    function row(e) {
+      var c = e.courseId ? getCourse(e.courseId) : null;
+      return '<tr><td class="title">' + esc(e.title) + (c ? '<div class="muted" style="font-size:13px">' + esc(c.title) + "</div>" : "") + "</td>" +
+        '<td data-label="วันที่" class="num">' + esc(KP.fmtDay(KP.localDate(e.date).toISOString(), true)) + '</td><td data-label="เวลา" class="num">' + esc(e.start) + "–" + esc(e.end) + "</td>" +
+        '<td data-label="สถานที่">' + (esc(e.location) || "–") + '</td><td data-label="วิทยากร">' + (esc(e.trainer) || "–") + '</td><td data-label="รับ" class="num">' + (e.capacity ? e.capacity + " คน" : "–") + "</td>" +
+        '<td class="actions"><button class="btn ghost small" data-edit="' + esc(e.id) + '">แก้ไข</button><button class="btn danger small" data-del="' + esc(e.id) + '">ลบ</button></td></tr>';
+    }
+    function table(list) {
+      return '<div class="table-wrap"><table class="data stack"><thead><tr><th>การอบรม</th><th>วันที่</th><th>เวลา</th><th>สถานที่</th><th>วิทยากร</th><th>รับ</th><th></th></tr></thead><tbody>' + list.map(row).join("") + "</tbody></table></div>";
+    }
+    var next = state.schedule.filter(function (e) { return e.date >= today; });
+    var past = state.schedule.filter(function (e) { return e.date < today; }).reverse();
+    adminFrame("schedule",
+      '<div id="sched">' + (next.length ? table(next) : '<div class="table-wrap">' + KP.emptyState("calendar", "ยังไม่มีตารางอบรมที่กำลังจะมาถึง", "กดปุ่มเพิ่มตารางอบรม แล้วพนักงานจะเห็นในปฏิทินทันที") + "</div>") +
+      (past.length ? '<h2 style="font-size:17px;margin:24px 0 10px">ที่ผ่านมาแล้ว</h2>' + table(past) : "") + "</div>",
+      '<button class="btn" id="add">' + icon("plus", 18) + " เพิ่มตารางอบรม</button>");
+
+    function form(ev) {
+      var e = ev || { date: today, start: "09:00", end: "12:00" };
+      openForm(ev ? "แก้ไขตารางอบรม" : "เพิ่มตารางอบรม",
+        '<div class="field"><label for="f-courseId">หลักสูตรที่เกี่ยวข้อง</label><select id="f-courseId" name="courseId"><option value="">ไม่ผูกกับหลักสูตร</option>' +
+        courses.map(function (c) { return '<option value="' + c.id + '"' + (c.id === e.courseId ? " selected" : "") + ">" + esc(c.title) + "</option>"; }).join("") + "</select></div>" +
+        input("title", "ชื่อการอบรม *", e.title, ' required maxlength="200"') +
+        input("date", "วันที่ *", e.date, ' type="date" required') +
+        '<div class="field-row">' + input("start", "เวลาเริ่ม *", e.start, ' type="time" required') + input("end", "เวลาเลิก *", e.end, ' type="time" required') + "</div>" +
+        input("location", "สถานที่", e.location, ' maxlength="200"') +
+        '<div class="field-row">' + input("trainer", "วิทยากร", e.trainer, ' maxlength="120"') + input("capacity", "จำนวนที่รับ (คน)", e.capacity || "", ' type="number" min="0"') + "</div>" +
+        input("note", "หมายเหตุ", e.note, ' maxlength="500"'),
+        function (v) { v.id = ev ? ev.id : ""; return adminCall("saveSchedule", v); });
+    }
+    function find(id) {
+      for (var i = 0; i < state.schedule.length; i++) if (state.schedule[i].id === id) return state.schedule[i];
+      return null;
+    }
+    document.getElementById("add").addEventListener("click", function () { form(); });
+    document.getElementById("sched").addEventListener("click", function (e) {
+      var edit = e.target.closest("[data-edit]"), del = e.target.closest("[data-del]");
+      if (edit) { form(find(edit.getAttribute("data-edit"))); return; }
+      if (!del) return;
+      var ev = find(del.getAttribute("data-del"));
+      if (!ev || !confirm("ลบตารางอบรม \"" + ev.title + "\" ?")) return;
+      del.disabled = true;
+      adminCall("deleteSchedule", { id: ev.id }).then(function () { toast("ลบแล้ว"); route(); }, function (err) { del.disabled = false; alert(err.message); });
+    });
+  }
+
+  /* ---------- router ---------- */
+  function route() {
+    if (!hrKey) { renderLogin(); return; }
+    var parts = location.hash.replace(/^#\/?/, "").split("/");
+    if (parts[0] === "admin") {
+      if (parts[1] === "courses") renderAdminCourses();
+      else if (parts[1] === "schedule") renderAdminSchedule();
+      else renderAdminEmployees();
+      return;
+    }
+    renderReport();
+  }
+  window.addEventListener("hashchange", route);
+
   /* ---------- start ---------- */
   var savedKey = readSession();
   if (savedKey) {
-    app.innerHTML = '<div class="login-wrap"><p>กำลังโหลดรายงาน…</p></div>';
-    load(savedKey).then(renderReport, function () { writeSession(null); renderLogin(); });
+    app.innerHTML = '<div class="loading">กำลังโหลดรายงาน…</div>';
+    load(savedKey).then(route, function () { writeSession(null); renderLogin(); });
   } else {
     renderLogin();
   }
