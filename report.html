@@ -563,6 +563,7 @@ dialog::backdrop { background: rgba(15, 42, 74, .4); }
 .banner-stat i { flex: none; display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; border: 2px solid #fff; color: #fff; }
 .banner-stat:nth-child(1) i { background: #e23d66; }
 .banner-stat:nth-child(2) i { background: #f2bb1d; color: #14233a; }
+.banner-stat:nth-child(3) i { background: #2f6fed; }
 .banner-stat b { display: block; font-weight: 600; font-size: 16px; line-height: 1.3; }
 .banner-stat span { font-size: 14px; color: rgba(255, 255, 255, .92); }
 .banner-art { flex: none; align-self: flex-end; width: 330px; margin: 0 -8px -28px 0; }
@@ -775,7 +776,6 @@ circle.k-todo { stroke: var(--track); } i.k-todo { background: var(--track); }
 .avatar-pick:hover { box-shadow: 0 0 0 2px var(--blue-soft); }
 .avatar-pick[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--blue); }
 .link-btn { padding: 0; border: 0; background: none; color: var(--blue); font: inherit; text-decoration: underline; cursor: pointer; }
-.side-contact { gap: 8px; }
 .contact-card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 28px; }
 .contact-info { flex: 1 1 240px; display: grid; gap: 14px; justify-items: start; min-width: 0; }
 .contact-info .btn { gap: 8px; }
@@ -792,6 +792,51 @@ circle.k-todo { stroke: var(--track); } i.k-todo { background: var(--track); }
   .avatar-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .avatar-big { width: 72px; height: 72px; }
 }
+
+/* เกมฝึกสมอง */
+.side-links { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.side-links .btn { gap: 6px; min-height: 44px; padding: 6px 8px; font-size: 14px; }
+.games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
+.games-grid .list-card p b { font-weight: 500; color: var(--ink); }
+.game-panel { max-width: 640px; margin: 0 auto; }
+.game-hud { display: flex; justify-content: center; gap: 28px; min-height: 0; color: var(--ink-2); font-size: 14px; text-align: center; }
+.game-hud:not(:empty) { margin-bottom: 16px; }
+.game-hud b { display: block; font-size: 20px; font-weight: 600; color: var(--navy); font-variant-numeric: tabular-nums; }
+.game-card { display: grid; justify-items: center; gap: 16px; padding: 16px 4px; text-align: center; }
+.game-card .btn { gap: 8px; }
+.game-note { color: var(--ink-2); font-size: 15px; line-height: 1.6; max-width: 460px; min-height: 24px; }
+.game-score { font-size: 40px; font-weight: 600; color: var(--navy); font-variant-numeric: tabular-nums; }
+.game-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.memory-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 420px; margin: 0 auto; }
+.memory-card { aspect-ratio: 1; display: grid; place-items: center; padding: 0; border: 0; border-radius: 10px; background: var(--fill); color: var(--navy); cursor: pointer; transition: background .15s ease, transform .15s ease; }
+.memory-card::before { content: "?"; color: #fff; font-size: 22px; font-weight: 600; }
+.memory-card.open { background: var(--blue-soft); }
+.memory-card.open::before { content: none; }
+.memory-card.matched { background: var(--track); box-shadow: inset 0 0 0 2px var(--fill); cursor: default; }
+.memory-card:not(.open):hover { transform: translateY(-2px); }
+.math-box, .seq-box { display: grid; justify-items: center; gap: 16px; }
+.math-q { font-size: 40px; font-weight: 600; color: var(--navy); font-variant-numeric: tabular-nums; }
+.math-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: min(360px, 100%); }
+.math-options .btn { min-height: 60px; font-size: 22px; font-variant-numeric: tabular-nums; }
+.seq-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: min(320px, 100%); }
+.seq-pad { aspect-ratio: 1; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--navy); font-size: 22px; font-weight: 600; cursor: pointer; transition: background .08s ease, color .08s ease, transform .08s ease; }
+.seq-pad.lit { background: var(--fill); border-color: var(--fill); color: #fff; transform: scale(1.06); }
+@media (prefers-reduced-motion: reduce) {
+  .memory-card, .seq-pad { transition: none; }
+  .memory-card:not(.open):hover, .seq-pad.lit { transform: none; }
+}
+
+/* แต้มสะสมและพลุแสดงความยินดี */
+.points-row { display: flex; align-items: center; gap: 10px; padding: 8px; margin-bottom: 4px; border-bottom: 1px solid var(--line); font-size: 14.5px; }
+.points-row b { margin-left: auto; color: var(--navy); font-weight: 600; font-variant-numeric: tabular-nums; }
+.celebrate { position: fixed; inset: 0; z-index: 1000; pointer-events: none; display: grid; place-items: start center; padding-top: 12vh; }
+.celebrate canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.celebrate-card { position: relative; display: grid; justify-items: center; gap: 4px; padding: 16px 28px; max-width: calc(100vw - 32px); background: var(--surface); color: var(--navy); border-radius: var(--radius); box-shadow: var(--shadow-lift); text-align: center; animation: celebrate-in .35s ease both; }
+.celebrate-card .ico { color: #e09a2b; }
+.celebrate-card b { font-size: 21px; font-weight: 600; }
+.celebrate-card span { font-size: 15px; color: var(--ink-2); }
+@keyframes celebrate-in { from { opacity: 0; transform: translateY(-10px) scale(.96); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .celebrate-card { animation: none; } }
 
 </style>
 
@@ -856,6 +901,8 @@ window.KP = (function () {
     trend: '<path d="M4 17l5.500-5.500 3.500 3.500L20 8"/><path d="M15 8h5v5"/>',
     phone: '<path d="M6 3.500h3l1.500 5-2 1.500c1 2.300 2.700 4 5 5l1.500-2 5 1.500v3c0 1.500-1 2.500-2.500 2.500C10.500 20 4 13.500 3.500 6 3.500 4.500 4.500 3.500 6 3.500Z"/>',
     camera: '<path d="M3.500 8h4l1.500-2.500h6L16.500 8h4v11.500h-17z"/><circle cx="12" cy="13" r="3.500"/>',
+    star: '<path d="m12 3.500 2.600 5.400 5.900.800-4.300 4.100 1.100 5.900-5.300-2.900-5.300 2.900 1.100-5.900-4.300-4.100 5.900-.800z"/>',
+    game: '<rect x="3" y="7" width="18" height="11" rx="4.500"/><path d="M8 10.500v4M6 12.500h4"/><path d="M15 11.500h.01M17.500 14h.01" stroke-width="2.500"/>',
   };
   function icon(name, size) {
     return '<svg class="ico" width="' + (size || 20) + '" height="' + (size || 20) + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.700" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || "") + "</svg>";
@@ -952,6 +999,7 @@ window.KP = (function () {
     { key: "room", page: "app", hash: "#/room", icon: "room", label: "ห้องอบรม" },
     { key: "learning", page: "app", hash: "#/learning", icon: "learning", label: "การเรียนของฉัน" },
     { key: "calendar", page: "app", hash: "#/calendar", icon: "calendar", label: "ปฏิทินอบรม" },
+    { key: "games", page: "app", hash: "#/games", icon: "game", label: "เกมฝึกสมอง", noTab: true },
     { key: "contact", page: "app", hash: "#/contact", icon: "phone", label: "ติดต่อ HRD", noTab: true }, // มือถือเปิดจากเมนูผู้ใช้และหน้าภาพรวม
     { key: "reports", page: "report", hash: "#/reports", icon: "reports", label: "รายงาน", hr: true },
     { key: "admin", page: "report", hash: "#/admin", icon: "admin", label: "จัดการระบบ", hr: true },
@@ -1120,7 +1168,7 @@ window.KP = (function () {
   function userMenu(user) {
     return '<div class="pop-wrap"><button class="user-btn" type="button" data-pop aria-expanded="false" aria-label="เมนูผู้ใช้"><span><b>' + esc(user.name) + "</b><small>" + esc(user.sub || "") + "</small></span>" +
       '<span class="avatar" id="user-avatar">' + avatarInner(user) + "</span></button>" +
-      '<div class="pop pop-user" hidden>' + (user.canSetAvatar ? '<button class="menu-row" type="button" data-avatar>' + icon("camera", 18) + "ตั้งรูปโปรไฟล์</button>" : "") +
+      '<div class="pop pop-user" hidden>' + (user.canSetAvatar ? '<div class="points-row">' + icon("star", 18) + "แต้มสะสม<b data-points>" + (user.points || 0) + ' แต้ม</b></div><button class="menu-row" type="button" data-avatar>' + icon("camera", 18) + 'ตั้งรูปโปรไฟล์</button><a class="menu-row" href="#/games">' + icon("game", 18) + "เกมฝึกสมอง</a>" : "") +
       '<button class="menu-row" type="button" data-contact>' + icon("phone", 18) + "ติดต่อ HRD</button>" +
       '<button class="menu-row" type="button" data-help>' + icon("help", 18) + "วิธีใช้งาน</button>" +
       '<button class="menu-row" type="button" id="logout">' + icon("logout", 18) + "ออกจากระบบ</button></div></div>";
