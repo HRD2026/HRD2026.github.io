@@ -524,6 +524,7 @@ dialog::backdrop { background: rgba(15, 42, 74, .4); }
 .pill.warn { background: var(--warn-soft); color: var(--warn); }
 .pill.good { background: var(--good-soft); color: var(--good); }
 .art { display: block; width: 100%; height: 100%; }
+.art-photo { object-fit: cover; }
 .thumb { flex: none; display: block; width: 62px; height: 44px; border-radius: 9px; overflow: hidden; }
 
 /* Rail + top bar */
@@ -983,7 +984,10 @@ window.KP = (function () {
       '<path d="M46 96a30 30 0 0 1 60 0z" fill="#f5b94a"/><rect x="38" y="96" width="76" height="8" rx="4" fill="#e09a2b"/><rect x="70" y="62" width="12" height="16" rx="4" fill="#e09a2b"/>' +
       '<path d="M252 112l14-56h8l14 56z" fill="#ef8a3c"/><path d="M258 88h24l3 12h-30z" fill="#fff"/><rect x="240" y="108" width="60" height="8" rx="4" fill="#d9722a"/>',
   };
+  // หลักสูตรที่มีภาพถ่ายหน้าปก (assets/cover-<id>.jpg) ใช้ภาพนั้น ไม่มีก็ใช้ภาพวาดของหมวด
   function courseArt(c) {
+    var photo = c && window.IMG && window.IMG["cover-" + c.id];
+    if (photo) return '<img class="art art-photo" src="' + photo + '" alt="" loading="lazy" decoding="async">';
     return '<svg class="art" viewBox="0 0 320 130" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="320" height="130" fill="#dbe8f8"/>' +
       '<circle cx="44" cy="28" r="58" fill="#e9f1fb"/><circle cx="288" cy="16" r="46" fill="#c9dcf5"/>' + (ART[c && c.group] || ART.quality) + "</svg>";
   }
