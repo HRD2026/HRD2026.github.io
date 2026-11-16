@@ -3293,7 +3293,8 @@ window.COURSES = [
       "<h1>เข้าสู่ระบบ</h1>" +
       '<p class="sub">กรุณาใส่รหัสพนักงานของคุณ</p>' +
       '<div class="field"><label for="empid">รหัสพนักงาน</label>' +
-      '<input id="empid" name="empid" inputmode="numeric" placeholder="เช่น 10002" required autofocus></div>' +
+      // รหัสมีทั้งตัวเลขล้วนและตัวอักษรผสม (เช่น GS0xx) จึงเปิดแป้นพิมพ์ปกติ และเปลี่ยนเป็นตัวพิมพ์ใหญ่ให้เอง
+      '<input id="empid" name="empid" type="text" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="40" placeholder="เช่น 10002 หรือ AB123" required autofocus></div>' +
       '<div class="error" id="err" role="alert">' + esc(message || "") + "</div>" +
       '<button class="btn block" type="submit" id="go">เข้าสู่ระบบ</button>' +
       '<div class="login-foot">เข้าระบบไม่ได้ <button class="link-btn" type="button" data-contact>ติดต่อ HRD</button><br>' +
@@ -3302,7 +3303,7 @@ window.COURSES = [
 
     document.getElementById("login").addEventListener("submit", function (e) {
       e.preventDefault();
-      var id = document.getElementById("empid").value.trim();
+      var id = document.getElementById("empid").value.replace(/\s+/g, "").toUpperCase();
       if (!id) return;
       var btn = document.getElementById("go");
       var err = document.getElementById("err");
