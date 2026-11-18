@@ -128,6 +128,13 @@ h1, h2, h3, h4 { color: var(--navy); line-height: 1.3; font-weight: 600; }
 .login-side li { display: flex; gap: 10px; align-items: center; }
 .login-main { display: grid; place-items: center; padding: 32px 20px; }
 .login-card { width: 100%; max-width: 380px; }
+.login-card .pin-input { letter-spacing: .4em; font-variant-numeric: tabular-nums; }
+.login-card .pin-note { color: var(--ink-2); font-size: 13px; margin: 6px 0 0; }
+.pin-rules { margin: 0 0 16px; padding-left: 20px; color: var(--ink-2); font-size: 14px; display: grid; gap: 2px; }
+.pin-chip { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.pin-chip.ok { background: var(--good-soft); color: var(--good); }
+.pin-chip.warn { background: var(--warn-soft); color: var(--warn); }
+.pin-chip.bad { background: var(--danger-soft); color: var(--danger); }
 .login-card h1 { font-size: 24px; margin: 0 0 4px; }
 .login-card p.sub { color: var(--ink-2); margin: 0 0 24px; }
 .login-brand { padding-bottom: 28px; }
@@ -1172,7 +1179,7 @@ window.KP = (function () {
   function userMenu(user) {
     return '<div class="pop-wrap"><button class="user-btn" type="button" data-pop aria-expanded="false" aria-label="เมนูผู้ใช้"><span><b>' + esc(user.name) + "</b><small>" + esc(user.sub || "") + "</small></span>" +
       '<span class="avatar" id="user-avatar">' + avatarInner(user) + "</span></button>" +
-      '<div class="pop pop-user" hidden>' + (user.canSetAvatar ? '<div class="points-row">' + icon("star", 18) + "แต้มสะสม<b data-points>" + (user.points || 0) + ' แต้ม</b></div><button class="menu-row" type="button" data-avatar>' + icon("camera", 18) + 'ตั้งรูปโปรไฟล์</button><a class="menu-row" href="#/games">' + icon("game", 18) + "เกมฝึกสมอง</a>" : "") +
+      '<div class="pop pop-user" hidden>' + (user.canSetAvatar ? '<div class="points-row">' + icon("star", 18) + "แต้มสะสม<b data-points>" + (user.points || 0) + ' แต้ม</b></div><button class="menu-row" type="button" data-avatar>' + icon("camera", 18) + 'ตั้งรูปโปรไฟล์</button><button class="menu-row" type="button" data-change-pin>' + icon("lock", 18) + 'เปลี่ยน PIN</button><a class="menu-row" href="#/games">' + icon("game", 18) + "เกมฝึกสมอง</a>" : "") +
       '<button class="menu-row" type="button" data-contact>' + icon("phone", 18) + "ติดต่อ HRD</button>" +
       '<button class="menu-row" type="button" data-help>' + icon("help", 18) + "วิธีใช้งาน</button>" +
       '<button class="menu-row" type="button" id="logout">' + icon("logout", 18) + "ออกจากระบบ</button></div></div>";
@@ -3291,36 +3298,144 @@ window.COURSES = [
       '<section class="login-main"><form class="login-card" id="login" autocomplete="off">' +
       '<div class="login-brand">' + KP.brandLogo(false) + "</div>" +
       "<h1>เข้าสู่ระบบ</h1>" +
-      '<p class="sub">กรุณาใส่รหัสพนักงานของคุณ</p>' +
+      '<p class="sub">กรุณาใส่รหัสพนักงานและ PIN ของคุณ</p>' +
       '<div class="field"><label for="empid">รหัสพนักงาน</label>' +
       // รหัสมีทั้งตัวเลขล้วนและตัวอักษรผสม (เช่น GS0xx) จึงเปิดแป้นพิมพ์ปกติ และเปลี่ยนเป็นตัวพิมพ์ใหญ่ให้เอง
       '<input id="empid" name="empid" type="text" inputmode="text" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="40" placeholder="เช่น 10002 หรือ AB123" required autofocus></div>' +
+      '<div class="field"><label for="pin">PIN 6 หลัก</label>' +
+      '<input id="pin" name="pin" class="pin-input" type="password" inputmode="numeric" autocomplete="current-password" maxlength="6" pattern="[0-9]{6}" placeholder="••••••">' +
+      '<p class="pin-note">เข้าครั้งแรกยังไม่มี PIN: ใส่รหัสพนักงาน เว้นช่องนี้ว่าง แล้วกดเข้าสู่ระบบ ระบบจะให้ตั้ง PIN ของคุณเอง</p></div>' +
       '<div class="error" id="err" role="alert">' + esc(message || "") + "</div>" +
       '<button class="btn block" type="submit" id="go">เข้าสู่ระบบ</button>' +
-      '<div class="login-foot">เข้าระบบไม่ได้ <button class="link-btn" type="button" data-contact>ติดต่อ HRD</button><br>' +
+      '<div class="login-foot">ลืม PIN หรือเข้าระบบไม่ได้ <button class="link-btn" type="button" data-contact>ติดต่อ HRD</button><br>' +
       '<a href="' + esc(KP.reportUrl) + '" target="_top">สำหรับฝ่ายบุคคล: รายงานและจัดการระบบ</a></div>' +
       "</form></section></div>";
 
+    var pinBox = document.getElementById("pin");
+    pinBox.addEventListener("input", function () { pinBox.value = pinBox.value.replace(/\D/g, "").slice(0, 6); });
     document.getElementById("login").addEventListener("submit", function (e) {
       e.preventDefault();
       var id = document.getElementById("empid").value.replace(/\s+/g, "").toUpperCase();
+      var pin = pinBox.value.replace(/\D/g, "");
       if (!id) return;
       var btn = document.getElementById("go");
       var err = document.getElementById("err");
+      if (pin && pin.length !== 6) { err.textContent = "กรุณาใส่ PIN ให้ครบ 6 หลัก (ถ้ายังไม่เคยตั้ง PIN ให้เว้นว่าง)"; pinBox.focus(); return; }
       btn.disabled = true; btn.textContent = "กำลังตรวจสอบ…"; err.textContent = "";
-      apiRetry(["apiLogin", id], function () { btn.textContent = "มีผู้ใช้งานจำนวนมาก กำลังลองอีกครั้ง…"; }).then(function (res) {
-        if (!res || !res.ok) {
-          btn.disabled = false; btn.textContent = "เข้าสู่ระบบ";
-          err.textContent = "ไม่พบรหัสพนักงานนี้ในระบบ กรุณาตรวจสอบอีกครั้ง";
-          return;
-        }
-        startSession(res);
+      apiRetry(["apiLogin", id, pin], function () { btn.textContent = "มีผู้ใช้งานจำนวนมาก กำลังลองอีกครั้ง…"; }).then(function (res) {
+        if (res && res.ok) { startSession(res); return; }
+        btn.disabled = false; btn.textContent = "เข้าสู่ระบบ";
+        if (res && res.error === "new-pin") { renderNewPin(res.ticket, res.name); return; }
+        pinBox.value = "";
+        err.textContent = loginError(res);
       }, function () {
         btn.disabled = false; btn.textContent = "เข้าสู่ระบบ";
         err.textContent = "เชื่อมต่อระบบไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่";
       });
     });
   }
+  function loginError(res) {
+    var e = res && res.error;
+    if (e === "locked") return "ใส่ PIN ผิดหลายครั้ง ระบบล็อกไว้ชั่วคราว กรุณาลองใหม่ในอีก " + (res.minutes || 15) + " นาที หรือติดต่อ HRD";
+    if (e === "pin-format") return "PIN ต้องเป็นตัวเลข 6 หลัก";
+    if (e === "pin-easy") return "PIN นี้เดาง่ายเกินไป (เช่น 111111 หรือ 123456) กรุณาตั้งใหม่";
+    if (e === "ticket-expired") return "หมดเวลาตั้ง PIN กรุณาเข้าสู่ระบบใหม่อีกครั้ง";
+    if (e === "wrong-old") return "PIN เดิมไม่ถูกต้อง" + (res.left ? " (ลองได้อีก " + res.left + " ครั้ง)" : "");
+    return "รหัสพนักงานหรือ PIN ไม่ถูกต้อง" + (res && res.left ? " (ลองได้อีก " + res.left + " ครั้งก่อนถูกล็อก)" : "");
+  }
+  // กฎ PIN ใหม่ที่หน้าเว็บตรวจก่อนส่ง (เซิร์ฟเวอร์ตรวจซ้ำอีกชั้น)
+  function pinProblem(pin, again) {
+    if (!/^\d{6}$/.test(pin)) return "PIN ต้องเป็นตัวเลข 6 หลัก";
+    if (/^(\d)\1{5}$/.test(pin) || "0123456789".indexOf(pin) !== -1 || "9876543210".indexOf(pin) !== -1) return loginError({ error: "pin-easy" });
+    if (pin !== again) return "PIN ทั้งสองช่องไม่ตรงกัน";
+    return "";
+  }
+  var PIN_RULES = '<ul class="pin-rules"><li>ตัวเลข 6 หลัก</li><li>ห้ามเลขเรียงหรือเลขซ้ำ เช่น 123456, 111111</li><li>ไม่ควรใช้ซ้ำกับ PIN บัตร ATM หรือแอปธนาคาร</li><li>จำไว้ให้ดี และห้ามบอกผู้อื่น ลืม PIN ให้ติดต่อ HRD เพื่อรีเซ็ต</li></ul>';
+  function pinField(id, label, auto) {
+    return '<div class="field"><label for="' + id + '">' + label + '</label><input id="' + id + '" class="pin-input" type="password" inputmode="numeric" autocomplete="' + auto + '" maxlength="6" pattern="[0-9]{6}" required></div>';
+  }
+  function digitsOnly(root) {
+    root.querySelectorAll(".pin-input").forEach(function (el) {
+      el.addEventListener("input", function () { el.value = el.value.replace(/\D/g, "").slice(0, 6); });
+    });
+  }
+
+  // เข้าครั้งแรก (หรือหลัง HR รีเซ็ต): ต้องตั้ง PIN ของตัวเองก่อนจึงจะเข้าใช้งานได้
+  function renderNewPin(ticket, name) {
+    app.innerHTML =
+      '<div class="login-wrap"><section class="login-main"><form class="login-card" id="newpin" autocomplete="off">' +
+      '<div class="login-brand">' + KP.brandLogo(false) + "</div>" +
+      "<h1>ตั้ง PIN ใหม่</h1>" +
+      '<p class="sub">สวัสดี ' + esc(name || "") + " กรุณาตั้ง PIN ของคุณเองก่อนเริ่มใช้งาน</p>" + PIN_RULES +
+      pinField("np1", "PIN ใหม่", "new-password") + pinField("np2", "ใส่ PIN ใหม่อีกครั้ง", "new-password") +
+      '<div class="error" id="err" role="alert"></div>' +
+      '<button class="btn block" type="submit" id="go">บันทึก PIN และเข้าสู่ระบบ</button>' +
+      '<div class="login-foot"><button class="link-btn" type="button" id="back">กลับไปหน้าเข้าสู่ระบบ</button></div>' +
+      "</form></section></div>";
+    var form = document.getElementById("newpin");
+    digitsOnly(form);
+    document.getElementById("np1").focus();
+    document.getElementById("back").addEventListener("click", function () { renderLogin(); });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var p1 = document.getElementById("np1").value, p2 = document.getElementById("np2").value;
+      var err = document.getElementById("err"), btn = document.getElementById("go");
+      var problem = pinProblem(p1, p2);
+      if (problem) { err.textContent = problem; return; }
+      btn.disabled = true; btn.textContent = "กำลังบันทึก…"; err.textContent = "";
+      apiRetry(["apiSetPin", ticket, p1], function () { btn.textContent = "มีผู้ใช้งานจำนวนมาก กำลังลองอีกครั้ง…"; }).then(function (res) {
+        if (res && res.ok) { startSession(res); return; }
+        btn.disabled = false; btn.textContent = "บันทึก PIN และเข้าสู่ระบบ";
+        if (res && res.error === "ticket-expired") { renderLogin(loginError(res)); return; }
+        err.textContent = loginError(res);
+      }, function () {
+        btn.disabled = false; btn.textContent = "บันทึก PIN และเข้าสู่ระบบ";
+        err.textContent = "เชื่อมต่อระบบไม่สำเร็จ กรุณาลองใหม่";
+      });
+    });
+  }
+
+  // เปลี่ยน PIN จากเมนูผู้ใช้
+  function openChangePin() {
+    var d = document.createElement("dialog");
+    d.innerHTML = '<form id="cp-form"><div class="dlg-head"><h2>เปลี่ยน PIN</h2></div><div class="dlg-body">' + PIN_RULES +
+      pinField("cp0", "PIN เดิม", "current-password") + pinField("cp1", "PIN ใหม่", "new-password") + pinField("cp2", "ใส่ PIN ใหม่อีกครั้ง", "new-password") +
+      '<div class="error" id="cp-err" role="alert"></div></div>' +
+      '<div class="dlg-foot"><button class="btn ghost" type="button" id="cp-cancel">ยกเลิก</button><button class="btn" type="submit" id="cp-save">บันทึก</button></div></form>';
+    document.body.appendChild(d);
+    digitsOnly(d);
+    var err = d.querySelector("#cp-err"), save = d.querySelector("#cp-save");
+    d.querySelector("#cp-cancel").addEventListener("click", function () { d.close(); d.remove(); });
+    d.querySelector("form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var oldPin = d.querySelector("#cp0").value, p1 = d.querySelector("#cp1").value, p2 = d.querySelector("#cp2").value;
+      var problem = /^\d{6}$/.test(oldPin) ? pinProblem(p1, p2) : "กรุณาใส่ PIN เดิมให้ครบ 6 หลัก";
+      if (!problem && oldPin === p1) problem = "PIN ใหม่ต้องไม่ซ้ำกับ PIN เดิม";
+      if (problem) { err.textContent = problem; return; }
+      save.disabled = true; save.textContent = "กำลังบันทึก…"; err.textContent = "";
+      api("apiChangePin", state.token, { oldPin: oldPin, newPin: p1 }).then(function (res) {
+        if (!res || !res.ok) {
+          save.disabled = false; save.textContent = "บันทึก";
+          err.textContent = res && res.error === "expired" ? "หมดเวลาการใช้งาน กรุณาออกจากระบบแล้วเข้าใหม่" : loginError(res);
+          return;
+        }
+        d.close(); d.remove();
+        var t = document.createElement("div");
+        t.className = "toast"; t.setAttribute("role", "status"); t.textContent = "เปลี่ยน PIN แล้ว";
+        document.body.appendChild(t);
+        setTimeout(function () { t.remove(); }, 2600);
+      }, function () {
+        save.disabled = false; save.textContent = "บันทึก";
+        err.textContent = "เชื่อมต่อระบบไม่สำเร็จ กรุณาลองใหม่";
+      });
+    });
+    d.addEventListener("close", function () { d.remove(); });
+    d.showModal();
+    d.querySelector("#cp0").focus();
+  }
+  document.addEventListener("click", function (e) {
+    if (e.target.closest("[data-change-pin]")) { KP.closePops(); openChangePin(); }
+  });
 
   function startSession(res) {
     // records queued for someone else (shared PC) must not be sent under this login

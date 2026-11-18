@@ -128,6 +128,13 @@ h1, h2, h3, h4 { color: var(--navy); line-height: 1.3; font-weight: 600; }
 .login-side li { display: flex; gap: 10px; align-items: center; }
 .login-main { display: grid; place-items: center; padding: 32px 20px; }
 .login-card { width: 100%; max-width: 380px; }
+.login-card .pin-input { letter-spacing: .4em; font-variant-numeric: tabular-nums; }
+.login-card .pin-note { color: var(--ink-2); font-size: 13px; margin: 6px 0 0; }
+.pin-rules { margin: 0 0 16px; padding-left: 20px; color: var(--ink-2); font-size: 14px; display: grid; gap: 2px; }
+.pin-chip { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.pin-chip.ok { background: var(--good-soft); color: var(--good); }
+.pin-chip.warn { background: var(--warn-soft); color: var(--warn); }
+.pin-chip.bad { background: var(--danger-soft); color: var(--danger); }
 .login-card h1 { font-size: 24px; margin: 0 0 4px; }
 .login-card p.sub { color: var(--ink-2); margin: 0 0 24px; }
 .login-brand { padding-bottom: 28px; }
@@ -1172,7 +1179,7 @@ window.KP = (function () {
   function userMenu(user) {
     return '<div class="pop-wrap"><button class="user-btn" type="button" data-pop aria-expanded="false" aria-label="เมนูผู้ใช้"><span><b>' + esc(user.name) + "</b><small>" + esc(user.sub || "") + "</small></span>" +
       '<span class="avatar" id="user-avatar">' + avatarInner(user) + "</span></button>" +
-      '<div class="pop pop-user" hidden>' + (user.canSetAvatar ? '<div class="points-row">' + icon("star", 18) + "แต้มสะสม<b data-points>" + (user.points || 0) + ' แต้ม</b></div><button class="menu-row" type="button" data-avatar>' + icon("camera", 18) + 'ตั้งรูปโปรไฟล์</button><a class="menu-row" href="#/games">' + icon("game", 18) + "เกมฝึกสมอง</a>" : "") +
+      '<div class="pop pop-user" hidden>' + (user.canSetAvatar ? '<div class="points-row">' + icon("star", 18) + "แต้มสะสม<b data-points>" + (user.points || 0) + ' แต้ม</b></div><button class="menu-row" type="button" data-avatar>' + icon("camera", 18) + 'ตั้งรูปโปรไฟล์</button><button class="menu-row" type="button" data-change-pin>' + icon("lock", 18) + 'เปลี่ยน PIN</button><a class="menu-row" href="#/games">' + icon("game", 18) + "เกมฝึกสมอง</a>" : "") +
       '<button class="menu-row" type="button" data-contact>' + icon("phone", 18) + "ติดต่อ HRD</button>" +
       '<button class="menu-row" type="button" data-help>' + icon("help", 18) + "วิธีใช้งาน</button>" +
       '<button class="menu-row" type="button" id="logout">' + icon("logout", 18) + "ออกจากระบบ</button></div></div>";
@@ -3117,6 +3124,7 @@ window.COURSES = [
     state.employees = res.employees || state.employees;
     state.schedule = res.schedule || state.schedule;
     state.settings = res.courseSettings || state.settings;
+    state.pins = res.pins || state.pins || {};
   }
   function load(key) {
     return api("apiReport", key).then(function (res) {
@@ -3359,6 +3367,14 @@ window.COURSES = [
     "bad-time": "เวลาไม่ถูกต้อง เวลาเลิกต้องหลังเวลาเริ่ม", "bad-url": "ลิงก์ต้องขึ้นต้นด้วย https://",
     "not-found": "ไม่พบรายการนี้ อาจถูกลบไปแล้ว", unauthorized: "หมดสิทธิ์ใช้งาน กรุณาเข้าสู่ระบบใหม่",
   };
+  // สถานะ PIN ที่ HR เห็น (ไม่มีใครเห็นตัว PIN จริง)
+  var PIN_LABEL = {
+    set: ["ok", "ตั้ง PIN แล้ว"], none: ["warn", "ยังไม่ตั้ง PIN"], locked: ["bad", "ถูกล็อก 15 นาที"],
+  };
+  function pinChip(id) {
+    var s = PIN_LABEL[(state.pins || {})[id]] || PIN_LABEL.none;
+    return '<span class="pin-chip ' + s[0] + '">' + s[1] + "</span>";
+  }
   function adminCall(action, item, extra) {
     var req = { action: action, item: item };
     Object.keys(extra || {}).forEach(function (k) { req[k] = extra[k]; });
@@ -3439,10 +3455,11 @@ window.COURSES = [
         return !q || (e.id + " " + e.name + " " + e.team + " " + e.dept + " " + e.position).toLowerCase().indexOf(q) !== -1;
       });
       document.getElementById("adm-list").innerHTML = (list.length
-        ? '<div class="table-wrap"><table class="data stack"><thead><tr><th>รหัส</th><th>ชื่อ</th><th>ตำแหน่ง</th><th>ส่วนงาน</th><th>ฝ่าย</th><th></th></tr></thead><tbody>' +
+        ? '<div class="table-wrap"><table class="data stack"><thead><tr><th>รหัส</th><th>ชื่อ</th><th>ตำแหน่ง</th><th>ส่วนงาน</th><th>ฝ่าย</th><th>PIN</th><th></th></tr></thead><tbody>' +
           list.slice(0, state.adminLimit).map(function (e) {
             return '<tr><td data-label="รหัส" class="num">' + esc(e.id) + '</td><td data-label="ชื่อ">' + esc(e.name) + '</td><td data-label="ตำแหน่ง">' + (esc(e.position) || "–") + '</td><td data-label="ส่วนงาน">' + (esc(e.team) || "–") + '</td><td data-label="ฝ่าย">' + (esc(e.dept) || "–") + "</td>" +
-              '<td class="actions"><button class="btn ghost small" data-edit="' + esc(e.id) + '">แก้ไข</button><button class="btn danger small" data-del="' + esc(e.id) + '">ลบ</button></td></tr>';
+              '<td data-label="PIN">' + pinChip(e.id) + "</td>" +
+              '<td class="actions"><button class="btn ghost small" data-edit="' + esc(e.id) + '">แก้ไข</button><button class="btn ghost small" data-courses="' + esc(e.id) + '">หลักสูตร</button><button class="btn ghost small" data-reset-pin="' + esc(e.id) + '">รีเซ็ต PIN</button><button class="btn danger small" data-del="' + esc(e.id) + '">ลบ</button></td></tr>';
           }).join("") + "</tbody></table></div>"
         : '<div class="table-wrap">' + KP.emptyState("search", "ไม่พบพนักงาน") + "</div>") +
         (list.length > state.adminLimit ? '<div class="more-row"><button class="btn ghost" id="adm-more">แสดงเพิ่มอีก 30 คน (ทั้งหมด ' + list.length + " คน)</button></div>" : "");
@@ -3452,14 +3469,63 @@ window.COURSES = [
     document.getElementById("adm-q").addEventListener("input", function (e) { state.adminQ = e.target.value; state.adminLimit = 30; paint(); });
     document.getElementById("adm-list").addEventListener("click", function (e) {
       if (e.target.id === "adm-more") { state.adminLimit += 30; paint(); return; }
-      var edit = e.target.closest("[data-edit]"), del = e.target.closest("[data-del]");
+      var edit = e.target.closest("[data-edit]"), del = e.target.closest("[data-del]"), reset = e.target.closest("[data-reset-pin]");
+      var crs = e.target.closest("[data-courses]");
       if (edit) { form(findEmp(edit.getAttribute("data-edit"))); return; }
+      if (crs) { openEmployeeCourses(findEmp(crs.getAttribute("data-courses"))); return; }
+      if (reset) {
+        var who = findEmp(reset.getAttribute("data-reset-pin"));
+        if (!who || !confirm("รีเซ็ต PIN ของ " + who.name + " (" + who.id + ")?\n\nPIN เดิมจะใช้ไม่ได้และปลดล็อกให้ พนักงานจะตั้ง PIN ใหม่เองตอนเข้าระบบครั้งถัดไป")) return;
+        reset.disabled = true;
+        adminCall("resetPin", { id: who.id }).then(function () { toast("รีเซ็ต PIN แล้ว"); route(); }, function (err) { reset.disabled = false; alert(err.message); });
+        return;
+      }
       if (!del) return;
       var emp = findEmp(del.getAttribute("data-del"));
       if (!emp || !confirm("ลบ " + emp.name + " (" + emp.id + ") ออกจากรายชื่อ?\n\nคนนี้จะเข้าระบบไม่ได้ทันที แต่ผลการเรียนเดิมยังเก็บไว้ในรายงาน")) return;
       del.disabled = true;
       adminCall("deleteEmployee", { id: emp.id }).then(function () { toast("ลบแล้ว"); route(); }, function (err) { del.disabled = false; alert(err.message); });
     });
+  }
+  // หลักสูตรที่พนักงาน 1 คนเริ่มเรียนแล้ว พร้อมปุ่มรีเซ็ตทีละหลักสูตร
+  function openEmployeeCourses(emp) {
+    if (!emp) return;
+    var dlg = document.createElement("dialog");
+    document.body.appendChild(dlg);
+    function paintList() {
+      var mine = state.rows.filter(function (r) { return r.employeeId === emp.id; });
+      dlg.innerHTML = '<div class="dlg-head"><h2>หลักสูตรของ ' + esc(emp.name) + " (" + esc(emp.id) + ")</h2></div><div class=\"dlg-body\">" +
+        '<p class="muted">รีเซ็ตแล้ว พนักงานจะเริ่มหลักสูตรนั้นใหม่ตั้งแต่ข้อสอบก่อนเรียน ส่วนประวัติเดิมยังเก็บไว้ในแท็บ Log และ History</p>' +
+        (mine.length
+          ? '<div class="table-wrap"><table class="data"><thead><tr><th>หลักสูตร</th><th>รอบ</th><th>ก่อนเรียน</th><th>หลังเรียน</th><th>สถานะ</th><th></th></tr></thead><tbody>' +
+            mine.map(function (r) {
+              var status = r.completedAt ? "เรียนจบ" : r.preScore === null ? "ยังไม่สอบก่อนเรียน" : "กำลังเรียน " + r.lessonsDone + "/" + r.lessonsTotal + " บท";
+              return "<tr><td>" + esc(r.courseTitle || r.courseId) + '</td><td class="num">' + (r.round || 1) + '</td><td class="num">' + (r.preScore === null ? "–" : r.preScore + "%") +
+                '</td><td class="num">' + (r.bestScore === null ? "–" : r.bestScore + "%") + "</td><td>" + status + "</td>" +
+                '<td class="actions"><button class="btn danger small" type="button" data-reset-course="' + esc(r.courseId) + '">รีเซ็ต</button></td></tr>';
+            }).join("") + "</tbody></table></div>"
+          : KP.emptyState("test", "ยังไม่เริ่มเรียนหลักสูตรใด")) +
+        '<div class="error" id="rc-err" role="alert"></div></div><div class="dlg-foot"><button class="btn" type="button" id="rc-close">ปิด</button></div>';
+      dlg.querySelector("#rc-close").addEventListener("click", function () { dlg.close(); dlg.remove(); });
+    }
+    dlg.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-reset-course]");
+      if (!b) return;
+      var courseId = b.getAttribute("data-reset-course");
+      var row = state.rows.filter(function (r) { return r.employeeId === emp.id && r.courseId === courseId; })[0];
+      if (!confirm("รีเซ็ตหลักสูตร \"" + ((row && row.courseTitle) || courseId) + "\" ของ " + emp.name + "?\n\nคะแนนก่อนเรียน หลังเรียน และบทที่อ่านแล้วในรอบนี้จะถูกล้าง พนักงานต้องเริ่มใหม่ตั้งแต่ข้อสอบก่อนเรียน")) return;
+      b.disabled = true; b.textContent = "กำลังรีเซ็ต…";
+      adminCall("resetCourse", { id: emp.id, courseId: courseId }).then(function () {
+        toast("รีเซ็ตหลักสูตรแล้ว ให้พนักงานออกจากระบบแล้วเข้าใหม่");
+        paintList();
+      }, function (err) {
+        b.disabled = false; b.textContent = "รีเซ็ต";
+        dlg.querySelector("#rc-err").textContent = err.message;
+      });
+    });
+    dlg.addEventListener("close", function () { dlg.remove(); });
+    paintList();
+    dlg.showModal();
   }
   function findEmp(id) {
     for (var i = 0; i < state.employees.length; i++) if (state.employees[i].id === id) return state.employees[i];
