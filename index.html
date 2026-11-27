@@ -120,14 +120,105 @@ h1, h2, h3, h4 { color: var(--navy); line-height: 1.3; font-weight: 600; }
 .foot-row { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--ink-2); margin-top: 6px; }
 
 /* ---------- Login ---------- */
-.login-wrap { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); background: var(--surface); }
-.login-side { background: var(--fill); color: #fff; padding: 56px; display: flex; flex-direction: column; justify-content: flex-end; }
-.login-side h2 { color: #fff; font-size: 34px; margin: 0 0 12px; max-width: 460px; }
-.login-side p { color: #c3d3e6; max-width: 460px; margin: 0; }
-.login-side ul { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 12px; color: #dce7f3; }
-.login-side li { display: flex; gap: 10px; align-items: center; }
+.login-wrap { min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(400px, 1fr); background: var(--surface); }
+/* ฝั่งซ้าย: เมืองไอโซเมตริกเคลื่อนไหว — พนักงานเดินไปศูนย์อบรม */
+.login-side {
+  --iso-ground: #eef3f8; --iso-road: #f9fafc; --iso-dash: #e2b84f; --iso-lawn: #dcebdf;
+  --iso-top: #f6f8fb; --iso-left: #e2e8f0; --iso-right: #cdd6e2;
+  --iso-blue: #dce8fb; --iso-sand: #f1e7d3; --iso-mint: #dcefe5;
+  --tree-d: #3d9a6a; --tree-l: #5cb685; --tree-sh: rgba(40, 70, 60, .12);
+  --rt-1: #2f6fed; --rt-2: #14966a; --rt-3: #e8891c;
+  --fade: #ffffff;
+  position: relative; overflow: hidden; background: var(--iso-ground); color: var(--ink); min-height: 100vh;
+}
+[data-theme="dark"] .login-side {
+  --iso-ground: #1b2230; --iso-road: #222a39; --iso-dash: #8a7333; --iso-lawn: #1f3029;
+  --iso-top: #2c3546; --iso-left: #252d3c; --iso-right: #1f2633;
+  --iso-blue: #2b3a58; --iso-sand: #3a3428; --iso-mint: #233a31;
+  --tree-d: #2f7a55; --tree-l: #44966b; --tree-sh: rgba(0, 0, 0, .3);
+  --rt-1: #6ea0f7; --rt-2: #4cc493; --rt-3: #f0a24a;
+  --fade: #171c26;
+}
+.login-scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.login-side::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--fade) 55%, transparent) 0%, transparent 22%, transparent 55%, color-mix(in srgb, var(--fade) 92%, transparent) 88%),
+              linear-gradient(90deg, transparent 80%, color-mix(in srgb, var(--fade) 60%, transparent) 100%); }
+.iso-ground { fill: var(--iso-ground); }
+.iso-road { fill: var(--iso-road); }
+.iso-dash { fill: none; stroke: var(--iso-dash); stroke-width: 2; stroke-dasharray: 10 9; opacity: .8; }
+.iso-lawn { fill: var(--iso-lawn); }
+.iso-b .f-t { fill: var(--iso-top); }
+.iso-b .f-l { fill: var(--iso-left); }
+.iso-b .f-r { fill: var(--iso-right); }
+.iso-b.t-blue .f-t { fill: var(--iso-blue); }
+.iso-b.t-sand .f-t { fill: var(--iso-sand); }
+.iso-b.t-mint .f-t { fill: var(--iso-mint); }
+.iso-b.t-pale .f-t { fill: var(--iso-top); }
+.iso-b.t-hub .f-t { fill: #dfe9fd; } .iso-b.t-hub .f-l { fill: #c6d7f7; } .iso-b.t-hub .f-r { fill: #a9c0ee; }
+.iso-b.t-hubtop .f-t { fill: #2f6fed; } .iso-b.t-hubtop .f-l { fill: #2558c4; } .iso-b.t-hubtop .f-r { fill: #1d47a0; }
+.hub-win { fill: #8fb0ee; }
+.tr-d { fill: var(--tree-d); } .tr-l { fill: var(--tree-l); } .tr-sh { fill: var(--tree-sh); }
+.hub-sign { fill: #14966a; }
+.hub-text { fill: #fff; font: 600 12px "Sarabun", "Noto Sans Thai", sans-serif; }
+.hub-ring { fill: none; stroke: var(--rt-1); stroke-width: 2; opacity: 0; transform-box: fill-box; transform-origin: center; animation: hub-ring 3s ease-out infinite; }
+.hub-book { color: var(--rt-1); }
+.hub-book rect { fill: #fff; stroke: currentColor; stroke-width: 2; }
+.hub-book line { stroke: currentColor; stroke-width: 1.5; }
+.hub-book { animation: book-rise 4.2s ease-in-out infinite; opacity: 0; }
+.iso-route { fill: none; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 14 10; animation: route-flow 1.4s linear infinite; }
+.iso-route.rt-1 { stroke: var(--rt-1); } .iso-route.rt-2 { stroke: var(--rt-2); } .iso-route.rt-3 { stroke: var(--rt-3); }
+.walker.rt-1 { fill: var(--rt-1); } .walker.rt-2 { fill: var(--rt-2); } .walker.rt-3 { fill: var(--rt-3); }
+.walker .w-sh { fill: rgba(0, 0, 0, .15); }
+.iso-pin { animation: pin-bob 2.2s ease-in-out infinite; }
+.iso-pin.rt-1 path { fill: var(--rt-1); } .iso-pin.rt-2 path { fill: var(--rt-2); } .iso-pin.rt-3 path { fill: var(--rt-3); }
+.iso-pin .pin-dot { fill: #fff; }
+.iso-blip { transform-box: fill-box; transform-origin: center; animation: blip 2.6s ease-out infinite; }
+.iso-blip.b0 { fill: var(--rt-1); } .iso-blip.b1 { fill: var(--rt-2); } .iso-blip.b2 { fill: var(--rt-3); }
+@keyframes route-flow { to { stroke-dashoffset: -24; } }
+@keyframes pin-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes blip { 0% { transform: scale(.6); opacity: 1; } 70%, 100% { transform: scale(2.4); opacity: 0; } }
+@keyframes hub-ring { 0% { transform: scale(.5); opacity: .7; } 100% { transform: scale(1.4); opacity: 0; } }
+@keyframes book-rise { 0% { opacity: 0; translate: 0 10px; } 20%, 60% { opacity: 1; } 100% { opacity: 0; translate: 0 -40px; } }
+.login-side-top { position: absolute; z-index: 2; top: 28px; left: 32px; background: color-mix(in srgb, var(--surface) 92%, transparent); border-radius: 14px; padding: 10px 14px; box-shadow: var(--shadow-lift); }
+.login-side-copy { position: absolute; z-index: 2; left: 40px; right: 40px; bottom: 40px; }
+.login-side-copy h2 { color: var(--navy); font-size: clamp(28px, 2.6vw, 38px); line-height: 1.25; margin: 0 0 18px; }
+.login-chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.login-chips li { background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 14px; font-weight: 500; color: var(--ink); box-shadow: var(--shadow); }
+.login-float { position: absolute; z-index: 2; display: flex; gap: 8px; align-items: center; background: var(--surface); color: var(--ink); border-radius: 12px; padding: 9px 14px; font-size: 14px; box-shadow: var(--shadow-lift); opacity: 0; animation: float-card 12s ease-in-out infinite; }
+.login-float b { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 999px; color: #fff; font-size: 12px; }
+.lf-1 { top: 15%; right: 5%; } .lf-1 b { background: var(--rt-2); }
+.lf-2 { top: 40%; left: 8%; animation-delay: 4s; } .lf-2 b { background: var(--rt-1); }
+.lf-3 { top: 54%; right: 20%; animation-delay: 8s; } .lf-3 b { background: var(--rt-3); }
+@keyframes float-card { 0% { opacity: 0; transform: translateY(12px); } 6%, 30% { opacity: 1; transform: translateY(0); } 36%, 100% { opacity: 0; transform: translateY(-8px); } }
+@media (prefers-reduced-motion: reduce) {
+  .login-side *, .login-float { animation: none !important; }
+  .login-float { opacity: 1; } .lf-3 { display: none; }
+}
 .login-main { display: grid; place-items: center; padding: 32px 20px; }
+@media (min-width: 981px) { .login-main .login-brand { display: none; } }
 .login-card { width: 100%; max-width: 380px; }
+/* HR: ตัวแก้ไขหลักสูตรอัปโหลดเอง */
+.ce-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; align-items: start; }
+.ce-card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: grid; gap: 12px; min-width: 0; }
+.ce-card h2 { font-size: 17px; margin: 0; display: flex; gap: 10px; align-items: center; }
+.ce-no { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); font-size: 14px; flex: none; }
+.ce-wide, .ce-actions { grid-column: 1 / -1; }
+.ce-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ce-cover { aspect-ratio: 640 / 260; border-radius: var(--radius-s); overflow: hidden; background: var(--track); }
+.ce-note { font-size: 13px; margin: 0; }
+.ce-file { display: flex; gap: 8px; align-items: center; min-width: 0; overflow-wrap: anywhere; }
+.file-btn { justify-self: start; cursor: pointer; }
+.ce-ai { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.ce-q { border: 1px solid var(--line); border-radius: var(--radius-s); padding: 12px; display: grid; gap: 8px; margin-bottom: 10px; }
+.ce-q-head { display: flex; justify-content: space-between; align-items: center; }
+.ce-q textarea, .ce-opt input[type=text] { width: 100%; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius-s); background: var(--surface); color: var(--ink); }
+.ce-opt { display: grid; grid-template-columns: auto auto 1fr; gap: 8px; align-items: center; }
+.ce-opt input[type=radio] { width: 18px; height: 18px; accent-color: var(--good); }
+.ce-quiz-foot, .ce-pub { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.ce-quiz-foot .muted { margin-right: auto; }
+.help-steps { margin: 0 0 12px; padding-left: 20px; display: grid; gap: 4px; }
+.doc-frame { position: relative; width: 100%; aspect-ratio: 3 / 4; max-height: 80vh; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--surface); margin: 12px 0; }
+.doc-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .login-notice { margin: 0 0 20px; font-size: 14px; line-height: 1.6; }
 .login-notice ol { margin: 8px 0; padding-left: 20px; display: grid; gap: 4px; }
 .login-notice p { margin: 0; color: var(--ink-2); }
@@ -698,8 +789,12 @@ circle.k-todo { stroke: var(--track); } i.k-todo { background: var(--track); }
   .side { position: static; max-height: none; }
   .side summary { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; font-weight: 500; color: var(--navy); cursor: pointer; }
   .side summary small { color: var(--ink-2); font-weight: 400; }
-  .login-wrap { grid-template-columns: minmax(0, 1fr); }
-  .login-side { display: none; }
+  .login-wrap { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
+  /* มือถือ/แท็บเล็ต: ภาพเคลื่อนไหวเป็นแถบสั้นด้านบน */
+  .login-side { min-height: 0; height: 190px; }
+  .login-scene { inset: auto; width: 820px; height: 560px; left: calc(50% - 560px); top: -125px; }
+  .login-side-top, .login-side-copy, .login-float { display: none; }
+  .login-side::after { background: linear-gradient(180deg, transparent 60%, var(--fade) 100%); }
   .grid2, .grid3 { grid-template-columns: 1fr; }
   .frame4, .smcr { grid-template-columns: 1fr 1fr; }
   .grid5s { grid-template-columns: repeat(3, 1fr); }
@@ -1327,7 +1422,35 @@ window.KP = (function () {
       '<div class="hbar-track"><i style="width:' + Math.max(0, Math.min(100, pct)) + '%"></i></div><div class="hbar-val">' + esc(value) + "</div></div>";
   }
 
+  // หลักสูตรที่ HR อัปโหลดเอง: แปลงเป็นรูปแบบเดียวกับหลักสูตรใน content.js
+  // บทเรียนมี 1 บทคือเอกสาร PDF ที่เปิดดูในหน้าเว็บ ข้อสอบชุดเดียวใช้ทั้งก่อนและหลังเรียน
+  function customCourse(rec) {
+    if (rec.cover) { window.IMG = window.IMG || {}; window.IMG["cover-" + rec.id] = rec.cover; }
+    var view = "https://drive.google.com/file/d/" + encodeURIComponent(rec.fileId) + "/view";
+    var embed = "https://drive.google.com/file/d/" + encodeURIComponent(rec.fileId) + "/preview";
+    return {
+      id: rec.id, custom: true, status: rec.status, fileId: rec.fileId, fileName: rec.fileName, cover: rec.cover,
+      scope: rec.scope || "internal", group: rec.group || "quality",
+      title: rec.title, subtitle: rec.subtitle || "", source: rec.fileName || rec.title,
+      lessons: [{
+        title: "เอกสารหลักสูตร: " + rec.title,
+        minutes: rec.minutes || 20,
+        body: '<p>อ่านเอกสารให้ครบทุกหน้า แล้วกดปุ่มด้านล่างเพื่อไปทำข้อสอบหลังเรียน</p>' +
+          '<div class="doc-frame"><iframe src="' + embed + '" title="' + esc(rec.title) + '" loading="lazy" allow="fullscreen"></iframe></div>' +
+          '<p><a class="btn ghost small" href="' + view + '" target="_blank" rel="noopener">' + icon("file", 16) + " เปิดเอกสารเต็มจอ</a></p>",
+      }],
+      quiz: rec.quiz || [],
+    };
+  }
+  // ใส่หลักสูตรอัปโหลดเองต่อท้ายรายการหลักสูตร (แทนที่ของเดิมที่ id ซ้ำ)
+  function mergeCustomCourses(list, recs) {
+    for (var i = list.length - 1; i >= 0; i--) if (list[i].custom) list.splice(i, 1);
+    (recs || []).forEach(function (r) { if (r && r.id && r.fileId) list.push(customCourse(r)); });
+    return list;
+  }
+
   return {
+    customCourse: customCourse, mergeCustomCourses: mergeCustomCourses,
     app: app, homeUrl: homeUrl, reportUrl: reportUrl, SCOPES: SCOPES, GROUPS: GROUPS,
     icon: icon, esc: esc, api: api, brandLogo: brandLogo, fmtDay: fmtDay, localDate: localDate, ymd: ymd,
     groupLabel: groupLabel, scopeLabel: scopeLabel, courseIcon: courseIcon, courseArt: courseArt, courseThumb: courseThumb, minutes: minutes,
@@ -3291,13 +3414,120 @@ window.COURSES = [
   });
 
   /* ---------- login ---------- */
+  // ภาพเมืองไอโซเมตริก: พนักงานเดินตามเส้นทางจากบ้าน/แผนกต่าง ๆ ไปยังอาคารศูนย์อบรม
+  function loginScene() {
+    var HW = 40, HH = 20, N = 14, ROAD_X = 6, ROAD_Y = 7;
+    var still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var seed = 7;
+    function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    function p(x, y, z) { return ((x - y) * HW).toFixed(1) + "," + ((x + y) * HH - (z || 0)).toFixed(1); }
+    function poly(cls, pts) { return '<polygon class="' + cls + '" points="' + pts.join(" ") + '"/>'; }
+    function box(x0, y0, x1, y1, h, tone, z0) {
+      z0 = z0 || 0;
+      return '<g class="iso-b ' + (tone || "") + '">' +
+        poly("f-l", [p(x0, y1, z0), p(x1, y1, z0), p(x1, y1, h), p(x0, y1, h)]) +
+        poly("f-r", [p(x1, y0, z0), p(x1, y1, z0), p(x1, y1, h), p(x1, y0, h)]) +
+        poly("f-t", [p(x0, y0, h), p(x1, y0, h), p(x1, y1, h), p(x0, y1, h)]) + "</g>";
+    }
+    function tree(x, y, s) {
+      var c = p(x, y, 0).split(",");
+      return '<g class="iso-tree" transform="translate(' + c[0] + "," + c[1] + ')">' +
+        '<ellipse class="tr-sh" cx="0" cy="2" rx="' + 9 * s + '" ry="' + 4 * s + '"/>' +
+        '<circle class="tr-d" cx="0" cy="' + -10 * s + '" r="' + 8 * s + '"/>' +
+        '<circle class="tr-l" cx="' + -3 * s + '" cy="' + -14 * s + '" r="' + 5 * s + '"/></g>';
+    }
+    var hub = { x0: 8.1, y0: 3.1, x1: 9.9, y1: 4.9 }; // อาคารศูนย์อบรม (2x2 ช่อง)
+    var ground = poly("iso-ground", [p(0, 0), p(N, 0), p(N, N), p(0, N)]);
+    var roads = poly("iso-road", [p(ROAD_X, 0), p(ROAD_X + 1, 0), p(ROAD_X + 1, N), p(ROAD_X, N)]) +
+      poly("iso-road", [p(0, ROAD_Y), p(N, ROAD_Y), p(N, ROAD_Y + 1), p(0, ROAD_Y + 1)]) +
+      '<polyline class="iso-dash" points="' + p(ROAD_X + .5, 0) + " " + p(ROAD_X + .5, N) + '"/>' +
+      '<polyline class="iso-dash" points="' + p(0, ROAD_Y + .5) + " " + p(N, ROAD_Y + .5) + '"/>';
+    var cells = [];
+    for (var s = 0; s <= 2 * N; s++) for (var x = 0; x < N; x++) {
+      var y = s - x;
+      if (y < 0 || y >= N || x === ROAD_X || y === ROAD_Y) continue;
+      if (x >= 8 && x <= 9 && y >= 3 && y <= 4) {
+        if (x === 9 && y === 4) cells.push(hubSvg());
+        continue;
+      }
+      var r = rnd();
+      if (r < .2) {
+        cells.push(poly("iso-lawn", [p(x + .06, y + .06), p(x + .94, y + .06), p(x + .94, y + .94), p(x + .06, y + .94)]) +
+          tree(x + .3, y + .35, .9) + tree(x + .7, y + .3, .75) + tree(x + .45, y + .75, 1));
+      } else if (r < .27) {
+        cells.push(poly("iso-lawn", [p(x + .06, y + .06), p(x + .94, y + .06), p(x + .94, y + .94), p(x + .06, y + .94)]));
+      } else {
+        var tones = ["", "", "", "t-blue", "t-sand", "t-mint"];
+        var h = 14 + Math.round(rnd() * 30);
+        cells.push(box(x + .14, y + .14, x + .86, y + .86, h, tones[Math.floor(rnd() * tones.length)]));
+        if (rnd() < .35) cells.push(box(x + .5, y + .2, x + .82, y + .5, h + 10, "t-pale"));
+      }
+    }
+    function hubSvg() {
+      var h = 46;
+      var door = p(hub.x0 + .9, hub.y1, 0).split(",");
+      var sign = p(hub.x0 + .2, hub.y1, h + 30).split(",");
+      return '<g class="iso-hub">' + '<ellipse class="hub-ring" cx="' + door[0] + '" cy="' + door[1] + '" rx="60" ry="30"/>' +
+        box(hub.x0, hub.y0, hub.x1, hub.y1, h, "t-hub") +
+        box(hub.x0 - .06, hub.y0 - .06, hub.x1 + .06, hub.y1 + .06, h + 6, "t-hubtop", h) +
+        // หน้าต่างห้องเรียนสองแถวบนผนังด้านหน้า
+        [14, 30].map(function (z) {
+          return [0, 1, 2, 3].map(function (i) {
+            var a = hub.x0 + .15 + i * .42;
+            return poly("hub-win", [p(a, hub.y1, z), p(a + .28, hub.y1, z), p(a + .28, hub.y1, z + 9), p(a, hub.y1, z + 9)]);
+          }).join("");
+        }).join("") +
+        '<g transform="translate(' + sign[0] + "," + sign[1] + ')"><rect class="hub-sign" x="-8" y="-14" width="92" height="22" rx="6"/>' +
+        '<text class="hub-text" x="38" y="1" text-anchor="middle">ศูนย์อบรม</text></g>' +
+        '<g class="hub-books">' + [0, 1, 2].map(function (i) {
+          var c = p(hub.x0 + .9, hub.y0 + .9, h + 72).split(",");
+          return '<g class="hub-book" style="animation-delay:' + (i * 1.4) + 's" transform="translate(' + (+c[0] + (i - 1) * 22) + "," + c[1] + ')">' +
+            '<rect x="-9" y="-7" width="18" height="14" rx="2"/><line x1="0" y1="-7" x2="0" y2="7"/></g>';
+        }).join("") + "</g></g>";
+    }
+    // เส้นทางเดินไปศูนย์อบรม (พิกัดช่องกริด)
+    var routes = [
+      { cls: "rt-1", pts: [[2.5, 11.4], [2.5, 7.5], [6.5, 7.5], [6.5, 4.5], [8.1, 4.5]], dur: 9 },
+      { cls: "rt-2", pts: [[12.5, 11.5], [12.5, 7.5], [9.5, 7.5], [9.5, 4.9]], dur: 7 },
+      { cls: "rt-3", pts: [[3.5, 1.5], [6.5, 1.5], [6.5, 3.8], [8.1, 3.8]], dur: 6 }
+    ];
+    var paths = routes.map(function (r, i) {
+      var d = "M" + r.pts.map(function (q) { return p(q[0], q[1], 0); }).join(" L");
+      var start = p(r.pts[0][0], r.pts[0][1], 0).split(",");
+      var walkers = [0, 1].map(function (k) {
+        var begin = (k * r.dur / 2 + i * .7).toFixed(1) + "s";
+        var body = '<g class="walker ' + r.cls + '"><ellipse cx="0" cy="1" rx="5" ry="2.5" class="w-sh"/>' +
+          '<rect x="-3.5" y="-15" width="7" height="12" rx="3.5"/><circle cx="0" cy="-19" r="3.6"/></g>';
+        if (still) return k ? "" : '<g transform="translate(' + start[0] + "," + start[1] + ')">' + body + "</g>";
+        // ซ่อนไว้จนกว่าจะเริ่มเดิน ไม่ให้โผล่ที่มุมภาพ
+        return '<g visibility="hidden">' + body +
+          '<animateMotion dur="' + r.dur + 's" begin="' + begin + '" repeatCount="indefinite" path="' + d + '"/>' +
+          '<set attributeName="visibility" to="visible" begin="' + begin + '"/></g>';
+      }).join("");
+      var pin = '<g transform="translate(' + start[0] + "," + start[1] + ')"><g class="iso-pin ' + r.cls + '" style="animation-delay:' + (i * .5) + 's">' +
+        '<path d="M0 0 C-7 -10 -9 -14 -9 -19 A9 9 0 1 1 9 -19 C9 -14 7 -10 0 0Z"/><circle cx="0" cy="-19" r="3.5" class="pin-dot"/></g></g>';
+      return '<path class="iso-route ' + r.cls + '" d="' + d + '"/>' + pin + walkers;
+    }).join("");
+    // จุดกะพริบบนหลังคาบ้าน (เหมือนจุดเช็กอิน)
+    var dots = [[1.5, 4.5], [4.5, 9.5], [10.5, 10.5], [11.5, 2.5], [3.5, 12.5], [12.5, 5.5]].map(function (q, i) {
+      var c = p(q[0], q[1], 34).split(",");
+      return '<g transform="translate(' + c[0] + "," + c[1] + ')"><circle class="iso-blip b' + (i % 3) + '" r="5" style="animation-delay:' + (i * .6) + 's"/></g>';
+    }).join("");
+    // ภาพเอียงไปทางขวาเหมือนตัวอย่าง: แนวถนนหลักอยู่กลางเฟรม
+    return '<svg class="login-scene" viewBox="-470 -40 940 640" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">' +
+      ground + roads + cells.join("") + paths + dots + "</svg>";
+  }
+
   function renderLogin(message) {
+    var chips = ["ทดสอบก่อนเรียน", "เรียนออนไลน์", "ทดสอบหลังเรียน", "ติดตามผล", "ตารางอบรม"];
     app.innerHTML =
-      '<div class="login-wrap"><section class="login-side"><h2>ศูนย์พัฒนาความรู้ของพนักงาน</h2>' +
-      "<p>เรียนหลักสูตรขององค์กร ทำแบบทดสอบ และติดตามผลการเรียนของคุณได้จากที่เดียว ทั้งบนคอมพิวเตอร์และมือถือ</p>" +
-      "<ul><li>" + icon("catalog") + courses.length + " หลักสูตรทั้งความรู้ภายในและภายนอก</li>" +
-      "<li>" + icon("test") + "ทดสอบก่อนและหลังเรียนทุกหลักสูตร</li>" +
-      "<li>" + icon("calendar") + "ดูตารางอบรมที่กำลังจะมาถึง</li></ul></section>" +
+      '<div class="login-wrap"><section class="login-side">' + loginScene() +
+      '<div class="login-side-top"><span class="login-mark">' + KP.brandLogo(false) + "</span></div>" +
+      '<div class="login-float lf-1"><b>✓</b> ผ่านแบบทดสอบหลังเรียน 90%</div>' +
+      '<div class="login-float lf-2"><b>▶</b> กำลังเรียน ' + courses.length + " หลักสูตร</div>" +
+      '<div class="login-float lf-3"><b>★</b> รับใบประกาศเมื่อเรียนจบ</div>' +
+      '<div class="login-side-copy"><h2>ศูนย์พัฒนาความรู้<br>ของพนักงาน</h2>' +
+      '<ul class="login-chips">' + chips.map(function (c) { return "<li>" + c + "</li>"; }).join("") + "</ul></div></section>" +
       '<section class="login-main"><form class="login-card" id="login" autocomplete="off">' +
       '<div class="login-brand">' + KP.brandLogo(false) + "</div>" +
       "<h1>เข้าสู่ระบบ</h1>" +
@@ -3459,6 +3689,7 @@ window.COURSES = [
     state.history = res.history || [];
     state.schedule = res.schedule || [];
     state.settings = res.courseSettings || {};
+    KP.mergeCustomCourses(courses, res.customCourses); // หลักสูตรที่ HR อัปโหลดและเผยแพร่แล้ว
     mergeProgress(res.progress);
     applyPending();
     writeToken(res.token);
